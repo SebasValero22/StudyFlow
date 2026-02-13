@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OperationHistoryRepository extends JpaRepository<OperationHistory, Integer> {
-    List<OperationHistory> findByUserId(Integer userId);
+    // Entra en 'user' y busca por su campo 'userId'
+    List<OperationHistory> findByUser_UserId(Integer userId);
 }

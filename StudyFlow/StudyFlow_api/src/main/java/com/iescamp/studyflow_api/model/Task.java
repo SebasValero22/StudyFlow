@@ -33,8 +33,8 @@ public class Task {
 
     private Boolean isCompleted = false;
 
+    @Enumerated(EnumType.STRING) // Esto le dice a MySQL que guarde "HIGH" como texto
     private Priority priority;
-
 
 
 

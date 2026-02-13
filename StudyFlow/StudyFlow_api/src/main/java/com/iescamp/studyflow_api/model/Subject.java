@@ -11,25 +11,22 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "subjects")
+@Table(name = "Subjects")
 public class Subject {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer subjectId;
 
-        @ManyToOne
-        @JoinColumn(name = "userId", nullable = false)
-        private User user;
-
-        @Column(nullable = false)
+        @Column(name = "nameSubject", nullable = false) // Match SQL column name
         private String name;
 
-        @Column(length = 7)
+        private String academicYear;
         private String color;
 
+        @Column(name = "activeSubject")
         private boolean active = true;
 
-        @Column(name = "academic_year")
-        private String academicYear;
-
+        @ManyToOne
+        @JoinColumn(name = "userId")
+        private User user;
 }

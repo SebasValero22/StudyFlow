@@ -62,12 +62,9 @@ public class OperationHistoryService {
                 .map(OperationHistoryDTO::convertToDTO)
                 .collect(Collectors.toList());
     }
-
-    public List<OperationHistoryDTO> findByUserId(int usrId) {
-        List<OperationHistory> operations = operationHistoryRepository.findByUserId(usrId);
-        // Note: It's better to return an empty list than throw error if user has no history
-        return operations.stream()
+    public List<OperationHistoryDTO> getHistoryByUser(Integer userId) {
+        return operationHistoryRepository.findByUser_UserId(userId).stream() // Cambiado aquí
                 .map(OperationHistoryDTO::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
