@@ -1,4 +1,4 @@
-package com.iescamp.studyflow.CONTROLLERS;
+package com.iescamp.studyflow.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
