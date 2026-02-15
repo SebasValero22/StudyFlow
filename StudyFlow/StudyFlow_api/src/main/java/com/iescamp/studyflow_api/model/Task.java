@@ -6,15 +6,12 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-/**
- * Mapped to 'tasks' table.
- * Represents an assignment linked to a specific {@link Subject}.
- */
-
-@Data @Entity @Table(name = "tasks")
+@Data
+@Entity @Table(name = "tasks")
 public class Task {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
     private Integer taskId;
 
@@ -27,17 +24,19 @@ public class Task {
 
     private String description;
 
+    // Asegúrate de que los nombres coincidan con el DTO
     private LocalDate start_date;
-
     private LocalDate due_date;
 
-    private Boolean isCompleted = false;
+    // Cambiamos el nombre del campo para evitar conflictos de Lombok
+    @Column(name = "isCompleted")
+    private Boolean completed = false;
 
-    @Enumerated(EnumType.STRING) // Esto le dice a MySQL que guarde "HIGH" como texto
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
-
-
-
-
+    // Getter manual por si Lombok genera "isCompleted()" en lugar de "getCompleted()"
+    public Boolean getIsCompleted() {
+        return completed;
+    }
 }

@@ -57,7 +57,7 @@ public class ExamService {
 
 
     public List<ExamDTO> findByName(String name){
-        List<Exam> exams = examRepository.findByName(name);
+        List<Exam> exams = examRepository.findBySubject_NameSubject(name);
         if (exams.isEmpty()){
             throw new RuntimeException("no exams found"+name);
         }
@@ -68,7 +68,7 @@ public class ExamService {
 
     public List<ExamDTO> findBySubject(String subjectName){
         // ¡Usamos el nuevo nombre con guion bajo!
-        List<Exam> exams = examRepository.findBySubject_Name(subjectName);
+        List<Exam> exams = examRepository.findBySubject_NameSubject(subjectName);
 
         if (exams.isEmpty()) {
             throw new RuntimeException("no exams found with that subject: " + subjectName);

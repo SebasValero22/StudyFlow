@@ -3,30 +3,28 @@ package com.iescamp.studyflow_api.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
-/**
- * Mapped to 'subjects' table.
- * Represents a study category owned by a {@link User}.
- */
-
 @Data
 @Entity
 @Table(name = "Subjects")
 public class Subject {
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer subjectId;
 
-        @Column(name = "nameSubject", nullable = false) // Match SQL column name
-        private String name;
+        @Column(nullable = false)
+        private Integer userId;
 
+        @Column(nullable = false)
+        private String nameSubject;
+
+        // CAMBIO CLAVE: String
+        @Column(name = "academicYear")
         private String academicYear;
+
+        @Column
         private String color;
 
-        @Column(name = "activeSubject")
-        private boolean active = true;
-
-        @ManyToOne
-        @JoinColumn(name = "userId")
-        private User user;
+        @Column(name = "activeSubject") // Asegura que coincida con tu SQL
+        private Boolean activeSubject;
 }

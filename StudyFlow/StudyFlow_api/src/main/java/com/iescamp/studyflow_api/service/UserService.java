@@ -18,7 +18,7 @@ public class UserService {
     public UserResponseDTO register(UserRegisterDTO dto) {
         // Convertimos DTO a Entidad
         User user = new User();
-        user.setName(dto.getName());
+        user.setUserName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword()); // En la vida real, aquí se encriptaría
 
@@ -58,7 +58,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
         // 2. Update the fields
-        user.setName(dto.getName());
+        user.setUserName(dto.getName());
         // user.setPassword(dto.getPassword()); // Optional: update password if needed
 
         // 3. Save (JPA will perform an UPDATE because the object has an ID)

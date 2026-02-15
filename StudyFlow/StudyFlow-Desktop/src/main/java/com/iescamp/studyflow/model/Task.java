@@ -1,24 +1,15 @@
 package com.iescamp.studyflow.model;
-import com.iescamp.studyflow.enums.Priority;
-
-import java.time.LocalDate;
-import java.util.Date;
 
 import lombok.Data;
+import java.util.Date;
+
 @Data
 public class Task {
-
-    private Integer taskId;
-    private Subject subjectId;
+    private int taskId;
+    private Integer subjectId;
     private String title;
     private String description;
-    private LocalDate start_date;
-    private LocalDate due_date;
-    private String isCompleted;
-    private Priority priority;
-
-
-
-
-
+    private Date due_date;
+    private String priority;
+    private Boolean isCompleted;
 }

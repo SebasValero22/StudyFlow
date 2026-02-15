@@ -17,21 +17,25 @@ public class SubjectService {
         @Autowired
         private SubjectRepository subjectRepository;
 
-        public SubjectResponseDTO add(SubjectResponseDTO dto) {
-            Subject subject = new Subject();
-            subject.setName(dto.getSubjectName());
-            subject.setColor(dto.getColor());
-            subject.setActive(dto.isActive());
-            subject.setAcademicYear(dto.getAcademicYear());
-            return SubjectResponseDTO.convertToDTO(subjectRepository.save(subject));
-        }
+    public SubjectResponseDTO add(SubjectResponseDTO dto) {
+        Subject subject = new Subject();
+        subject.setNameSubject(dto.getNameSubject());
+        subject.setColor(dto.getColor());
+        subject.setActiveSubject(dto.getActiveSubject());
+        subject.setAcademicYear(dto.getAcademicYear());
+        // --- ¡ESTA ES LA LÍNEA QUE FALTABA! ---
+        // Sin esto, el ID se queda nulo y la base de datos explota
+        subject.setUserId(dto.getUserId());
+        // ---------------------------------------
+        return SubjectResponseDTO.convertToDTO(subjectRepository.save(subject));
+    }
 
         public SubjectResponseDTO modify(Integer id, SubjectResponseDTO dto) {
             Subject subject = subjectRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Subject not found"));
-            subject.setName(dto.getSubjectName());
+            subject.setNameSubject(dto.getNameSubject());
             subject.setColor(dto.getColor());
-            subject.setActive(dto.isActive());
+            subject.setActiveSubject(dto.getActiveSubject());
             subject.setAcademicYear(dto.getAcademicYear());
             return SubjectResponseDTO.convertToDTO(subjectRepository.save(subject));
         }
@@ -58,7 +62,7 @@ public class SubjectService {
 
     public List<SubjectResponseDTO> findByName(String name) {
         // 1. Get the list of all matching entities from the repo
-        List<Subject> subjects = subjectRepository.findByName(name);
+        List<Subject> subjects = subjectRepository.findByNameSubject(name);
 
         // 2. Check if the list is empty to handle the "not found" case
         if (subjects.isEmpty()) {

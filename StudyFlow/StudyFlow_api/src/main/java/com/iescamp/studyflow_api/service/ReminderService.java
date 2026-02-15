@@ -30,7 +30,10 @@ public class ReminderService {
         reminderRepository.deleteById(id);
         // Remove the 'throw new RuntimeException' success message!
     }
-    public ReminderDTO update(Integer id, ReminderDTO dto){
+    public ReminderDTO update
+
+
+            (Integer id, ReminderDTO dto){
         Reminder reminder = reminderRepository.findById(id).orElseThrow();
         reminder.setMessage(dto.getMessage());
         reminder.setDateTime(dto.getDateTime());

@@ -12,7 +12,7 @@ import lombok.Data;
         public static UserResponseDTO convertToDTO(User entity) {
             UserResponseDTO dto = new UserResponseDTO();
             dto.setUserId(entity.getUserId());
-            dto.setName(entity.getName());
+            dto.setName(entity.getUserName());
             dto.setEmail(entity.getEmail());
             return dto;
         }

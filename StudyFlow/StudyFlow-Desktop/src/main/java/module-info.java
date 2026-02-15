@@ -7,9 +7,10 @@ module com.iescamp.studyflow {
     requires java.desktop;
     requires com.fasterxml.jackson.databind;
 
-
     opens com.iescamp.studyflow to javafx.fxml;
     exports com.iescamp.studyflow;
-    exports com.iescamp.studyflow.controller;
     opens com.iescamp.studyflow.controller to javafx.fxml;
+    exports com.iescamp.studyflow.controller;
+    opens com.iescamp.studyflow.model to com.fasterxml.jackson.databind;
+    exports com.iescamp.studyflow.model;
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.MainDashboardController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="StudyFlow" textFill="#2196f3">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField promptText="Search..." style="-fx-background-color: #F4F7FA; -fx-background-radius: 15;" />
+                <Label text="👤" textFill="#777777">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox spacing="5.0" style="-fx-background-color: #2C3E50; -fx-padding: 15;" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="MENU" textFill="#7f8c8d">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                    </VBox.margin>
+                </Label>
+                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOverview" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;" text="📊  Overview" />
+                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTasks" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="✅  Tasks" />
+                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSubjects" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📚  Subjects" />
+                <Separator style="-fx-background-color: #34495e;" />
+                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showExams" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📅  Exams" />
+                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGrades" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="🎓  Grades" />
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #F4F7FA;">
+            <children>
+                <Label text="Select an option from the menu" textFill="#999999" />
+            </children></StackPane>
+    </center>
+
+    <bottom>
+        <HBox style="-fx-background-color: #ecf0f1; -fx-padding: 5;" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="statusLabel" text="Status: Ready" textFill="#777777" />
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>
