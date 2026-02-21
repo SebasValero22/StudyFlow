@@ -33,13 +33,12 @@
                 <TableColumn prefWidth="300.0" text="Title">
                     <cellValueFactory><PropertyValueFactory property="title" /></cellValueFactory>
                 </TableColumn>
+                <TableColumn prefWidth="250.0" text="Description">
+                    <cellValueFactory><PropertyValueFactory property="descriptionTask" /></cellValueFactory>
+                </TableColumn>
                 <TableColumn prefWidth="120.0" text="Due Date">
                     <cellValueFactory><PropertyValueFactory property="dueDate" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="100.0" text="Priority">
-                    <cellValueFactory><PropertyValueFactory property="priority" /></cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="80.0" text="Completed" />
             </columns>
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

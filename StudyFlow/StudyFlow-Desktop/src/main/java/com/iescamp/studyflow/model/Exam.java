@@ -1,18 +1,14 @@
 package com.iescamp.studyflow.model;
 
-import Enums.ExamType;
-
-import java.util.Date;
 import lombok.Data;
+import java.time.LocalDate;
+
 @Data
 public class Exam {
-    private int examID;
-    private int subjectID;
-    private String name;
-    private ExamType type;
-    private Date examDate;
-
-
-
-
+    private int examId;
+    private int subjectId;
+    private String nameExam; // Coincide con colExamName -> "nameExam"
+    private String examType; // Coincide con colExamType -> "examType"
+    private LocalDate examDate; // Coincide con colDate -> "examDate"
+    private String classroom; // Coincide con colRoom -> "classroom"
 }

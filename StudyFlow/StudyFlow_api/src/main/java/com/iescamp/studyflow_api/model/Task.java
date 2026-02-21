@@ -22,6 +22,7 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
+    @Column(name = "descriptionTask")
     private String description;
 
     // Asegúrate de que los nombres coincidan con el DTO

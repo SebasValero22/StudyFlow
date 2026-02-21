@@ -4,6 +4,7 @@ package com.iescamp.studyflow_api.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -19,6 +20,7 @@ public class Grade {
     private String concept;
     private Double score;
     private Double weight;
-    private Date date;
+    @Column(name = "gradeDate")
+    private LocalDate gradeDate;
 
 }

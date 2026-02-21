@@ -2,7 +2,9 @@ package com.iescamp.studyflow_api.service;
 
 import com.iescamp.studyflow_api.dto.ExamDTO;
 import com.iescamp.studyflow_api.model.Exam;
+import com.iescamp.studyflow_api.model.Subject;
 import com.iescamp.studyflow_api.repository.ExamRepository;
+import com.iescamp.studyflow_api.repository.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +17,24 @@ public class ExamService {
 
     @Autowired
     private ExamRepository examRepository;
+    // Importa el repositorio de asignaturas
+    @Autowired
+    private SubjectRepository subjectRepository;
 
-
-    public ExamDTO add(ExamDTO dto){
+    public ExamDTO add(ExamDTO dto) {
         Exam exam = new Exam();
         exam.setExamId(dto.getExamId());
-        exam.setName(dto.getName());
+        exam.setName(dto.getNameExam());
         exam.setExamType(dto.getExamType());
         exam.setExamDate(dto.getExamDate());
         exam.setClassroom(dto.getClassroom());
-        exam.setSubject(dto.getSubject());
+
+        // BUSCA LA ASIGNATURA REAL POR ID
+        if (dto.getSubjectId() != null) {
+            Subject subject = subjectRepository.findById(dto.getSubjectId())
+                    .orElseThrow(() -> new RuntimeException("Subject not found with ID: " + dto.getSubjectId()));
+            exam.setSubject(subject); // Ahora sí pasamos el objeto Subject completo
+        }
 
         return ExamDTO.convertToDTO(examRepository.save(exam));
     }
@@ -40,7 +50,7 @@ public class ExamService {
                 .orElseThrow(() -> new RuntimeException("Exam not found"));
 
         // 2. Update fields
-        exam.setName(dto.getName());
+        exam.setName(dto.getNameExam());
         exam.setExamType(dto.getExamType());
         exam.setExamDate(dto.getExamDate());
         exam.setClassroom(dto.getClassroom());

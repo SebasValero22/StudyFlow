@@ -23,7 +23,7 @@ public class GradeService {
         grade.setScore(dto.getScore());
         grade.setSubject(dto.getSubject());
         grade.setWeight(dto.getWeight());
-        grade.setDate(dto.getDate());
+        grade.setGradeDate(dto.getGradeDate());
         return GradeDTO.convertToDTO(gradeRepository.save(grade));
 
     }

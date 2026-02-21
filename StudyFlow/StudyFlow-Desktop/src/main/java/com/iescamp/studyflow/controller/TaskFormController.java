@@ -13,8 +13,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 public class TaskFormController {
@@ -68,26 +69,30 @@ public class TaskFormController {
         try {
             Task newTask = new Task();
             newTask.setTitle(titleField.getText());
-            newTask.setDescription(descArea.getText());
+            newTask.setDescriptionTask(descArea.getText());
 
-            // 2. ID de Asignatura (CRÍTICO)
+            // 2. ID de Asignatura
+            // Usamos el objeto del ComboBox para obtener el ID real de la DB
             newTask.setSubjectId(subjectCombo.getValue().getSubjectId());
 
-            // 3. Booleanos (Ahora que tu modelo es Boolean, esto es directo)
+            // 3. Estado de la tarea
             newTask.setIsCompleted(completedCheckBox.isSelected());
 
-            // 4. Fechas (Conversión LocalDate -> Date)
+            // 4. Fechas (LocalDate es lo que espera tu modelo y la API)
             if (dueDatePicker.getValue() != null) {
-                Date date = java.sql.Date.valueOf(dueDatePicker.getValue());
-                newTask.setDue_date(date);
+                // No necesitas conversión extra si usas LocalDate en el modelo
+                newTask.setDueDate(dueDatePicker.getValue());
             }
 
-            // 5. Prioridad (Manejo de nulos)
+            // 5. Prioridad
             if (priorityCombo.getValue() != null) {
-                newTask.setPriority(priorityCombo.getValue().toString());
+                newTask.setPriority(priorityCombo.getValue().toString().toUpperCase());
             }
 
+            // 6. Persistencia
             taskService.saveTask(newTask);
+
+            // Cerramos tras éxito
             closeWindow();
 
         } catch (Exception e) {

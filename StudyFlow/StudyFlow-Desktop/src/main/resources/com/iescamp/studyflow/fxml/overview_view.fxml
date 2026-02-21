@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20.0" style="-fx-background-color: #F4F7FA; -fx-padding: 30;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.OverviewController">
+    <children>
+        <Label text="Resumen Académico" textFill="#2c3e50">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+
+        <HBox spacing="20.0">
+            <children>
+                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0" style="-fx-background-color: #34495e; -fx-background-radius: 10;">
+                    <children>
+                        <Label fx:id="lblTasksCount" text="3 Tareas para hoy" textFill="WHITE" wrapText="true">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0" style="-fx-background-color: #27ae60; -fx-background-radius: 10;">
+                    <children>
+                        <Label fx:id="lblNextExam" text="Próximo Examen: Física" textFill="WHITE" wrapText="true">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0" style="-fx-background-color: #2980b9; -fx-background-radius: 10;">
+                    <children>
+                        <Label fx:id="lblGPA" text="Media Total: 8.5" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;" VBox.vgrow="ALWAYS">
+            <children>
+                <Label text="Actividad Reciente" textFill="#7f8c8d">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <Label text="Aquí se mostrará el historial de operaciones a futuro..." textFill="#95a5a6" />
+            </children>
+        </VBox>
+    </children>
+</VBox>

@@ -6,6 +6,7 @@ module com.iescamp.studyflow {
     requires java.net.http;
     requires java.desktop;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.datatype.jsr310;
 
     opens com.iescamp.studyflow to javafx.fxml;
     exports com.iescamp.studyflow;

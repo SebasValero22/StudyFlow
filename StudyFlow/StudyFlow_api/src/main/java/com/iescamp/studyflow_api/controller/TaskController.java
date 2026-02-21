@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "*") // <-- THIS IS MANDATORY FOR THE PWA
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {

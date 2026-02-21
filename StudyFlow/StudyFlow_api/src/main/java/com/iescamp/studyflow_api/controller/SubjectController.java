@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/subjects")
 // @CrossOrigin(origins = "*") // Descomenta si tienes problemas de conexión desde otro PC

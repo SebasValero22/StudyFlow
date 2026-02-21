@@ -77,8 +77,12 @@ public class LoginController {
 
     @FXML
     public void handleRegister(ActionEvent actionEvent) {
-        // Asegúrate de tener este FXML creado o da error
-        // ViewSwitcher.loadView("register_view.fxml");
-        System.out.println("Ir a registro...");
-    }
+            try {
+                // Verifica que la ruta coincida con tu estructura de carpetas
+                ViewSwitcher.loadView("register_view.fxml");
+            } catch (Exception e) {
+                System.err.println("Error al cargar la vista de registro: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -16,7 +17,7 @@ public class GradeDTO {
     private String concept;
     private Double score;
     private Double weight;
-    private Date date;
+    private LocalDate gradeDate;
 
 
 
@@ -28,7 +29,7 @@ public class GradeDTO {
         dto.setSubject(grade.getSubject());
         dto.setWeight(grade.getWeight());
         dto.setScore(grade.getScore());
-        dto.setDate(grade.getDate());
+        dto.setGradeDate(grade.getGradeDate());
 
 
 

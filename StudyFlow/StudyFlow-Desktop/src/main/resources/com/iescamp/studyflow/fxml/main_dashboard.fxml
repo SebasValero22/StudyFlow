@@ -16,24 +16,28 @@
     <top>
         <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" BorderPane.alignment="CENTER">
             <children>
-                <Label text="StudyFlow" textFill="#2196f3">
+                <Label text="StudyFlow"
+                       textFill="#2196f3"
+                       onMouseClicked="#showOverview"
+                       style="-fx-cursor: hand;">
                     <font>
                         <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
                 <Region HBox.hgrow="ALWAYS" />
                 <TextField promptText="Search..." style="-fx-background-color: #F4F7FA; -fx-background-radius: 15;" />
-                <Label text="👤" textFill="#777777">
+
+                <Button onAction="#showUserConfig" style="-fx-background-color: transparent; -fx-cursor: hand;" text="👤" textFill="#777777">
                     <font>
                         <Font size="20.0" />
                     </font>
-                </Label>
+                </Button>
             </children>
         </HBox>
     </top>
 
     <left>
-        <VBox spacing="5.0" style="-fx-background-color: #2C3E50; -fx-padding: 15;" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebarMenu" spacing="5.0" style="-fx-background-color: #2C3E50; -fx-padding: 15;" BorderPane.alignment="CENTER">
             <children>
                 <Label text="MENU" textFill="#7f8c8d">
                     <font>
@@ -56,8 +60,9 @@
     <center>
         <StackPane fx:id="contentArea" style="-fx-background-color: #F4F7FA;">
             <children>
-                <Label text="Select an option from the menu" textFill="#999999" />
-            </children></StackPane>
+                <Label text="Cargando panel de control..." textFill="#999999" />
+            </children>
+        </StackPane>
     </center>
 
     <bottom>
