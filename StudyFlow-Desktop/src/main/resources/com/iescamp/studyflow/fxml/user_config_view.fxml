@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<VBox spacing="30.0" styleClass="content-area" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.UserConfigController">
+    <children>
+        <VBox spacing="5.0">
+            <children>
+                <Label style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Account Settings" />
+                <Label style="-fx-text-fill: #7f8c8d;" text="Manage your personal information and security preferences" />
+            </children>
+        </VBox>
+
+        <VBox spacing="25.0" styleClass="card">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <children>
+                <GridPane hgap="20.0" vgap="20.0">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="150.0" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                    </columnConstraints>
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Full Name" />
+                        <TextField fx:id="txtUsername" prefHeight="40.0" style="-fx-background-color: #f1f3f5; -fx-background-radius: 8; -fx-border-color: #e9ecef; -fx-border-radius: 8;" GridPane.columnIndex="1" />
+
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Email Address" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtEmail" editable="false" prefHeight="40.0" style="-fx-background-color: #e9ecef; -fx-background-radius: 8; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-text-fill: #6c757d;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="New Password" GridPane.rowIndex="2" />
+                        <PasswordField fx:id="txtNewPassword" prefHeight="40.0" promptText="Leave blank to keep current" style="-fx-background-color: #f1f3f5; -fx-background-radius: 8; -fx-border-color: #e9ecef; -fx-border-radius: 8;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    </children>
+                </GridPane>
+
+                <Separator style="-fx-opacity: 0.5;" />
+
+                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                    <children>
+                        <Button onAction="#handleUpdateUser" prefHeight="40.0" prefWidth="180.0" styleClass="action-button" text="Save Changes" />
+                        <Label fx:id="lblStatus" style="-fx-text-fill: #2ecc71; -fx-font-weight: bold;" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <VBox spacing="15.0" styleClass="card" style="-fx-border-color: #fab1a0; -fx-border-width: 1; -fx-border-radius: 12;">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #d63031;" text="Danger Zone" />
+                <Label style="-fx-text-fill: #7f8c8d;" text="Once you delete your account, there is no going back. Please be certain." />
+                <Button styleClass="action-button, delete-button" text="Delete Account" />
+            </children>
+        </VBox>
+    </children>
+</VBox>

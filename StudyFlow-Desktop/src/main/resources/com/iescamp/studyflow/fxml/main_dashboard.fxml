@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="750.0" prefWidth="1200.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.MainDashboardController">
+    <left>
+        <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_LEFT" onMouseClicked="#showOverview" spacing="12.0" style="-fx-padding: 30 25; -fx-cursor: hand;">
+                    <children>
+                        <StackPane styleClass="logo-icon">
+                            <children>
+                                <Label text="SF" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </StackPane>
+                        <Label styleClass="logo-text" text="StudyFlow" />
+                    </children>
+                </HBox>
+
+                <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets left="12.0" right="12.0" />
+                    </padding>
+                    <children>
+                        <Button fx:id="btnOverview" onAction="#showOverview" prefHeight="45.0" prefWidth="236.0" styleClass="nav-button, nav-button-active" text="📊   Overview" />
+                        <Button fx:id="btnSubjects" onAction="#showSubjects" prefHeight="45.0" prefWidth="236.0" styleClass="nav-button" text="📚   Subjects" />
+                        <Button fx:id="btnTasks" onAction="#showTasks" prefHeight="45.0" prefWidth="236.0" styleClass="nav-button" text="✅   Tasks" />
+                        <Button fx:id="btnExams" onAction="#showExams" prefHeight="45.0" prefWidth="236.0" styleClass="nav-button" text="📝   Exams" />
+                        <Button fx:id="btnGrades" onAction="#showGrades" prefHeight="45.0" prefWidth="236.0" styleClass="nav-button" text="⭐   Grades" />
+                    </children>
+                </VBox>
+
+                <VBox style="-fx-padding: 20 12; -fx-border-color: #f1f3f5; -fx-border-width: 1 0 0 0;">
+                    <children>
+                        <Button onAction="#showUserConfig" prefHeight="45.0" prefWidth="236.0" styleClass="nav-button" text="⚙️   Settings" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_LEFT" prefHeight="70.0" styleClass="top-header">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                            <children>
+                                <Circle radius="5.0" styleClass="status-dot" />
+                                <Label styleClass="sync-status" text="Personal Cloud Sync: Active" />
+                            </children>
+                        </HBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0" onMouseClicked="#showProfile" style="-fx-cursor: hand;">
+                            <children>
+                                <VBox alignment="CENTER_RIGHT">
+                                    <children>
+                                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Guest User" />
+                                        <Label style="-fx-text-fill: #adb5bd; -fx-font-size: 11px;" text="Student" />
+                                    </children>
+                                </VBox>
+                                <StackPane prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #f1f3f5; -fx-background-radius: 20; -fx-border-color: #e9ecef; -fx-border-radius: 20; -fx-border-width: 2;">
+                                    <children>
+                                        <Label text="👤" textFill="#adb5bd">
+                                            <font>
+                                                <Font size="18.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </StackPane>
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+                <StackPane fx:id="contentArea" styleClass="content-area" VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

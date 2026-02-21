@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane prefHeight="500.0" prefWidth="400.0" style="-fx-background-color: #f8f9fa;" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.LoginController">
+   <children>
+      <VBox alignment="CENTER" maxWidth="350.0" spacing="25.0" styleClass="card" style="-fx-padding: 40;">
+         <children>
+            <StackPane styleClass="logo-icon" maxWidth="60" maxHeight="60">
+               <children>
+                  <Label text="SF" textFill="WHITE" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+               </children>
+            </StackPane>
+            
+            <VBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <Label style="-fx-font-size: 24px; -fx-font-weight: 800; -fx-text-fill: #2c3e50;" text="Welcome Back" />
+                  <Label style="-fx-text-fill: #7f8c8d;" text="Log in to your StudyFlow cloud" />
+               </children>
+            </VBox>
+
+            <VBox spacing="15.0">
+               <children>
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Email Address" />
+                        <TextField fx:id="emailField" prefHeight="40.0" promptText="name@example.com" style="-fx-background-color: #f1f3f5; -fx-background-radius: 8; -fx-border-color: #e9ecef; -fx-border-radius: 8;" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Password" />
+                        <PasswordField fx:id="passwordField" prefHeight="40.0" promptText="••••••••" style="-fx-background-color: #f1f3f5; -fx-background-radius: 8; -fx-border-color: #e9ecef; -fx-border-radius: 8;" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleLogin" prefHeight="45.0" styleClass="action-button" text="Sign In" />
+            
+            <Button onAction="#goToRegister" style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-weight: bold;" text="Don't have an account? Sign up" />
+            
+            <Label fx:id="messageLabel" textFill="#e74c3c" wrapText="true" alignment="CENTER" textAlignment="CENTER"/>
+         </children>
+      </VBox>
+   </children>
+</StackPane>

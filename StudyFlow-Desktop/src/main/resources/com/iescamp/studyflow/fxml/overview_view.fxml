@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="30.0" styleClass="content-area" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.OverviewController">
+    <children>
+        <Label style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #2c3e50;" text="Dashboard Overview" />
+
+        <HBox spacing="25.0">
+            <children>
+                <VBox prefWidth="280.0" spacing="15.0" styleClass="card" style="-fx-background-color: #3498db;">
+                    <padding>
+                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                    </padding>
+                    <children>
+                        <Label text="Current GPA" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="lblGPA" text="0.00" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="48.0" />
+                            </font>
+                        </Label>
+                        <Label text="Overall Academic Average" textFill="#e1f5fe" />
+                    </children>
+                </VBox>
+
+                <VBox prefWidth="280.0" spacing="15.0" styleClass="card">
+                    <padding>
+                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                    </padding>
+                    <children>
+                        <Label style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;" text="PENDING TASKS" />
+                        <Label fx:id="lblTasksCount" style="-fx-font-size: 36px; -fx-font-weight: bold;" text="0" />
+                        <Label style="-fx-text-fill: #95a5a6;" text="Incomplete items" />
+                    </children>
+                </VBox>
+
+                <VBox prefWidth="280.0" spacing="15.0" styleClass="card">
+                    <padding>
+                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                    </padding>
+                    <children>
+                        <Label style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;" text="UPCOMING EXAM" />
+                        <Label fx:id="lblNextExam" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="None scheduled" wrapText="true" />
+                        <Label style="-fx-text-fill: #95a5a6;" text="Next milestone" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <VBox spacing="15.0" styleClass="card" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Sync Activity Log" />
+                <Label style="-fx-text-fill: #7f8c8d;" text="Your academic data is synchronized with the StudyFlow Cloud in real-time." />
+                <!-- We could add a list here later, for now just the aesthetic -->
+                <VBox style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-background-radius: 8;">
+                    <children>
+                        <Label text="✓ Connection to API: http://localhost:8081 [OK]" textFill="#27ae60" />
+                        <Label text="✓ Service Worker: Running" textFill="#27ae60" />
+                        <Label text="✓ Database: StudyFlow (MySQL) [Connected]" textFill="#27ae60" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</VBox>
