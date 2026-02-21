@@ -1,0 +1,49 @@
+<div class="grades-container">
+  <h2>Grades & GPA</h2>
+
+  <div class="gpa-display">
+    <h3>Overall GPA: <span class="gpa-score">{{ calculateGPA() }}</span></h3>
+  </div>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div class="grade-form">
+    <h3>Add New Grade</h3>
+    <div class="input-group">
+      <input type="number" [(ngModel)]="newGrade.score" placeholder="Score (0-10)">
+      <input type="number" [(ngModel)]="newGrade.weight" placeholder="Weight %">
+      <select [(ngModel)]="newGrade.subjectId">
+        <option value="0" disabled>Select Subject</option>
+        <option *ngFor="let subject of subjects" [value]="subject.subjectId">
+          {{ subject.nameSubject }}
+        </option>
+      </select>
+      <button (click)="isEditing ? updateGrade() : addGrade()">{{ isEditing ? 'Update Grade' : 'Add Grade' }}</button>
+      <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+    </div>
+  </div>
+
+  <div class="grade-list">
+    <table>
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Score</th>
+          <th>Weight</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let grade of grades">
+          <td>{{ getSubjectName(grade.subjectId) }}</td>
+          <td>{{ grade.score }}</td>
+          <td>{{ grade.weight }}%</td>
+          <td>
+            <button (click)="editGrade(grade)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
+            <button (click)="deleteGrade(grade.gradeId!)" style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

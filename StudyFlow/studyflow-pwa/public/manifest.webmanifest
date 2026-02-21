@@ -1,0 +1,23 @@
+{
+  "name": "StudyFlow",
+  "short_name": "StudyFlow",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "theme_color": "#0d1b2a",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "StudyFlowIcon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "StudyFlowIcon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}
