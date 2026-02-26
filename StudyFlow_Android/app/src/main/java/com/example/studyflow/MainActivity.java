@@ -13,9 +13,16 @@ import com.example.studyflow.ui.dashboard.DashboardFragment;
 import com.example.studyflow.ui.grades.GradeListFragment;
 import com.example.studyflow.ui.subjects.SubjectListFragment; // Import necesario
 import com.example.studyflow.ui.tasks.TaskListFragment;
-import com.example.studyflow.ui.user.UserConfigFragment; // Import necesario
+import com.example.studyflow.ui.settings.UserConfigFragment; // Import corregido
 
 import com.google.android.material.navigation.NavigationView;
+
+import com.example.studyflow.utils.UserSession;
+import android.content.Intent;
+import com.example.studyflow.ui.login.LoginActivity;
+import androidx.activity.OnBackPressedCallback;
+import androidx.drawerlayout.widget.DrawerLayout;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -23,7 +30,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.Theme_StudyFlow);
         super.onCreate(savedInstanceState);
+        
+        // Verificar sesión
+        if (!UserSession.getInstance().isLoggedIn()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -38,6 +54,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         binding.navView.setNavigationItemSelectedListener(this);
+
+        // Manejar botón atrás moderno
+        OnBackPressedCallback callback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                callback.setEnabled(true);
+            }
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                callback.setEnabled(false);
+            }
+        });
 
         // Cargar Dashboard por defecto
         if (savedInstanceState == null) {
@@ -67,15 +105,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         binding.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    // Necesario para que el botón "Atrás" cierre el menú si está abierto
-    @Override
-    public void onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 }

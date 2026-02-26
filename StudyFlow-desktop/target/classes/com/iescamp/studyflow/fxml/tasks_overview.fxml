@@ -27,7 +27,7 @@
                 <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #34495e;" text="Current Academic Tasks" />
                 <TableView fx:id="taskTable" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn prefWidth="80.0" text="Done" />
+                        <TableColumn fx:id="colDone" prefWidth="80.0" text="Done" />
                         <TableColumn prefWidth="250.0" text="Title">
                             <cellValueFactory><PropertyValueFactory property="title" /></cellValueFactory>
                         </TableColumn>
@@ -45,6 +45,7 @@
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" spacing="10.0">
                     <children>
+                        <Button onAction="#handleEditTask" styleClass="action-button" style="-fx-background-color: #f39c12;" text="Modify" />
                         <Button onAction="#handleDeleteTask" styleClass="action-button, delete-button" text="Delete Selected" />
                     </children>
                 </HBox>

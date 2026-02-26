@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.Button?>
 <VBox spacing="25.0" styleClass="content-area" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.GradesController">
     <children>
         <HBox alignment="CENTER_LEFT" spacing="20.0">

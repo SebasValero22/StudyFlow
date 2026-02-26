@@ -29,7 +29,7 @@ public class TaskService {
 
         // 2. Actualizamos campos básicos
         task.setTitle(dto.getTitle());
-        task.setDescription(dto.getDescription());
+        task.setDescriptionTask(dto.getDescription());
         task.setPriority(dto.getPriority());
         task.setStart_date(dto.getStart_date());
         task.setDue_date(dto.getDue_date());
@@ -49,7 +49,7 @@ public class TaskService {
     // Método privado para no repetir código entre add y modify
     private TaskResponseDTO saveOrUpdate(Task task, TaskResponseDTO dto) {
         task.setTitle(dto.getTitle());
-        task.setDescription(dto.getDescription());
+        task.setDescriptionTask(dto.getDescription());
         task.setPriority(dto.getPriority());
         task.setStart_date(dto.getStart_date());
         task.setDue_date(dto.getDue_date());

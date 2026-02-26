@@ -15,6 +15,7 @@
             <children>
                 <Label style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Exams Schedule" />
                 <HBox HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleEditExam" styleClass="action-button" style="-fx-background-color: #f39c12;" text="Modify" />
                 <Button onAction="#handleNewExam" styleClass="action-button" text="+ New Exam" />
             </children>
         </HBox>

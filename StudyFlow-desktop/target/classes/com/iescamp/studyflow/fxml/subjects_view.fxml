@@ -41,6 +41,7 @@
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" spacing="10.0">
                     <children>
+                        <Button onAction="#handleEditSubject" styleClass="action-button" style="-fx-background-color: #f39c12;" text="Modify" />
                         <Button onAction="#handleDeleteSubject" styleClass="action-button, delete-button" text="Delete Selected" />
                     </children>
                 </HBox>

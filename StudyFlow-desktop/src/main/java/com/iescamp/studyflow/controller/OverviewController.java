@@ -58,10 +58,10 @@ public class OverviewController {
             }
 
         } catch (Exception e) {
-            System.err.println("Error cargando estadísticas: " + e.getMessage());
-            lblTasksCount.setText("Error al cargar");
-            lblNextExam.setText("Error al cargar");
-            lblGPA.setText("Error al cargar");
+            System.err.println("Error loading statistics: " + e.getMessage());
+            lblTasksCount.setText("Error loading");
+            lblNextExam.setText("Error loading");
+            lblGPA.setText("Error loading");
         }
     }
 }

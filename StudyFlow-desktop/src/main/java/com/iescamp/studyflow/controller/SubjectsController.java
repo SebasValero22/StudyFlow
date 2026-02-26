@@ -34,7 +34,7 @@ public class SubjectsController {
             List<Subject> list = subjectService.getAllSubjects();
             subjectsTable.setItems(FXCollections.observableArrayList(list));
         } catch (Exception e) {
-            statusLabel.setText("Error cargando asignaturas: " + e.getMessage());
+            statusLabel.setText("Error loading subjects: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -61,7 +61,7 @@ public class SubjectsController {
 
             if (subject != null) {
                 SubjectFormController controller = loader.getController();
-                controller.setSubject(subject); // We need to add this method to the controller
+                controller.setSubject(subject); 
             }
 
             Stage stage = new Stage();
@@ -82,17 +82,17 @@ public class SubjectsController {
     public void handleDeleteSubject(ActionEvent event) {
         Subject selected = subjectsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            statusLabel.setText("Selecciona una asignatura primero.");
+            statusLabel.setText("Select a subject first.");
             return;
         }
 
         try {
-            // Llamada al servicio para borrar
+            // Call service to delete
             subjectService.deleteSubject(selected.getSubjectId());
-            loadSubjects(); // Refrescar tabla
-            statusLabel.setText("Asignatura eliminada.");
+            loadSubjects(); // Refresh table
+            statusLabel.setText("Subject deleted.");
         } catch (Exception e) {
-            statusLabel.setText("Error al eliminar: " + e.getMessage());
+            statusLabel.setText("Error deleting: " + e.getMessage());
         }
     }
 }

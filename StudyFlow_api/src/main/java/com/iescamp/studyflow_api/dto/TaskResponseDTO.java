@@ -46,7 +46,7 @@ public class TaskResponseDTO {
         TaskResponseDTO dto = new TaskResponseDTO();
         dto.setTaskId(task.getTaskId());
         dto.setTitle(task.getTitle());
-        dto.setDescription(task.getDescription());
+        dto.setDescription(task.getDescriptionTask());
         dto.setPriority(task.getPriority());
         dto.setStart_date(task.getStart_date());
         dto.setDue_date(task.getDue_date());

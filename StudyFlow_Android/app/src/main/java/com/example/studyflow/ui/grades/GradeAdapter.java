@@ -1,19 +1,19 @@
 package com.example.studyflow.ui.grades;
-import android.graphics.Color;
+
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.studyflow.data.model.Grade;
-import com.example.studyflow.databinding.ItemGradeBinding; // Generado por item_grade.xml
+import com.example.studyflow.data.dto.GradeResponseDTO;
+import com.example.studyflow.databinding.ItemGradeBinding;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GradeAdapter extends RecyclerView.Adapter<GradeAdapter.GradeViewHolder> {
 
-    private List<Grade> gradeList = new ArrayList<>();
+    private List<GradeResponseDTO> gradeList = new ArrayList<>();
 
-    public void setGrades(List<Grade> grades) {
+    public void setGrades(List<GradeResponseDTO> grades) {
         this.gradeList = grades;
         notifyDataSetChanged();
     }
@@ -27,34 +27,22 @@ public class GradeAdapter extends RecyclerView.Adapter<GradeAdapter.GradeViewHol
 
     @Override
     public void onBindViewHolder(@NonNull GradeViewHolder holder, int position) {
-        Grade grade = gradeList.get(position);
-
+        GradeResponseDTO grade = gradeList.get(position);
         holder.binding.tvConcept.setText(grade.getConcept());
         holder.binding.tvScore.setText(String.valueOf(grade.getScore()));
-
-        // Formato: "Peso: 30% | 2023-10-15"
-        String details = "Peso: " + (grade.getWeight() * 100) + "%";
-        if (grade.getGradeDate() != null) {
-            details += " | " + grade.getGradeDate().toString();
-        }
-        holder.binding.tvDetails.setText(details);
-
-        // Lógica visual: Verde si aprueba (>=5), Rojo si suspende (<5)
-        if (grade.getScore() >= 5.0) {
-            holder.binding.tvScore.setTextColor(Color.parseColor("#4CAF50")); // Verde
-        } else {
-            holder.binding.tvScore.setTextColor(Color.parseColor("#F44336")); // Rojo
-        }
+        
+        String dateStr = grade.getGradeDate() != null ? grade.getGradeDate().toString() : "";
+        String weightStr = grade.getWeight() != null ? (grade.getWeight() * 100) + "%" : "0%";
+        holder.binding.tvDetails.setText("Peso: " + weightStr + " | " + dateStr);
     }
 
     @Override
     public int getItemCount() {
-        return gradeList != null ? gradeList.size() : 0;
+        return gradeList.size();
     }
 
     static class GradeViewHolder extends RecyclerView.ViewHolder {
         ItemGradeBinding binding;
-
         public GradeViewHolder(ItemGradeBinding binding) {
             super(binding.getRoot());
             this.binding = binding;

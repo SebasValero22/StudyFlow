@@ -18,7 +18,7 @@
     <left>
         <VBox prefWidth="260.0" styleClass="sidebar" BorderPane.alignment="CENTER">
             <children>
-                <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-padding: 30 25;">
+                <HBox alignment="CENTER_LEFT" onMouseClicked="#showOverview" spacing="12.0" style="-fx-padding: 30 25; -fx-cursor: hand;">
                     <children>
                         <StackPane styleClass="logo-icon">
                             <children>

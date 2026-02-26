@@ -92,7 +92,7 @@ public class TaskFormController {
             }
 
             if (existingTask != null) {
-                taskService.updateTask(task);
+                taskService.updateTask(task.getTaskId(), task);
             } else {
                 taskService.saveTask(task);
             }

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,19 +14,22 @@ import com.example.studyflow.databinding.FragmentGradeListBinding;
 public class GradeListFragment extends Fragment {
     private FragmentGradeListBinding binding;
     private GradeViewModel viewModel;
-    // Asumimos un GradeAdapter similar al de Subjects
     private GradeAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentGradeListBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(GradeViewModel.class);
 
-        adapter = new GradeAdapter();
         binding.rvGrades.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new GradeAdapter();
         binding.rvGrades.setAdapter(adapter);
 
         viewModel.getGrades().observe(getViewLifecycleOwner(), grades -> {
             adapter.setGrades(grades);
+        });
+
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
         });
 
         viewModel.loadGrades();

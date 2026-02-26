@@ -1,34 +1,43 @@
 package com.example.studyflow.data.remote;
 
-import com.example.studyflow.data.model.*;
+import com.example.studyflow.data.dto.*;
 import java.util.List;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
 public interface ApiService {
-    // Autenticación
+    // Users
     @POST("users/login")
-    Call<User> login(@Body User loginRequest);
+    Call<UserResponseDTO> login(@Body UserLoginDTO loginRequest);
 
-    // Tareas
+    @POST("users/register")
+    Call<UserResponseDTO> register(@Body UserRegisterDTO registerRequest);
+
+    // Tasks
     @GET("tasks")
-    Call<List<Task>> getTasks();
+    Call<List<TaskResponseDTO>> getTasks();
 
     @POST("tasks")
-    Call<Task> createTask(@Body Task task);
+    Call<TaskResponseDTO> createTask(@Body TaskResponseDTO task);
 
-    // Asignaturas
+    @PUT("tasks/{id}")
+    Call<TaskResponseDTO> updateTask(@Path("id") Integer id, @Body TaskResponseDTO task);
+
+    @DELETE("tasks/{id}")
+    Call<Void> deleteTask(@Path("id") Integer id);
+
+    // Subjects
     @GET("subjects")
-    Call<List<Subject>> getSubjects();
+    Call<List<SubjectResponseDTO>> getSubjects();
 
-    // Exámenes
+    @POST("subjects")
+    Call<SubjectResponseDTO> createSubject(@Body SubjectResponseDTO subject);
+
+    // Exams (Placeholder DTOs if needed or generic)
     @GET("exams")
-    Call<List<Exam>> getExams();
+    Call<List<TaskResponseDTO>> getExams(); // Often similar to tasks in logic
 
-    // Calificaciones
+    // Grades
     @GET("grades")
-    Call<List<Grade>> getGrades();
+    Call<List<GradeResponseDTO>> getGrades();
 }

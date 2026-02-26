@@ -1,10 +1,10 @@
 package com.example.studyflow.utils;
 
-import com.example.studyflow.data.model.User;
+import com.example.studyflow.data.dto.UserResponseDTO;
 
 public class UserSession {
     private static UserSession instance;
-    private User currentUser;
+    private UserResponseDTO currentUser;
 
     private UserSession() {}
 
@@ -15,7 +15,8 @@ public class UserSession {
         return instance;
     }
 
-    public void setUser(User user) { this.currentUser = user; }
-    public User getUser() { return currentUser; }
+    public void setUser(UserResponseDTO user) { this.currentUser = user; }
+    public UserResponseDTO getUser() { return currentUser; }
+    public boolean isLoggedIn() { return currentUser != null; }
     public void logout() { currentUser = null; }
 }

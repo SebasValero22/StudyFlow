@@ -31,7 +31,7 @@ public class TaskOverviewController {
     public void initialize() {
         loadSubjectColors();
         
-        // 1. Botón TRUE/FALSE
+        // 1. TRUE/FALSE Toggle Button
         colDone.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
             private final javafx.scene.control.Button btn = new javafx.scene.control.Button();
             @Override
@@ -50,7 +50,7 @@ public class TaskOverviewController {
             }
         });
 
-        // 2. Color de fondo según asignatura
+        // 2. Background color based on subject
         taskTable.setRowFactory(tv -> new javafx.scene.control.TableRow<>() {
             @Override
             protected void updateItem(Task item, boolean empty) {
@@ -82,7 +82,7 @@ public class TaskOverviewController {
             List<Task> tasks = taskService.getAllTasks();
             taskTable.setItems(FXCollections.observableArrayList(tasks));
         } catch (Exception e) {
-            showAlert("Error", "No se pudieron cargar las tareas.");
+            showAlert("Error", "Could not load tasks.");
         }
     }
 
@@ -94,7 +94,7 @@ public class TaskOverviewController {
     public void handleEditTask(ActionEvent actionEvent) {
         Task selected = taskTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Aviso", "Select a task to modify.");
+            showAlert("Notice", "Select a task to modify.");
             return;
         }
         openForm(selected);
@@ -107,7 +107,7 @@ public class TaskOverviewController {
 
             if (task != null) {
                 TaskFormController controller = loader.getController();
-                controller.setTask(task); // We need to add this method to the controller
+                controller.setTask(task); 
             }
 
             Stage stage = new Stage();
@@ -126,20 +126,20 @@ public class TaskOverviewController {
     public void handleDeleteTask(ActionEvent actionEvent) {
         Task selected = taskTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Aviso", "Selecciona una tarea para borrar.");
+            showAlert("Notice", "Select a task to delete.");
             return;
         }
 
-        // Confirmación (Usabilidad)
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Borrar tarea " + selected.getTitle() + "?");
+        // Confirmation (Usability)
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Delete task " + selected.getTitle() + "?");
         Optional<ButtonType> result = confirm.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 taskService.deleteTask(selected.getTaskId());
-                loadTasks(); // Refrescar tabla
+                loadTasks(); // Refresh table
             } catch (Exception e) {
-                showAlert("Error", "No se pudo borrar la tarea.");
+                showAlert("Error", "Could not delete task.");
             }
         }
     }

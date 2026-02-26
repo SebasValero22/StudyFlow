@@ -1,0 +1,21 @@
+The folder android studio is supposed to be already connected to the api, the api is S:\StudyFlow\StudyFlow_api
+that api has all the business logic and is running perfectly already.
+what you have to do is look into the next images that are inside the S:\StudyFlow\instructions StudyFlow, these images are how it looks in the pwa the important things and stuff we cannot avoid. you have all already done in the Desktop version  S:\StudyFlow\StudyFlow-desktop 
+even tho this folder already has the entities and most of the logic created, is a java android file dont change the base of it all you have to do is finish it not rebuild it, adapt it and continue so you basically finish what i was doing making a functional working app like the dekstop and that is it basically.
+
+
+
+the aplication studyflow has to let an user sign in, thats why we need a login and we have it already you can check for the fxml inside the S:\StudyFlow\StudyFlow-desktop\src\main\resources\com\iescamp\studyflow\fxml
+i want you to create the views so it all just works like the desktop, which means:
+can log in, can registerm can create, modify and delete tasks, exams, subjects and grades. it has to able to set tasks and exams as completed.
+
+its basically a port of the desktop/pwa S:\StudyFlow\studyflow-pwa\src\app
+
+one more time IS JAVA IT IS CONNECTED TO A JAVA BASED API AND IT HAS TO BE LIKE THE PWA/DESKTOP, fully functional and the logo is S:\StudyFlow\tudyFlowIcon.png
+
+
+if any questions ask before starting.
+
+
+and at last i want you to write a file in the root S:\StudyFlow
+called android_ctivities which is where you will tell me absolutely everything you did in this session regarding the android project

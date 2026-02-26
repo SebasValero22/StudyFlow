@@ -25,7 +25,7 @@ public class Task {
 
     @Column(name = "descriptionTask")
     @JsonProperty("description")
-    private String description;
+    private String descriptionTask;
 
     @Column(name = "startDate")
     private LocalDate start_date;

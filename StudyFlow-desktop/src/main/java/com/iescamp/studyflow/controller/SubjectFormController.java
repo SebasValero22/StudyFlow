@@ -24,7 +24,9 @@ public class SubjectFormController {
 
     @FXML
     public void initialize() {
-        colorPicker.setValue(Color.web("#3498db"));
+        // Pantone Color Palette from PWA instructions
+        // ['#FFB7B2', '#B2E2F2', '#B2F2BB', '#F2F2B2', '#E2F0CB', '#FFDAC1']
+        colorPicker.setValue(Color.web("#FFB7B2"));
     }
 
     public void setSubject(Subject subject) {
@@ -36,7 +38,11 @@ public class SubjectFormController {
             } catch (Exception e) {}
         }
         if (subject.getColor() != null) {
-            colorPicker.setValue(Color.web(subject.getColor()));
+            try {
+                colorPicker.setValue(Color.web(subject.getColor()));
+            } catch (Exception e) {
+                colorPicker.setValue(Color.web("#FFB7B2"));
+            }
         }
     }
 
@@ -52,6 +58,7 @@ public class SubjectFormController {
             User currentUser = UserSession.getInstance().getUser();
             if (currentUser == null) {
                 formStatusLabel.setText("No active session.");
+                formStatusLabel.setTextFill(Color.RED);
                 return;
             }
 
@@ -74,6 +81,7 @@ public class SubjectFormController {
         } catch (Exception e) {
             e.printStackTrace();
             formStatusLabel.setText("Error saving: " + e.getMessage());
+            formStatusLabel.setTextFill(Color.RED);
         }
     }
 

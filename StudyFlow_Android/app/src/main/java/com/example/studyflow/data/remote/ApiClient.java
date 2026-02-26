@@ -9,7 +9,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class ApiClient {
 
-    private static final String BASE_URL= "http://localhost:8888/api";
+    private static final String BASE_URL="https://studyflow-nuux.onrender.com";
     private static Retrofit retrofit = null;
 
 

@@ -3,22 +3,30 @@ package com.example.studyflow.ui.grades;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.example.studyflow.data.model.Grade;
-import com.example.studyflow.data.repository.GradeRepository; // Crear Repo
+import com.example.studyflow.data.dto.GradeResponseDTO;
+import com.example.studyflow.data.repository.GradeRepository;
+import com.example.studyflow.data.repository.TaskRepository;
 import java.util.List;
 
 public class GradeViewModel extends ViewModel {
     private final GradeRepository repository = new GradeRepository();
-    private final MutableLiveData<List<Grade>> _grades = new MutableLiveData<>();
+    private final MutableLiveData<List<GradeResponseDTO>> grades = new MutableLiveData<>();
+    private final MutableLiveData<String> error = new MutableLiveData<>();
 
-    public LiveData<List<Grade>> getGrades() { return _grades; }
+    public LiveData<List<GradeResponseDTO>> getGrades() { return grades; }
+    public LiveData<String> getError() { return error; }
 
     public void loadGrades() {
-        repository.fetchGrades(new GradeRepository.Callback() {
+        repository.getGrades(new TaskRepository.RepositoryCallback<List<GradeResponseDTO>>() {
             @Override
-            public void onSuccess(List<Grade> data) { _grades.postValue(data); }
+            public void onSuccess(List<GradeResponseDTO> result) {
+                grades.postValue(result);
+            }
+
             @Override
-            public void onError(String msg) { }
+            public void onError(String message) {
+                error.postValue(message);
+            }
         });
     }
 }

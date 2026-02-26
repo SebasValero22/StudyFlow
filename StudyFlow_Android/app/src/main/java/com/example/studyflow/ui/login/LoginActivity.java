@@ -21,15 +21,27 @@ public class LoginActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
         binding.btnLogin.setOnClickListener(v -> {
-            String email = binding.etEmail.getText().toString();
-            String pass = binding.etPassword.getText().toString();
-            viewModel.login(email, pass);
+            String email = binding.etEmail.getText().toString().trim();
+            String pass = binding.etPassword.getText().toString().trim();
+            if (!email.isEmpty() && !pass.isEmpty()) {
+                viewModel.login(email, pass);
+            } else {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.btnRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            startActivity(intent);
         });
 
         viewModel.getUser().observe(this, user -> {
-            // Ir al Dashboard al tener éxito
-            // startActivity(new Intent(this, DashboardActivity.class));
-            Toast.makeText(this, "Bienvenido " + user.getUserName(), Toast.LENGTH_SHORT).show();
+            if (user != null) {
+                Toast.makeText(this, "Welcome " + user.getName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, com.example.studyflow.MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
         });
 
         viewModel.getError().observe(this, error ->

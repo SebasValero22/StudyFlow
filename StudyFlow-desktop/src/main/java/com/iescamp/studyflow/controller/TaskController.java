@@ -33,31 +33,31 @@ public class TaskController {
             List<Task> tasks = taskService.getAllTasks();
             taskTable.setItems(FXCollections.observableArrayList(tasks));
         } catch (Exception e) {
-            statusLabel.setText("Error al cargar tareas.");
+            statusLabel.setText("Error loading tasks.");
             e.printStackTrace();
         }
     }
 
-    // ESTE ES EL MÉTODO CORRECTO: Abrir el formulario para crear
+    // Correct method to open the creation form
     @FXML
     public void openCreateTaskDialog(ActionEvent event) {
         try {
-            // Cargar el FXML del formulario (Asegúrate que la ruta sea correcta)
+            // Load the form FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/iescamp/studyflow/fxml/task_form.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle("Nueva Tarea");
+            stage.setTitle("New Task");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atrás
-            stage.showAndWait(); // Espera a que se cierre
+            stage.initModality(Modality.APPLICATION_MODAL); // Blocks background window
+            stage.showAndWait(); // Wait for close
 
-            // Al volver, refrescamos la tabla
+            // Refresh table upon return
             loadTasks();
 
         } catch (IOException e) {
             e.printStackTrace();
-            statusLabel.setText("Error al abrir el formulario.");
+            statusLabel.setText("Error opening the form.");
         }
     }
 }
