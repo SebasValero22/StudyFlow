@@ -1,5 +1,0 @@
-instructions overall 
-1-go to StudyFlow desktop, look into view instructions and make it so its that way
-2-go to the api, analize it and make the android app work, read the Android StudyFlow instructions and apply them that way, the folders and most classes are made so you got this 
-3-make sure it all works just fine
-4-put all the changes improvements and things you've done in a file called 24-02-26-StudyFlowChanges and there tell me all you did 
