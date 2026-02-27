@@ -25,7 +25,7 @@
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="Cancelar" onAction="#handleCancel" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
-        <Button text="Guardar" onAction="#handleSave" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button fx:id="saveButton" text="Guardar" onAction="#handleSave" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;"/>
     </HBox>
     <Label fx:id="statusLabel"/>
 </VBox>

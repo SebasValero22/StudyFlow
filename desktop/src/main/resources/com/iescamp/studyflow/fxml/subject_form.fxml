@@ -55,7 +55,7 @@
 
                 <Button onAction="#handleDelete" mnemonicParsing="false" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="Delete Subject" />
 
-                <Button onAction="#handleSave" mnemonicParsing="false" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Save Changes" />
+                <Button fx:id="saveButton" onAction="#handleSave" mnemonicParsing="false" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Save Changes" />
             </children>
             <VBox.margin>
                 <Insets top="10.0" />

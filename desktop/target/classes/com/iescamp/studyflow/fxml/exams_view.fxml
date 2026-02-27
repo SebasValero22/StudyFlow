@@ -16,5 +16,9 @@
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="ADD EXAM" onAction="#handleNewExam"
                 style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;"/>
+        <Button text="EDIT EXAM" onAction="#handleEditExam"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;"/>
+        <Button text="DELETE EXAM" onAction="#handleDeleteExam"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;"/>
     </HBox>
 </VBox>

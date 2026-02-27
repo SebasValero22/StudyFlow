@@ -42,6 +42,24 @@ public class TaskFormController {
         loadSubjects();
     }
 
+    private void loadSubjects() {
+        try {
+            List<Subject> subjects = subjectService.getAllSubjects();
+            subjectCombo.setItems(FXCollections.observableArrayList(subjects));
+
+            // Convertidor para mostrar solo el nombre
+            subjectCombo.setConverter(new StringConverter<>() {
+                @Override
+                public String toString(Subject s) { return (s != null) ? s.getNameSubject() : ""; }
+                @Override
+                public Subject fromString(String string) { return null; }
+            });
+
+        } catch (Exception e) {
+            formStatusLabel.setText("Error cargando asignaturas: " + e.getMessage());
+        }
+    }
+
     public void setTaskToEdit(Task task) {
         this.taskToEdit = task;
         titleField.setText(task.getTitle());
