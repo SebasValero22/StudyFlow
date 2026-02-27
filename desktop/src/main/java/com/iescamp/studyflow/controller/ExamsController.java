@@ -7,6 +7,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import java.io.IOException;
+
 public class ExamsController {
     @FXML private TableView<Exam> examsTable;
     @FXML private TableColumn<Exam, String> colExamName;
@@ -18,7 +25,7 @@ public class ExamsController {
 
     @FXML
     public void initialize() {
-        // 1. Primero configuramos las columnas (esto nunca debe fallar)
+        // ... (setupTable code) ...
         colExamName.setCellValueFactory(new PropertyValueFactory<>("nameExam"));
         colExamType.setCellValueFactory(new PropertyValueFactory<>("examType"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("examDate"));
@@ -45,13 +52,14 @@ public class ExamsController {
             }
         });
 
-        // 2. Cargamos los datos de forma segura
+        loadExamsSilently();
+    }
+
+    private void loadExamsSilently() {
         try {
             loadExams();
         } catch (Exception e) {
-            // En lugar de dejar que la app explote, mostramos un error en consola o UI
-            System.err.println("No se pudieron cargar los exámenes: " + e.getMessage());
-            // Opcional: mostrar una alerta al usuario
+            e.printStackTrace();
         }
     }
 
@@ -59,5 +67,51 @@ public class ExamsController {
         examsTable.setItems(FXCollections.observableArrayList(examService.getAllExams()));
     }
 
-    @FXML private void handleNewExam() { /* Lógica para abrir form de examen */ }
+    @FXML 
+    private void handleNewExam() { 
+        openExamForm(null);
+    }
+
+    @FXML
+    private void handleEditExam() {
+        Exam selected = examsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+        openExamForm(selected);
+    }
+
+    @FXML
+    private void handleDeleteExam() {
+        Exam selected = examsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+        try {
+            examService.deleteExam(selected.getExamId());
+            loadExams();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openExamForm(Exam exam) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/iescamp/studyflow/fxml/exam_form.fxml"));
+            Parent root = loader.load();
+
+            if (exam != null) {
+                ExamFormController controller = loader.getController();
+                controller.setExamToEdit(exam);
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle(exam == null ? "Nuevo Examen" : "Editar Examen");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            loadExams();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -14,9 +14,11 @@ public class ExamFormController {
     @FXML private TextField nameField, typeField, roomField;
     @FXML private DatePicker datePicker;
     @FXML private Label statusLabel;
+    @FXML private Button saveButton;
 
     private final ExamService examService = new ExamService();
     private final SubjectService subjectService = new SubjectService();
+    private Exam examToEdit;
 
     @FXML
     public void initialize() {
@@ -27,6 +29,24 @@ public class ExamFormController {
         }
     }
 
+    public void setExamToEdit(Exam exam) {
+        this.examToEdit = exam;
+        nameField.setText(exam.getNameExam());
+        typeField.setText(exam.getExamType());
+        roomField.setText(exam.getClassroom());
+        datePicker.setValue(exam.getExamDate());
+        
+        if (exam.getSubjectId() != 0) {
+            for (Subject s : subjectCombo.getItems()) {
+                if (s.getSubjectId() == exam.getSubjectId()) {
+                    subjectCombo.setValue(s);
+                    break;
+                }
+            }
+        }
+        saveButton.setText("Actualizar");
+    }
+
     @FXML
     private void handleSave() {
         if (nameField.getText().isEmpty() || subjectCombo.getValue() == null || datePicker.getValue() == null) {
@@ -35,14 +55,18 @@ public class ExamFormController {
         }
 
         try {
-            Exam newExam = new Exam();
-            newExam.setNameExam(nameField.getText());
-            newExam.setExamType(typeField.getText());
-            newExam.setExamDate(datePicker.getValue());
-            newExam.setClassroom(roomField.getText());
-            newExam.setSubjectId(subjectCombo.getValue().getSubjectId());
+            Exam exam = (examToEdit != null) ? examToEdit : new Exam();
+            exam.setNameExam(nameField.getText());
+            exam.setExamType(typeField.getText());
+            exam.setExamDate(datePicker.getValue());
+            exam.setClassroom(roomField.getText());
+            exam.setSubjectId(subjectCombo.getValue().getSubjectId());
 
-            examService.saveExam(newExam); // Este método debe llamar al POST de la API
+            if (examToEdit != null) {
+                examService.updateExam(exam.getExamId(), exam);
+            } else {
+                examService.saveExam(exam);
+            }
             handleCancel();
         } catch (Exception e) {
             statusLabel.setText("Error al guardar: " + e.getMessage());

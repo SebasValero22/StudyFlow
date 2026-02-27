@@ -30,11 +30,10 @@
 
         <TableView fx:id="taskTable" style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colTaskCompleted" prefWidth="50.0" text="Done" />
-                <TableColumn fx:id="titleColumn" prefWidth="250.0" text="Title">
+                <TableColumn fx:id="titleColumn" prefWidth="300.0" text="Title">
                     <cellValueFactory><PropertyValueFactory property="title" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="200.0" text="Description">
+                <TableColumn prefWidth="250.0" text="Description">
                     <cellValueFactory><PropertyValueFactory property="descriptionTask" /></cellValueFactory>
                 </TableColumn>
                 <TableColumn prefWidth="120.0" text="Due Date">
@@ -50,7 +49,6 @@
             <children>
                 <Region HBox.hgrow="ALWAYS" />
                 <Button mnemonicParsing="false" onAction="#openCreateTaskDialog" style="-fx-background-color: #2196f3; -fx-text-fill: white;" text="+ Add New Task" />
-                <Button mnemonicParsing="false" onAction="#openEditTaskDialog" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Edit Selected" />
                 <Button mnemonicParsing="false" onAction="#handleDeleteTask" style="-fx-background-color: transparent; -fx-border-color: #e74c3c; -fx-text-fill: #e74c3c;" text="Delete Selected" />
             </children>
         </HBox>

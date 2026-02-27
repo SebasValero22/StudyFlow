@@ -22,7 +22,6 @@
             </font>
         </Label>
         <Button onAction="#handleCreateSubject" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="+ Nueva Asignatura" />
-        <Button onAction="#handleEditSubject" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Editar Seleccionada" />
         <Button onAction="#handleDeleteSubject" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Eliminar Seleccionada" />
     </HBox>
 

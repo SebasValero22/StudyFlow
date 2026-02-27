@@ -38,6 +38,17 @@ public class ExamService {
                 .POST(HttpRequest.BodyPublishers.ofString(json)).build();
 
         if (ApiClient.sendRequest(request).statusCode() != 200) {
+            throw new Exception("EXAM COULDNT BE SAVED");
+        }
+    }
+
+    // PUT /api/exams/{id}
+    public void updateExam(Integer id, Exam exam) throws Exception {
+        String json = JsonMapper.get().writeValueAsString(exam);
+        HttpRequest request = ApiClient.prepareRequest("/exams/" + id)
+                .PUT(HttpRequest.BodyPublishers.ofString(json)).build();
+
+        if (ApiClient.sendRequest(request).statusCode() != 200) {
             throw new Exception("EXAM COULDNT BE UPDATED");
         }
     }

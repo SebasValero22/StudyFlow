@@ -18,12 +18,26 @@ public class SubjectFormController {
     @FXML private DatePicker academicYearPicker;
     @FXML private ColorPicker colorPicker;
     @FXML private Label formStatusLabel;
+    @FXML private Button saveButton;
 
     private final SubjectService subjectService = new SubjectService();
+    private Subject subjectToEdit;
 
     @FXML
     public void initialize() {
         colorPicker.setValue(Color.web("#3498db"));
+    }
+
+    public void setSubjectToEdit(Subject subject) {
+        this.subjectToEdit = subject;
+        nameField.setText(subject.getNameSubject());
+        if (subject.getAcademicYear() != null && !subject.getAcademicYear().isEmpty()) {
+            academicYearPicker.setValue(LocalDate.parse(subject.getAcademicYear()));
+        }
+        if (subject.getColor() != null && !subject.getColor().isEmpty()) {
+            colorPicker.setValue(Color.web(subject.getColor()));
+        }
+        saveButton.setText("Actualizar");
     }
 
     @FXML
@@ -35,46 +49,31 @@ public class SubjectFormController {
         }
 
         try {
-            // 1. Obtener usuario de la sesión
             User currentUser = UserSession.getInstance().getUser();
-
-            // Verificación de seguridad (por si se perdió la sesión)
             if (currentUser == null) {
                 formStatusLabel.setText("Error: No hay sesión activa. Relogueate.");
                 formStatusLabel.setTextFill(Color.RED);
                 return;
             }
 
-            // 2. Crear objeto Subject
-            Subject subject = new Subject();
+            Subject subject = (subjectToEdit != null) ? subjectToEdit : new Subject();
             subject.setNameSubject(nameField.getText());
-
-            // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
-            // Usamos el ID real del usuario logueado
             subject.setUserId(currentUser.getUserId());
-            // ---------------------------------
 
-            // Fechas
             LocalDate date = academicYearPicker.getValue();
-            if (date != null) {
-                subject.setAcademicYear(date.toString());
-            } else {
-                subject.setAcademicYear("");
-            }
+            subject.setAcademicYear(date != null ? date.toString() : "");
 
-            // Color
             String hexColor = toHexString(colorPicker.getValue());
             subject.setColor(hexColor);
-
-            // Active (Por defecto true al crear)
             subject.setActiveSubject(true);
 
-            // 3. Guardar
-            subjectService.saveSubject(subject);
+            if (subjectToEdit != null) {
+                subjectService.updateSubject(subject.getSubjectId(), subject);
+            } else {
+                subjectService.saveSubject(subject);
+            }
 
-            // 4. Cerrar
             closeWindow();
-
         } catch (Exception e) {
             e.printStackTrace();
             formStatusLabel.setText("Error al guardar: " + e.getMessage());

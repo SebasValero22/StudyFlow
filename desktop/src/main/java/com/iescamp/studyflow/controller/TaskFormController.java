@@ -27,9 +27,11 @@ public class TaskFormController {
     @FXML public ComboBox<Priority> priorityCombo;
     @FXML public CheckBox completedCheckBox;
     @FXML public Label formStatusLabel;
+    @FXML private Button saveButton;
 
     private final TaskService taskService = new TaskService();
     private final SubjectService subjectService = new SubjectService();
+    private Task taskToEdit;
 
     @FXML
     public void initialize() {
@@ -40,22 +42,26 @@ public class TaskFormController {
         loadSubjects();
     }
 
-    private void loadSubjects() {
-        try {
-            List<Subject> subjects = subjectService.getAllSubjects();
-            subjectCombo.setItems(FXCollections.observableArrayList(subjects));
-
-            // Convertidor para mostrar solo el nombre
-            subjectCombo.setConverter(new StringConverter<>() {
-                @Override
-                public String toString(Subject s) { return (s != null) ? s.getNameSubject() : ""; }
-                @Override
-                public Subject fromString(String string) { return null; }
-            });
-
-        } catch (Exception e) {
-            formStatusLabel.setText("Error cargando asignaturas: " + e.getMessage());
+    public void setTaskToEdit(Task task) {
+        this.taskToEdit = task;
+        titleField.setText(task.getTitle());
+        descArea.setText(task.getDescriptionTask());
+        dueDatePicker.setValue(task.getDueDate());
+        completedCheckBox.setSelected(task.getIsCompleted() != null && task.getIsCompleted());
+        if (task.getPriority() != null) {
+            priorityCombo.setValue(Priority.valueOf(task.getPriority().toUpperCase()));
         }
+        
+        // Seleccionar la asignatura en el combo
+        if (task.getSubjectId() != null) {
+            for (Subject s : subjectCombo.getItems()) {
+                if (s.getSubjectId() == task.getSubjectId()) {
+                    subjectCombo.setValue(s);
+                    break;
+                }
+            }
+        }
+        saveButton.setText("Actualizar");
     }
 
     public void handleSave(ActionEvent actionEvent) {
@@ -67,30 +73,32 @@ public class TaskFormController {
         }
 
         try {
-            Task newTask = new Task();
-            newTask.setTitle(titleField.getText());
-            newTask.setDescriptionTask(descArea.getText());
+            Task task = (taskToEdit != null) ? taskToEdit : new Task();
+            task.setTitle(titleField.getText());
+            task.setDescriptionTask(descArea.getText());
 
             // 2. ID de Asignatura
-            // Usamos el objeto del ComboBox para obtener el ID real de la DB
-            newTask.setSubjectId(subjectCombo.getValue().getSubjectId());
+            task.setSubjectId(subjectCombo.getValue().getSubjectId());
 
             // 3. Estado de la tarea
-            newTask.setIsCompleted(completedCheckBox.isSelected());
+            task.setIsCompleted(completedCheckBox.isSelected());
 
-            // 4. Fechas (LocalDate es lo que espera tu modelo y la API)
+            // 4. Fechas
             if (dueDatePicker.getValue() != null) {
-                // No necesitas conversión extra si usas LocalDate en el modelo
-                newTask.setDueDate(dueDatePicker.getValue());
+                task.setDueDate(dueDatePicker.getValue());
             }
 
             // 5. Prioridad
             if (priorityCombo.getValue() != null) {
-                newTask.setPriority(priorityCombo.getValue().toString().toUpperCase());
+                task.setPriority(priorityCombo.getValue().toString().toUpperCase());
             }
 
             // 6. Persistencia
-            taskService.saveTask(newTask);
+            if (taskToEdit != null) {
+                taskService.updateTask(task.getTaskId(), task);
+            } else {
+                taskService.saveTask(task);
+            }
 
             // Cerramos tras éxito
             closeWindow();

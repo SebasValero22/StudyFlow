@@ -22,6 +22,7 @@ import java.util.Optional;
 public class TaskOverviewController {
     @FXML public TableView<Task> taskTable;
     @FXML private TableColumn<Task, String> titleColumn;
+    @FXML private TableColumn<Task, Boolean> colTaskCompleted;
     private final TaskService taskService = new TaskService();
 
     @FXML
@@ -51,6 +52,32 @@ public class TaskOverviewController {
                 }
             }
         });
+
+        colTaskCompleted.setCellValueFactory(data -> new javafx.beans.property.SimpleBooleanProperty(data.getValue().getIsCompleted()));
+        colTaskCompleted.setCellFactory(column -> new TableCell<Task, Boolean>() {
+            private final CheckBox checkBox = new CheckBox();
+            {
+                checkBox.setOnAction(event -> {
+                    Task task = getTableView().getItems().get(getIndex());
+                    task.setIsCompleted(checkBox.isSelected());
+                    try {
+                        taskService.updateTask(task.getTaskId(), task);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    checkBox.setSelected(item);
+                    setGraphic(checkBox);
+                }
+            }
+        });
     }
 
     private void loadTasks() {
@@ -59,6 +86,33 @@ public class TaskOverviewController {
             taskTable.setItems(FXCollections.observableArrayList(tasks));
         } catch (Exception e) {
             showAlert("Error", "No se pudieron cargar las tareas.");
+        }
+    }
+
+    @FXML
+    public void openEditTaskDialog(ActionEvent event) {
+        Task selected = taskTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Aviso", "Selecciona una tarea para editar.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/iescamp/studyflow/fxml/task_form.fxml"));
+            Parent root = loader.load();
+
+            TaskFormController controller = loader.getController();
+            controller.setTaskToEdit(selected);
+
+            Stage stage = new Stage();
+            stage.setTitle("Editar Tarea");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            loadTasks();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
