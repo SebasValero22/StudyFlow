@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iescamp.studyflow.controller.GradesController" style="-fx-padding: 20;">
+    <Label text="Calificaciones Académicas" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+    <TableView fx:id="gradesTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colConcept" text="Concepto" prefWidth="250"/>
+            <TableColumn fx:id="colScore" text="Nota" prefWidth="100"/>
+            <TableColumn fx:id="colWeight" text="Peso (%)" prefWidth="100"/>
+            <TableColumn fx:id="colDate" text="Fecha" prefWidth="120"/>
+        </columns>
+    </TableView>
+    <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #ecf0f1; -fx-padding: 10; -fx-background-radius: 5;">
+        <Label fx:id="lblAverage" text="Media Ponderada: --" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+    </HBox>
+</VBox>

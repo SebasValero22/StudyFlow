@@ -1,0 +1,77 @@
+<div class="tasks-container">
+  <h2>Tasks</h2>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div class="task-form">
+    <h3>Add New Task</h3>
+    <div class="input-group">
+      <input type="text" [(ngModel)]="newTask.title" placeholder="Task Title">
+      <input type="text" [(ngModel)]="newTask.description" placeholder="Description">
+      <select [(ngModel)]="newTask.subjectId">
+        <option value="0" disabled selected>Select Subject</option>
+        <option *ngFor="let subject of subjects" [value]="subject.subjectId">
+          {{ subject.nameSubject }}
+        </option>
+      </select>
+    </div>
+    <div class="input-group">
+      <input type="date" [(ngModel)]="newTask.start_date">
+      <input type="date" [(ngModel)]="newTask.due_date">
+      <select [(ngModel)]="newTask.priority">
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+      <button (click)="isEditing ? updateTask() : addTask()">{{ isEditing ? 'Update Task' : 'Add Task' }}</button>
+      <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+    </div>
+  </div>
+
+  <div class="task-filters">
+    <label>Filter by Subject:</label>
+    <select [(ngModel)]="selectedSubjectId">
+      <option [ngValue]="null">All Subjects</option>
+      <option *ngFor="let s of subjects" [ngValue]="s.subjectId">
+        {{ s.nameSubject }}
+      </option>
+    </select>
+  </div>
+
+  <div class="task-list">
+    <table>
+      <thead>
+        <tr>
+          <th>Done</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Due Date</th>
+          <th>Priority</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of filteredTasks" [ngStyle]="{'background-color': getSubjectColor(task.subjectId) + '33', 'border-left': '5px solid ' + getSubjectColor(task.subjectId)}">
+          <td>
+            <button (click)="toggleComplete(task)" [style.background-color]="task.isCompleted ? '#2ecc71' : '#bdc3c7'" class="toggle-btn">
+              {{ task.isCompleted ? 'TRUE' : 'FALSE' }}
+            </button>
+          </td>
+          <td [class.completed]="task.isCompleted" style="font-weight: 600;">{{ task.title }}</td>
+          <td>{{ task.description }}</td>
+          <td>
+            <div>{{ task.due_date }}</div>
+            <small [style.color]="getDaysRemaining(task.due_date) === 'Overdue' ? '#e74c3c' : '#7f8c8d'" style="font-weight: bold;">
+              {{ getDaysRemaining(task.due_date) }}
+            </small>
+          </td>
+          <td>{{ task.priority }}</td>
+          <td>
+            <button (click)="editTask(task)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
+            <button class="delete-btn" (click)="deleteTask(task.taskId)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

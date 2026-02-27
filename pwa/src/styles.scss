@@ -1,0 +1,104 @@
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  --sidebar-blue: #2c3e50;
+  --sidebar-hover: #34495e;
+  --accent-blue: #3498db;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 260px !important;
+  background-color: var(--sidebar-blue) !important;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  color: white;
+
+  .brand {
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+
+    .logo-icon {
+      background: white;
+      color: var(--sidebar-blue);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+  }
+
+  .nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+
+    li {
+      padding: 0 0.75rem;
+      margin-bottom: 0.5rem;
+
+      a {
+        text-decoration: none;
+        color: #bdc3c7;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+
+        &:hover { background-color: var(--sidebar-hover); color: white; }
+        &.active { background-color: var(--accent-blue); color: white; font-weight: 600; }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--sidebar-hover);
+    a { color: #bdc3c7; text-decoration: none; &:hover { color: white; } }
+  }
+}
+
+.main-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.top-header {
+  height: 70px;
+  background-color: white;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.content-area {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
