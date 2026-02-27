@@ -37,13 +37,13 @@ public class SubjectFormController {
         if (subject.getColor() != null && !subject.getColor().isEmpty()) {
             colorPicker.setValue(Color.web(subject.getColor()));
         }
-        saveButton.setText("Actualizar");
+        saveButton.setText("Update");
     }
 
     @FXML
     public void handleSave(ActionEvent event) {
         if (nameField.getText().trim().isEmpty()) {
-            formStatusLabel.setText("El nombre es obligatorio");
+            formStatusLabel.setText("Name is required");
             formStatusLabel.setTextFill(Color.RED);
             return;
         }
@@ -51,7 +51,7 @@ public class SubjectFormController {
         try {
             User currentUser = UserSession.getInstance().getUser();
             if (currentUser == null) {
-                formStatusLabel.setText("Error: No hay sesión activa. Relogueate.");
+                formStatusLabel.setText("Error: No active session. Please login again.");
                 formStatusLabel.setTextFill(Color.RED);
                 return;
             }
@@ -76,7 +76,7 @@ public class SubjectFormController {
             closeWindow();
         } catch (Exception e) {
             e.printStackTrace();
-            formStatusLabel.setText("Error al guardar: " + e.getMessage());
+            formStatusLabel.setText("Error saving: " + e.getMessage());
             formStatusLabel.setTextFill(Color.RED);
         }
     }

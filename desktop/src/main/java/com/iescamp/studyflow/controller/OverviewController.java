@@ -48,9 +48,9 @@ public class OverviewController {
 
     private void setupTimeframeCombo() {
         timeframeCombo.setItems(FXCollections.observableArrayList(
-                "1 Semana", "2 Semanas", "3 Semanas", "1 Mes"
+                "1 Week", "2 Weeks", "3 Weeks", "1 Month"
         ));
-        timeframeCombo.setValue("1 Semana");
+        timeframeCombo.setValue("1 Week");
         timeframeCombo.setOnAction(event -> filterData());
     }
 
@@ -76,9 +76,11 @@ public class OverviewController {
                     setText(item);
                     Task task = getTableView().getItems().get(getIndex());
                     String color = task.getSubjectColor();
-                    if (color != null) {
+                    if (color != null && !color.isEmpty()) {
                         if (!color.startsWith("#")) color = "#" + color;
                         setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("");
                     }
                 }
             }
@@ -97,9 +99,11 @@ public class OverviewController {
                     setText(item);
                     Exam exam = getTableView().getItems().get(getIndex());
                     String color = exam.getSubjectColor();
-                    if (color != null) {
+                    if (color != null && !color.isEmpty()) {
                         if (!color.startsWith("#")) color = "#" + color;
                         setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("");
                     }
                 }
             }
@@ -121,10 +125,10 @@ public class OverviewController {
         if (allTasks == null || allExams == null) return;
 
         int days = switch (timeframeCombo.getValue()) {
-            case "1 Semana" -> 7;
-            case "2 Semanas" -> 14;
-            case "3 Semanas" -> 21;
-            case "1 Mes" -> 30;
+            case "1 Week" -> 7;
+            case "2 Weeks" -> 14;
+            case "3 Weeks" -> 21;
+            case "1 Month" -> 30;
             default -> 7;
         };
 
@@ -132,7 +136,7 @@ public class OverviewController {
         LocalDate today = LocalDate.now();
 
         List<Task> filteredTasks = allTasks.stream()
-                .filter(t -> !t.getIsCompleted())
+                .filter(t -> t.getIsCompleted() != null && !t.getIsCompleted())
                 .filter(t -> t.getDueDate() != null && !t.getDueDate().isBefore(today) && !t.getDueDate().isAfter(limitDate))
                 .collect(Collectors.toList());
 
@@ -146,24 +150,26 @@ public class OverviewController {
 
     private void loadStatistics() {
         try {
-            long pendingTasks = allTasks.stream().filter(t -> !t.getIsCompleted()).count();
-            lblTasksCount.setText(pendingTasks + " Tareas pendientes");
+            long pendingTasks = allTasks.stream()
+                    .filter(t -> t.getIsCompleted() != null && !t.getIsCompleted())
+                    .count();
+            lblTasksCount.setText(pendingTasks + " Pending Tasks");
 
             if (!allExams.isEmpty()) {
-                lblNextExam.setText("Próximo: " + allExams.get(0).getNameExam());
+                lblNextExam.setText("Next: " + allExams.get(0).getNameExam());
             } else {
-                lblNextExam.setText("No hay exámenes");
+                lblNextExam.setText("No exams scheduled");
             }
 
             List<Grade> grades = gradeService.getAllGrades();
             if (!grades.isEmpty()) {
                 double avg = grades.stream().mapToDouble(Grade::getScore).average().orElse(0.0);
-                lblGPA.setText(String.format("Media Total: %.2f", avg));
+                lblGPA.setText(String.format("Overall GPA: %.2f", avg));
             } else {
-                lblGPA.setText("Sin notas");
+                lblGPA.setText("No grades yet");
             }
         } catch (Exception e) {
-            lblTasksCount.setText("Error");
+            lblTasksCount.setText("Error loading data");
         }
     }
 }

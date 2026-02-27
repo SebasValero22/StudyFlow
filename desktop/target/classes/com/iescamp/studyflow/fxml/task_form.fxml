@@ -64,7 +64,7 @@
         <HBox alignment="CENTER_RIGHT" spacing="10.0">
             <children>
                 <Button mnemonicParsing="false" onAction="#handleCancel" style="-fx-background-color: transparent; -fx-border-color: #bdc3c7; -fx-text-fill: #7f8c8d;" text="Cancel" />
-                <Button mnemonicParsing="false" onAction="#handleSave" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Save Task" />
+                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Save Task" />
             </children>
             <VBox.margin>
                 <Insets top="10.0" />

@@ -21,37 +21,37 @@ public class MainDashboardController {
     @FXML
     public void initialize() {
             showOverview(null);
-            statusLabel.setText("Bienvenido a StudyFlow");
+            statusLabel.setText("Welcome to StudyFlow");
     }
 
     @FXML
     public void showOverview(Event event) {
         loadView("overview_view.fxml");
-        updateUI(event, "Viendo: Resumen General");
+        updateUI(event, "Viewing: Dashboard");
     }
 
     @FXML
     public void showTasks(ActionEvent actionEvent) {
         loadView("tasks_overview.fxml");
-        updateUI(actionEvent, "Viendo: Mis Tareas");
+        updateUI(actionEvent, "Viewing: My Tasks");
     }
 
     @FXML
     public void showSubjects(ActionEvent actionEvent) {
         loadView("subjects_view.fxml");
-        updateUI(actionEvent, "Viendo: Asignaturas");
+        updateUI(actionEvent, "Viewing: Subjects");
     }
 
     @FXML
     public void showExams(ActionEvent actionEvent) {
         loadView("exams_view.fxml");
-        updateUI(actionEvent, "Viendo: Próximos Exámenes");
+        updateUI(actionEvent, "Viewing: Upcoming Exams");
     }
 
     @FXML
     public void showGrades(ActionEvent actionEvent) {
         loadView("grades_view.fxml");
-        updateUI(actionEvent, "Viendo: Calificaciones Académicas");
+        updateUI(actionEvent, "Viewing: Academic Grades");
     }
 
     @FXML
@@ -62,8 +62,8 @@ public class MainDashboardController {
 
             if (getClass().getResource(path) == null) {
                 // Este es el error que ves ahora, porque overview_view.fxml no existía
-                System.err.println("¡ERROR! No se encuentra el archivo FXML en: " + path);
-                statusLabel.setText("Error: Archivo " + fxmlFile + " no encontrado.");
+                System.err.println("ERROR! FXML file not found at: " + path);
+                statusLabel.setText("Error: File " + fxmlFile + " not found.");
                 return;
             }
 
@@ -73,7 +73,7 @@ public class MainDashboardController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            statusLabel.setText("Error crítico al cargar: " + fxmlFile);
+            statusLabel.setText("Critical error loading: " + fxmlFile);
         }
     }
 
@@ -91,6 +91,6 @@ public class MainDashboardController {
     @FXML
     public void showUserConfig(ActionEvent actionEvent) {
         loadView("user_config_view.fxml"); // Asegúrate de que el nombre coincida con tu archivo
-        statusLabel.setText("Configuración de Perfil");
+        statusLabel.setText("Profile Settings");
     }
 }

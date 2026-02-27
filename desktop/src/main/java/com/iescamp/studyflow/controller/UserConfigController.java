@@ -24,6 +24,6 @@ public class UserConfigController {
     @FXML
     private void handleUpdateUser() {
         // Aquí llamarías a tu userService.update(...)
-        System.out.println("Actualizando usuario...");
+        System.out.println("Updating user...");
     }
 }

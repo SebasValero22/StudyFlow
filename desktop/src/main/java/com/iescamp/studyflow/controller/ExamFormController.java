@@ -44,13 +44,13 @@ public class ExamFormController {
                 }
             }
         }
-        saveButton.setText("Actualizar");
+        saveButton.setText("Update");
     }
 
     @FXML
     private void handleSave() {
         if (nameField.getText().isEmpty() || subjectCombo.getValue() == null || datePicker.getValue() == null) {
-            statusLabel.setText("Por favor, rellena los campos obligatorios.");
+            statusLabel.setText("Please fill in the required fields.");
             return;
         }
 
@@ -69,7 +69,7 @@ public class ExamFormController {
             }
             handleCancel();
         } catch (Exception e) {
-            statusLabel.setText("Error al guardar: " + e.getMessage());
+            statusLabel.setText("Error saving: " + e.getMessage());
         }
     }
 

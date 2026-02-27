@@ -28,13 +28,13 @@ public class LoginController {
         // 1. Validación
         if (email.isEmpty() || password.isEmpty()) {
             lblStatus.setTextFill(Color.RED);
-            lblStatus.setText("Por favor, rellena todos los campos.");
+            lblStatus.setText("Please fill in all fields.");
             return;
         }
 
         // 2. Feedback visual
         lblStatus.setTextFill(Color.BLUE);
-        lblStatus.setText("Conectando con el servidor...");
+        lblStatus.setText("Connecting to server...");
         btnLogin.setDisable(true);
 
         // 3. Tarea en segundo plano
@@ -52,7 +52,7 @@ public class LoginController {
             // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
             // Guardamos el usuario en la sesión global
             UserSession.getInstance().setUser(user);
-            System.out.println("Sesión iniciada para ID: " + user.getUserId());
+            System.out.println("Session started for ID: " + user.getUserId());
             // ---------------------------------
 
             // Navegar al Dashboard
@@ -63,11 +63,11 @@ public class LoginController {
         loginTask.setOnFailed(e -> {
             Throwable error = loginTask.getException();
             btnLogin.setDisable(false);
-            lblStatus.setText("Error de acceso");
+            lblStatus.setText("Login error");
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Login Error");
-            alert.setHeaderText("No se pudo iniciar sesión");
+            alert.setHeaderText("Could not log in");
             alert.setContentText(error.getMessage());
             alert.showAndWait();
         });
@@ -81,7 +81,7 @@ public class LoginController {
                 // Verifica que la ruta coincida con tu estructura de carpetas
                 ViewSwitcher.loadView("register_view.fxml");
             } catch (Exception e) {
-                System.err.println("Error al cargar la vista de registro: " + e.getMessage());
+                System.err.println("Error loading register view: " + e.getMessage());
                 e.printStackTrace();
             }
         }

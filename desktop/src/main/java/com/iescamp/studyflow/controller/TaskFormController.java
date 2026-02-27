@@ -56,7 +56,7 @@ public class TaskFormController {
             });
 
         } catch (Exception e) {
-            formStatusLabel.setText("Error cargando asignaturas: " + e.getMessage());
+            formStatusLabel.setText("Error loading subjects: " + e.getMessage());
         }
     }
 
@@ -79,13 +79,13 @@ public class TaskFormController {
                 }
             }
         }
-        saveButton.setText("Actualizar");
+        saveButton.setText("Update");
     }
 
     public void handleSave(ActionEvent actionEvent) {
         // 1. Validaciones
         if (titleField.getText().isEmpty() || subjectCombo.getValue() == null) {
-            formStatusLabel.setText("Título y Asignatura son obligatorios.");
+            formStatusLabel.setText("Title and Subject are required.");
             formStatusLabel.setTextFill(Color.RED);
             return;
         }

@@ -35,7 +35,7 @@ public class GradesController {
             gradesTable.setItems(FXCollections.observableArrayList(grades));
             calculateAverage(grades);
         } catch (Exception e) {
-            lblAverage.setText("Error al conectar con la API");
+            lblAverage.setText("Error connecting to API");
             e.printStackTrace();
         }
     }
@@ -46,6 +46,6 @@ public class GradesController {
         for (Grade g : grades) {
             weightedSum += (g.getScore() * (g.getWeight() / 100));
         }
-        lblAverage.setText(String.format("Media Ponderada: %.2f", weightedSum));
+        lblAverage.setText(String.format("Weighted Average: %.2f", weightedSum));
     }
 }

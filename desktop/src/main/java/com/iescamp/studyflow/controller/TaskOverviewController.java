@@ -49,7 +49,10 @@ public class TaskOverviewController {
             }
         });
 
-        colTaskCompleted.setCellValueFactory(data -> new javafx.beans.property.SimpleBooleanProperty(data.getValue().getIsCompleted()));
+        colTaskCompleted.setCellValueFactory(data -> {
+            Boolean completed = data.getValue().getIsCompleted();
+            return new javafx.beans.property.SimpleBooleanProperty(completed != null && completed);
+        });
         colTaskCompleted.setCellFactory(column -> new TableCell<Task, Boolean>() {
             private final CheckBox checkBox = new CheckBox();
             {
@@ -81,7 +84,7 @@ public class TaskOverviewController {
             List<Task> tasks = taskService.getAllTasks();
             taskTable.setItems(FXCollections.observableArrayList(tasks));
         } catch (Exception e) {
-            showAlert("Error", "No se pudieron cargar las tareas.");
+            showAlert("Error", "Could not load tasks.");
         }
     }
 
@@ -89,7 +92,7 @@ public class TaskOverviewController {
     public void openEditTaskDialog(ActionEvent event) {
         Task selected = taskTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Aviso", "Selecciona una tarea para editar.");
+            showAlert("Warning", "Select a task to edit.");
             return;
         }
 
@@ -101,7 +104,7 @@ public class TaskOverviewController {
             controller.setTaskToEdit(selected);
 
             Stage stage = new Stage();
-            stage.setTitle("Editar Tarea");
+            stage.setTitle("Edit Task");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
@@ -118,7 +121,7 @@ public class TaskOverviewController {
             Parent root = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle("Nueva Tarea");
+            stage.setTitle("New Task");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atrás
             stage.showAndWait(); // Espera a que se cierre
@@ -134,12 +137,12 @@ public class TaskOverviewController {
     public void handleDeleteTask(ActionEvent actionEvent) {
         Task selected = taskTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Aviso", "Selecciona una tarea para borrar.");
+            showAlert("Notice", "Select a task to delete.");
             return;
         }
 
         // Confirmación (Usabilidad)
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "¿Borrar tarea " + selected.getTitle() + "?");
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Delete task " + selected.getTitle() + "?");
         Optional<ButtonType> result = confirm.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -147,7 +150,7 @@ public class TaskOverviewController {
                 taskService.deleteTask(selected.getTaskId());
                 loadTasks(); // Refrescar tabla
             } catch (Exception e) {
-                showAlert("Error", "No se pudo borrar la tarea.");
+                showAlert("Error", "Could not delete task.");
             }
         }
     }

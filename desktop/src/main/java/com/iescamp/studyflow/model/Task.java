@@ -18,7 +18,7 @@ public class Task {
 
     private LocalDate dueDate;
     private String priority;
-    private Boolean isCompleted;
+    private Boolean isCompleted = false;
     private String subjectName;
     private String subjectColor;
 }

@@ -61,7 +61,7 @@ public class SubjectsController {
             List<Subject> list = subjectService.getAllSubjects();
             subjectsTable.setItems(FXCollections.observableArrayList(list));
         } catch (Exception e) {
-            statusLabel.setText("Error cargando asignaturas: " + e.getMessage());
+            statusLabel.setText("Error loading subjects: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -74,7 +74,7 @@ public class SubjectsController {
             Parent root = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle("Nueva Asignatura");
+            stage.setTitle("New Subject");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
@@ -84,7 +84,7 @@ public class SubjectsController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            statusLabel.setText("Error al abrir el formulario.");
+            statusLabel.setText("Error opening form.");
         }
     }
 
@@ -92,7 +92,7 @@ public class SubjectsController {
     public void handleEditSubject(ActionEvent event) {
         Subject selected = subjectsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            statusLabel.setText("Selecciona una asignatura para editar.");
+            statusLabel.setText("Select a subject to edit.");
             return;
         }
 
@@ -104,7 +104,7 @@ public class SubjectsController {
             controller.setSubjectToEdit(selected);
 
             Stage stage = new Stage();
-            stage.setTitle("Editar Asignatura");
+            stage.setTitle("Edit Subject");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
@@ -112,7 +112,7 @@ public class SubjectsController {
             loadSubjects();
         } catch (IOException e) {
             e.printStackTrace();
-            statusLabel.setText("Error al abrir el formulario de edición.");
+            statusLabel.setText("Error opening edit form.");
         }
     }
 
@@ -120,7 +120,7 @@ public class SubjectsController {
     public void handleDeleteSubject(ActionEvent event) {
         Subject selected = subjectsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            statusLabel.setText("Selecciona una asignatura primero.");
+            statusLabel.setText("Select a subject first.");
             return;
         }
 
@@ -128,9 +128,9 @@ public class SubjectsController {
             // Llamada al servicio para borrar
             subjectService.deleteSubject(selected.getSubjectId());
             loadSubjects(); // Refrescar tabla
-            statusLabel.setText("Asignatura eliminada.");
+            statusLabel.setText("Subject deleted.");
         } catch (Exception e) {
-            statusLabel.setText("Error al eliminar: " + e.getMessage());
+            statusLabel.setText("Error deleting: " + e.getMessage());
         }
     }
 }
