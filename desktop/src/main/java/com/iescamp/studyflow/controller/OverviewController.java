@@ -10,10 +10,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import java.util.List;
 
+import com.iescamp.studyflow.model.DashboardItem;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +27,11 @@ public class OverviewController {
     @FXML private Label lblGPA;
 
     @FXML private ComboBox<String> timeframeCombo;
-    @FXML private TableView<Task> tasksTable;
-    @FXML private TableColumn<Task, String> colTaskTitle;
-    @FXML private TableColumn<Task, LocalDate> colTaskDate;
-
-    @FXML private TableView<Exam> examsTable;
-    @FXML private TableColumn<Exam, String> colExamName;
-    @FXML private TableColumn<Exam, LocalDate> colExamDate;
+    @FXML private TableView<DashboardItem> activityTable;
+    @FXML private TableColumn<DashboardItem, String> colType;
+    @FXML private TableColumn<DashboardItem, String> colTitle;
+    @FXML private TableColumn<DashboardItem, String> colSubject;
+    @FXML private TableColumn<DashboardItem, LocalDate> colDate;
 
     private final TaskService taskService = new TaskService();
     private final ExamService examService = new ExamService();
@@ -42,7 +43,7 @@ public class OverviewController {
     @FXML
     public void initialize() {
         setupTimeframeCombo();
-        setupTables();
+        setupTable();
         loadData();
     }
 
@@ -54,18 +55,14 @@ public class OverviewController {
         timeframeCombo.setOnAction(event -> filterData());
     }
 
-    private void setupTables() {
-        colTaskTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
-        colTaskDate.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
-        colTaskTitle.setCellFactory(column -> createColoredTaskCell());
+    private void setupTable() {
+        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colSubject.setCellValueFactory(new PropertyValueFactory<>("subjectName"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-        colExamName.setCellValueFactory(new PropertyValueFactory<>("nameExam"));
-        colExamDate.setCellValueFactory(new PropertyValueFactory<>("examDate"));
-        colExamName.setCellFactory(column -> createColoredExamCell());
-    }
-
-    private TableCell<Task, String> createColoredTaskCell() {
-        return new TableCell<>() {
+        // Coloring Logic for Title
+        colTitle.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -74,8 +71,8 @@ public class OverviewController {
                     setStyle("");
                 } else {
                     setText(item);
-                    Task task = getTableView().getItems().get(getIndex());
-                    String color = task.getSubjectColor();
+                    DashboardItem rowItem = getTableView().getItems().get(getIndex());
+                    String color = rowItem.getSubjectColor();
                     if (color != null && !color.isEmpty()) {
                         if (!color.startsWith("#")) color = "#" + color;
                         setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
@@ -84,11 +81,10 @@ public class OverviewController {
                     }
                 }
             }
-        };
-    }
+        });
 
-    private TableCell<Exam, String> createColoredExamCell() {
-        return new TableCell<>() {
+        // Styling for Type column
+        colType.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -97,17 +93,14 @@ public class OverviewController {
                     setStyle("");
                 } else {
                     setText(item);
-                    Exam exam = getTableView().getItems().get(getIndex());
-                    String color = exam.getSubjectColor();
-                    if (color != null && !color.isEmpty()) {
-                        if (!color.startsWith("#")) color = "#" + color;
-                        setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+                    if (item.equals("EXAM")) {
+                        setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-alignment: CENTER; -fx-font-weight: bold; -fx-background-radius: 5;");
                     } else {
-                        setStyle("");
+                        setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-alignment: CENTER; -fx-font-weight: bold; -fx-background-radius: 5;");
                     }
                 }
             }
-        };
+        });
     }
 
     private void loadData() {
@@ -135,17 +128,27 @@ public class OverviewController {
         LocalDate limitDate = LocalDate.now().plusDays(days);
         LocalDate today = LocalDate.now();
 
-        List<Task> filteredTasks = allTasks.stream()
-                .filter(t -> t.getIsCompleted() != null && !t.getIsCompleted())
-                .filter(t -> t.getDueDate() != null && !t.getDueDate().isBefore(today) && !t.getDueDate().isAfter(limitDate))
-                .collect(Collectors.toList());
+        List<DashboardItem> activities = new ArrayList<>();
 
-        List<Exam> filteredExams = allExams.stream()
-                .filter(e -> e.getExamDate() != null && !e.getExamDate().isBefore(today) && !e.getExamDate().isAfter(limitDate))
-                .collect(Collectors.toList());
+        // Add Tasks
+        for (Task t : allTasks) {
+            if ((t.getIsCompleted() == null || !t.getIsCompleted()) && 
+                t.getDueDate() != null && !t.getDueDate().isBefore(today) && !t.getDueDate().isAfter(limitDate)) {
+                activities.add(new DashboardItem("TASK", t.getTitle(), t.getDueDate(), t.getSubjectName(), t.getSubjectColor(), t.getIsCompleted()));
+            }
+        }
 
-        tasksTable.setItems(FXCollections.observableArrayList(filteredTasks));
-        examsTable.setItems(FXCollections.observableArrayList(filteredExams));
+        // Add Exams
+        for (Exam e : allExams) {
+            if (e.getExamDate() != null && !e.getExamDate().isBefore(today) && !e.getExamDate().isAfter(limitDate)) {
+                activities.add(new DashboardItem("EXAM", e.getNameExam() + " (" + e.getExamType() + ")", e.getExamDate(), e.getSubjectName(), e.getSubjectColor(), false));
+            }
+        }
+
+        // Sort by Date
+        activities.sort(Comparator.comparing(DashboardItem::getDate));
+
+        activityTable.setItems(FXCollections.observableArrayList(activities));
     }
 
     private void loadStatistics() {

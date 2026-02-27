@@ -16,14 +16,14 @@
     </padding>
 
     <HBox alignment="CENTER_LEFT" spacing="20.0">
-        <Label text="Mis Asignaturas" textFill="#2c3e50">
+        <Label text="My Subjects" textFill="#2c3e50">
             <font>
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
-        <Button onAction="#handleCreateSubject" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="+ Nueva Asignatura" />
-        <Button onAction="#handleEditSubject" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Editar Seleccionada" />
-        <Button onAction="#handleDeleteSubject" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Eliminar Seleccionada" />
+        <Button onAction="#handleCreateSubject" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="+ New Subject" />
+        <Button onAction="#handleEditSubject" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Edit Selected" />
+        <Button onAction="#handleDeleteSubject" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Delete Selected" />
     </HBox>
 
     <TableView fx:id="subjectsTable" VBox.vgrow="ALWAYS">
@@ -31,10 +31,10 @@
             <TableColumn text="ID" prefWidth="50">
                 <cellValueFactory><PropertyValueFactory property="subjectId" /></cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="nameColumn" text="Nombre" prefWidth="200">
+            <TableColumn fx:id="nameColumn" text="Name" prefWidth="200">
                 <cellValueFactory><PropertyValueFactory property="nameSubject" /></cellValueFactory>
             </TableColumn>
-            <TableColumn text="Año Académico" prefWidth="150">
+            <TableColumn text="Academic Year" prefWidth="150">
                 <cellValueFactory><PropertyValueFactory property="academicYear" /></cellValueFactory>
             </TableColumn>
         </columns>

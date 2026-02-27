@@ -19,7 +19,7 @@
     <children>
         <HBox alignment="CENTER_LEFT">
             <children>
-                <Label text="Create New Task" textFill="#2196f3">
+                <Label text="Manage Task" textFill="#2196f3">
                     <font>
                         <Font name="System Bold" size="18.0" />
                     </font>

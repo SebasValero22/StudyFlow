@@ -35,7 +35,7 @@
                 <Label text="Subject Name" textFill="#555555" />
                 <TextField fx:id="nameField" promptText="e.g. Physics I" GridPane.columnIndex="1" />
 
-                <Label text="Academic Year / Start Date:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label text="Academic Year:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <DatePicker fx:id="academicYearPicker" promptText="Select date" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                 <Label text="Color Tag" textFill="#555555" GridPane.rowIndex="2" />

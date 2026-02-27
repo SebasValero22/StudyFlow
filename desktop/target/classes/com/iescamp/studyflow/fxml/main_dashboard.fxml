@@ -60,7 +60,7 @@
     <center>
         <StackPane fx:id="contentArea" style="-fx-background-color: #F4F7FA;">
             <children>
-                <Label text="Cargando panel de control..." textFill="#999999" />
+                <Label text="Loading dashboard..." textFill="#999999" />
             </children>
         </StackPane>
     </center>

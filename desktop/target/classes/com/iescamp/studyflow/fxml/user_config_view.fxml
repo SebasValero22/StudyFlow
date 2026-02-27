@@ -17,12 +17,12 @@
     <children>
         <VBox spacing="5.0">
             <children>
-                <Label text="Configuración de Perfil" textFill="#2c3e50">
+                <Label text="Profile Settings" textFill="#2c3e50">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
-                <Label text="Gestiona tus datos personales y seguridad de la cuenta" textFill="#7f8c8d" />
+                <Label text="Manage your personal data and account security" textFill="#7f8c8d" />
             </children>
         </VBox>
 
@@ -40,26 +40,26 @@
                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label text="Nombre de Usuario:" textFill="#2c3e50">
+                <Label text="Username:" textFill="#2c3e50">
                     <font>
                         <Font name="System Bold" size="14.0" />
                     </font>
                 </Label>
                 <TextField fx:id="txtUsername" style="-fx-background-radius: 5;" GridPane.columnIndex="1" />
 
-                <Label text="Correo Electrónico:" textFill="#2c3e50" GridPane.rowIndex="1">
+                <Label text="Email Address:" textFill="#2c3e50" GridPane.rowIndex="1">
                     <font>
                         <Font name="System Bold" size="14.0" />
                     </font>
                 </Label>
                 <TextField fx:id="txtEmail" editable="false" style="-fx-background-color: #e0e0e0; -fx-background-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Label text="Nueva Contraseña:" textFill="#2c3e50" GridPane.rowIndex="3">
+                <Label text="New Password:" textFill="#2c3e50" GridPane.rowIndex="3">
                     <font>
                         <Font name="System Bold" size="14.0" />
                     </font>
                 </Label>
-                <PasswordField fx:id="txtNewPassword" promptText="Dejar en blanco para no cambiar" style="-fx-background-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <PasswordField fx:id="txtNewPassword" promptText="Leave blank to keep current" style="-fx-background-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             </children>
             <VBox.margin>
                 <Insets top="10.0" />
@@ -68,7 +68,7 @@
 
         <HBox spacing="15.0">
             <children>
-                <Button mnemonicParsing="false" onAction="#handleUpdateUser" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Guardar Cambios" />
+                <Button mnemonicParsing="false" onAction="#handleUpdateUser" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Save Changes" />
                 <Label fx:id="lblStatus" textFill="#27ae60">
                     <HBox.margin>
                         <Insets top="8.0" />
