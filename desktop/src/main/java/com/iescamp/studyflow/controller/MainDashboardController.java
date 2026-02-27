@@ -16,11 +16,12 @@ import java.io.IOException;
 public class MainDashboardController {
     @FXML public StackPane contentArea;
     @FXML public Label statusLabel;
-    @FXML private VBox sidebarMenu; // Asegúrate de añadir fx:id="sidebarMenu" en el VBox del FXML
+    @FXML private VBox sidebarMenu;
+    @FXML private Button btnOverview;
 
     @FXML
     public void initialize() {
-            showOverview(null);
+            showOverview(new ActionEvent(btnOverview, null));
             statusLabel.setText("Welcome to StudyFlow");
     }
 
@@ -81,10 +82,18 @@ public class MainDashboardController {
     private void updateUI(Event event, String statusText) {
         statusLabel.setText(statusText);
 
-        // Solo intentamos resaltar si el origen es realmente un botón
-        if (event != null && event.getSource() instanceof Button) {
-            Button btn = (Button) event.getSource();
-            // Tu lógica de estilos aquí...
+        // Reset all buttons to default grey color
+        if (sidebarMenu != null) {
+            for (javafx.scene.Node node : sidebarMenu.getChildren()) {
+                if (node instanceof Button btn) {
+                    btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-alignment: BASELINE_LEFT;");
+                }
+            }
+        }
+
+        // Highlight the selected button in white
+        if (event != null && event.getSource() instanceof Button btn) {
+            btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-alignment: BASELINE_LEFT;");
         }
     }
 

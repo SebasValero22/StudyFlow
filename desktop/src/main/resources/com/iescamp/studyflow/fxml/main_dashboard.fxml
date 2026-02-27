@@ -47,12 +47,12 @@
                         <Insets bottom="10.0" top="10.0" />
                     </VBox.margin>
                 </Label>
-                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOverview" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;" text="📊  Overview" />
-                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTasks" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="✅  Tasks" />
-                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSubjects" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📚  Subjects" />
+                <Button fx:id="btnOverview" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOverview" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📊  Overview" />
+                <Button fx:id="btnTasks" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTasks" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="✅  Tasks" />
+                <Button fx:id="btnSubjects" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSubjects" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📚  Subjects" />
                 <Separator style="-fx-background-color: #34495e;" />
-                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showExams" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📅  Exams" />
-                <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGrades" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="🎓  Grades" />
+                <Button fx:id="btnExams" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showExams" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📅  Exams" />
+                <Button fx:id="btnGrades" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGrades" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="🎓  Grades" />
             </children>
         </VBox>
     </left>
