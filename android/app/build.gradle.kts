@@ -7,7 +7,7 @@ android {
     compileSdk = 36  // CORREGIDO: Sintaxis estándar
 
     defaultConfig {
-        applicationId = "com.example.studyflow"
+        applicationId = "com.iescamp.studyflow"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

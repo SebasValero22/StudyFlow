@@ -51,6 +51,17 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.iescamp.studyflow.Launcher</mainClass>
+                    <jlinkImageName>studyflow</jlinkImageName>
+                    <jlinkZipName>studyflow</jlinkZipName>
+                    <launcher>studyflow</launcher>
+                    <jpackageFlags>
+                        <jpackageFlag>--type</jpackageFlag>
+                        <jpackageFlag>exe</jpackageFlag>
+                        <jpackageFlag>--win-shortcut</jpackageFlag>
+                        <jpackageFlag>--win-menu</jpackageFlag>
+                        <jpackageFlag>--vendor</jpackageFlag>
+                        <jpackageFlag>IESCamp</jpackageFlag>
+                    </jpackageFlags>
                 </configuration>
             </plugin>
         </plugins>
