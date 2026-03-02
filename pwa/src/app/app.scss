@@ -9,6 +9,15 @@
   display: flex;
   height: 100%;
   background-color: #f8f9fa;
+
+  &.no-auth {
+    .main-wrapper {
+      width: 100%;
+    }
+    .content-area {
+      padding: 0;
+    }
+  }
 }
 
 .sidebar {

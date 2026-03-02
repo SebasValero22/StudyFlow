@@ -1,41 +1,45 @@
-<div class="app-layout">
-  <nav class="sidebar">
-    <a routerLink="/overview" style="text-decoration: none; color: inherit;">
-      <div class="brand">
-        <img src="StudyFlowIcon.png" alt="StudyFlow Logo" style="width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover;">
-        <span>StudyFlow</span>
-      </div>
-    </a>
-    <ul class="nav-links">
-      <li><a routerLink="/overview" routerLinkActive="active"><span class="icon">📊</span> Overview</a></li>
-      <li><a routerLink="/subjects" routerLinkActive="active"><span class="icon">📚</span> Subjects</a></li>
-      <li><a routerLink="/tasks" routerLinkActive="active"><span class="icon">✅</span> Tasks</a></li>
-      <li><a routerLink="/exams" routerLinkActive="active"><span class="icon">📝</span> Exams</a></li>
-      <li><a routerLink="/grades" routerLinkActive="active"><span class="icon">⭐</span> Grades</a></li>
-    </ul>
-    <div class="sidebar-footer">
-      <a routerLink="/settings" class="settings-link"><span class="icon">⚙️</span> Settings</a>
-    </div>
-  </nav>
-
-  <div class="main-wrapper">
-    <header class="top-header">
-      <div class="sync-status">
-        <span class="status-dot"></span>
-        <span>Personal Cloud Sync: <strong>Active</strong></span>
-      </div>
-      <a routerLink="/profile" class="user-profile-link">
-        <div class="user-profile">
-          <div class="user-info">
-            <span class="user-name">Guest User</span>
-            <span class="user-role">Student</span>
-          </div>
-          <div class="avatar">
-            <img src="https://ui-avatars.com/api/?name=Guest+User&background=3498db&color=fff" alt="User Avatar">
-          </div>
+<div class="app-layout" [class.no-auth]="!isLoggedIn()">
+  @if (isLoggedIn()) {
+    <nav class="sidebar">
+      <a routerLink="/overview" style="text-decoration: none; color: inherit;">
+        <div class="brand">
+          <img src="assets/StudyFlowIcon.png" alt="StudyFlow Logo" style="width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover;">
+          <span>StudyFlow</span>
         </div>
       </a>
-    </header>
+      <ul class="nav-links">
+        <li><a routerLink="/overview" routerLinkActive="active"><span class="icon">📊</span> Overview</a></li>
+        <li><a routerLink="/subjects" routerLinkActive="active"><span class="icon">📚</span> Subjects</a></li>
+        <li><a routerLink="/tasks" routerLinkActive="active"><span class="icon">✅</span> Tasks</a></li>
+        <li><a routerLink="/exams" routerLinkActive="active"><span class="icon">📝</span> Exams</a></li>
+        <li><a routerLink="/grades" routerLinkActive="active"><span class="icon">⭐</span> Grades</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <a routerLink="/settings" class="settings-link"><span class="icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+  }
+
+  <div class="main-wrapper">
+    @if (isLoggedIn()) {
+      <header class="top-header">
+        <div class="sync-status">
+          <span class="status-dot"></span>
+          <span>Personal Cloud Sync: <strong>Active</strong></span>
+        </div>
+        <a routerLink="/profile" class="user-profile-link">
+          <div class="user-profile">
+            <div class="user-info">
+              <span class="user-name">{{ getCurrentUser()?.userName || 'Guest User' }}</span>
+              <span class="user-role">{{ getCurrentUser()?.email || 'Student' }}</span>
+            </div>
+            <div class="avatar">
+              <img [src]="'https://ui-avatars.com/api/?name=' + (getCurrentUser()?.userName || 'Guest+User') + '&background=3498db&color=fff'" alt="User Avatar">
+            </div>
+          </div>
+        </a>
+      </header>
+    }
 
     <main class="content-area">
       <router-outlet></router-outlet>

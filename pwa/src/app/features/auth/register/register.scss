@@ -1,0 +1,126 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f7fb;
+  padding: 20px;
+}
+
+.register-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+
+    img {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #333;
+      font-size: 24px;
+      font-weight: 700;
+    }
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    color: #1a1a1a;
+    font-size: 20px;
+  }
+
+  p {
+    margin: 0 0 32px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #4a90e2;
+      }
+    }
+  }
+
+  .error-banner {
+    background-color: #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:disabled {
+      background-color: #a0c4ed;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #357abd;
+    }
+  }
+
+  .footer-links {
+    margin-top: 24px;
+    font-size: 14px;
+    color: #666;
+
+    a {
+      color: #4a90e2;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

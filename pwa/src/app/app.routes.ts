@@ -6,9 +6,13 @@ import { SubjectsComponent } from './features/subjects/subjects';
 import { GradesComponent } from './features/grades/grades';
 import { ProfileComponent } from './features/profile/profile';
 import { SettingsComponent } from './features/settings/settings';
+import { LoginComponent } from './features/auth/login/login';
+import { RegisterComponent } from './features/auth/register/register';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'overview', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'overview', component: OverviewComponent },
   { path: 'tasks', component: TasksComponent },
   { path: 'exams', component: ExamsComponent },

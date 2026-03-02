@@ -1,6 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+
+export interface User {
+  id?: number;
+  userName: string;
+  email: string;
+}
+
+export interface UserLoginDTO {
+  email: string;
+  password?: string;
+}
+
+export interface UserRegisterDTO {
+  name: string;
+  email: string;
+  password?: string;
+}
+
+export interface UserResponseDTO {
+  id: number;
+  userName: string;
+  email: string;
+}
 
 export interface Subject {
   subjectId?: number;
@@ -44,7 +67,46 @@ export interface Grade {
 })
 export class ApiService {
   private baseUrl = 'https://studyflow-nuux.onrender.com/api';
-  constructor(private http: HttpClient) {}
+  private currentUser = signal<UserResponseDTO | null>(null);
+
+  constructor(private http: HttpClient) {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      this.currentUser.set(JSON.parse(savedUser));
+    }
+  }
+
+  // Auth
+  login(credentials: UserLoginDTO): Observable<UserResponseDTO> {
+    return this.http.post<UserResponseDTO>(`${this.baseUrl}/users/login`, credentials).pipe(
+      tap(user => {
+        this.currentUser.set(user);
+        localStorage.setItem('user', JSON.stringify(user));
+      })
+    );
+  }
+
+  register(userData: UserRegisterDTO): Observable<UserResponseDTO> {
+    return this.http.post<UserResponseDTO>(`${this.baseUrl}/users/register`, userData).pipe(
+      tap(user => {
+        this.currentUser.set(user);
+        localStorage.setItem('user', JSON.stringify(user));
+      })
+    );
+  }
+
+  logout() {
+    this.currentUser.set(null);
+    localStorage.removeItem('user');
+  }
+
+  isLoggedIn() {
+    return !!this.currentUser();
+  }
+
+  getCurrentUser() {
+    return this.currentUser();
+  }
 
   // Subjects
   getSubjects(): Observable<Subject[]> {

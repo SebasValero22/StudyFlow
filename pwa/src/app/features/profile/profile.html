@@ -1,10 +1,10 @@
 <div class="profile-container">
   <div class="profile-header">
     <div class="avatar-large">
-      <img src="https://ui-avatars.com/api/?name=Guest+User&background=3498db&color=fff&size=128" alt="Large Avatar">
+      <img [src]="'https://ui-avatars.com/api/?name=' + (getUser()?.userName || 'Guest+User') + '&background=3498db&color=fff&size=128'" alt="Large Avatar">
     </div>
     <div class="header-info">
-      <h1>Guest User</h1>
+      <h1>{{ getUser()?.userName || 'Guest User' }}</h1>
       <p class="role">Student • Personal Cloud Sync Active</p>
     </div>
   </div>
@@ -14,15 +14,18 @@
       <h3>User Information</h3>
       <div class="info-row">
         <span class="label">Username:</span>
-        <span class="value">guest_user</span>
+        <span class="value">{{ getUser()?.userName || 'guest_user' }}</span>
       </div>
       <div class="info-row">
         <span class="label">Email:</span>
-        <span class="value">guest@studyflow.com</span>
+        <span class="value">{{ getUser()?.email || 'guest@studyflow.com' }}</span>
       </div>
       <div class="info-row">
         <span class="label">Member Since:</span>
         <span class="value">February 2026</span>
+      </div>
+      <div style="margin-top: 20px;">
+        <button (click)="logout()" class="logout-btn">Logout</button>
       </div>
     </div>
 
