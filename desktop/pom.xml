@@ -50,7 +50,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.studyflow.Main</mainClass>
+                    <mainClass>com.iescamp.studyflow.Launcher</mainClass>
                 </configuration>
             </plugin>
         </plugins>
