@@ -1,0 +1,36 @@
+.grades-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.gpa-display {
+  background-color: #3498db;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+
+  h3 { margin: 0; }
+  .gpa-score { font-size: 32px; font-weight: bold; }
+}
+
+.grade-form {
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 30px;
+
+  .input-group {
+    display: flex;
+    gap: 10px;
+
+    input, select { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  }
+}
+
+.grade-list {
+  table { width: 100%; border-collapse: collapse; tr { border-bottom: 1px solid #eee; } th, td { padding: 12px; text-align: left; } }
+}

@@ -1,0 +1,73 @@
+.tasks-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.task-form {
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 30px;
+
+  .input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+
+    input, select {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+}
+
+.task-filters {
+  margin-bottom: 20px;
+  label { margin-right: 10px; font-weight: bold; }
+  select { padding: 8px; border-radius: 4px; }
+}
+
+.task-list {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    tr { border-bottom: 1px solid #eee; }
+
+    th, td { padding: 12px; text-align: left; }
+
+    .completed { text-decoration: line-through; color: #7f8c8d; }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .toggle-btn {
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      min-width: 50px;
+    }
+  }
+}

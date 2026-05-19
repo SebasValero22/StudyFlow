@@ -1,0 +1,105 @@
+package com.iescamp.studyflow.controller;
+
+import javafx.event.ActionEvent;
+
+import javafx.event.Event;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+
+import java.io.IOException;
+
+public class MainDashboardController {
+    @FXML public StackPane contentArea;
+    @FXML public Label statusLabel;
+    @FXML private VBox sidebarMenu;
+    @FXML private Button btnOverview;
+
+    @FXML
+    public void initialize() {
+            showOverview(new ActionEvent(btnOverview, null));
+            statusLabel.setText("Welcome to StudyFlow");
+    }
+
+    @FXML
+    public void showOverview(Event event) {
+        loadView("overview_view.fxml");
+        updateUI(event, "Viewing: Dashboard");
+    }
+
+    @FXML
+    public void showTasks(ActionEvent actionEvent) {
+        loadView("tasks_overview.fxml");
+        updateUI(actionEvent, "Viewing: My Tasks");
+    }
+
+    @FXML
+    public void showSubjects(ActionEvent actionEvent) {
+        loadView("subjects_view.fxml");
+        updateUI(actionEvent, "Viewing: Subjects");
+    }
+
+    @FXML
+    public void showExams(ActionEvent actionEvent) {
+        loadView("exams_view.fxml");
+        updateUI(actionEvent, "Viewing: Upcoming Exams");
+    }
+
+    @FXML
+    public void showGrades(ActionEvent actionEvent) {
+        loadView("grades_view.fxml");
+        updateUI(actionEvent, "Viewing: Academic Grades");
+    }
+
+    @FXML
+    private void loadView(String fxmlFile) {
+        try {
+            // Usamos el parametro fxmlFile para construir la ruta
+            String path = "/com/iescamp/studyflow/fxml/" + fxmlFile;
+
+            if (getClass().getResource(path) == null) {
+                // Si la vista no existe, mostramos error y salimos
+                System.err.println("ERROR! FXML file not found at: " + path);
+                statusLabel.setText("Error: File " + fxmlFile + " not found.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            Parent view = loader.load();
+            contentArea.getChildren().setAll(view);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusLabel.setText("Critical error loading: " + fxmlFile);
+        }
+    }
+
+    // Metodo auxiliar para limpiar el estilo de los botones y actualizar el texto
+    private void updateUI(Event event, String statusText) {
+        statusLabel.setText(statusText);
+
+        // Resetear botones al color por defecto
+        if (sidebarMenu != null) {
+            for (javafx.scene.Node node : sidebarMenu.getChildren()) {
+                if (node instanceof Button btn) {
+                    btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-alignment: BASELINE_LEFT;");
+                }
+            }
+        }
+
+        // Resaltar el boton seleccionado
+        if (event != null && event.getSource() instanceof Button btn) {
+            btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-alignment: BASELINE_LEFT;");
+        }
+    }
+
+    @FXML
+    public void showUserConfig(ActionEvent actionEvent) {
+        loadView("user_config_view.fxml"); // Asegurate de que el nombre coincida con el archivo
+        statusLabel.setText("Profile Settings");
+    }
+}

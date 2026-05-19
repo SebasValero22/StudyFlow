@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="500.0" prefWidth="400.0" spacing="20.0" style="-fx-background-color: #F4F7FA;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.LoginController">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+    <children>
+        <Label text="StudyFlow" textFill="#2196f3">
+            <font>
+                <Font name="System Bold" size="28.0" />
+            </font>
+        </Label>
+        <Label text="Welcome Back" textFill="#555555">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+        <VBox spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <TextField fx:id="txtUsername" promptText="Username" style="-fx-background-color: #F0F2F5; -fx-padding: 10;" />
+                <PasswordField fx:id="txtPassword" promptText="Password" style="-fx-background-color: #F0F2F5; -fx-padding: 10;" />
+                <Button fx:id="btnLogin" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" style="-fx-background-color: #2196f3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 5;" text="Log In" />
+                <Button fx:id="btnRegister" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegister" style="-fx-background-color: transparent; -fx-text-fill: #777; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;" text="Register" />
+                <Label fx:id="lblStatus" alignment="CENTER" maxWidth="1.7976931348623157E308" textFill="#e53935" wrapText="true" />
+            </children>
+        </VBox>
+    </children>
+</VBox>

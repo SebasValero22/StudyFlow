@@ -1,0 +1,59 @@
+<div class="subjects-container">
+  <h2>Subjects Management</h2>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div class="subject-form">
+    <h3>Add New Subject</h3>
+    <div class="input-group">
+      <input type="text" [(ngModel)]="newSubject.nameSubject" placeholder="Subject Name" required>
+      <input type="text" [(ngModel)]="newSubject.academicYear" placeholder="Academic Year (e.g. 2025/2026)">
+    </div>
+    
+    <div class="color-picker">
+      <label>Choose Pantone Color:</label>
+      <div class="colors">
+        <div 
+          *ngFor="let color of pantoneColors" 
+          [style.background-color]="color" 
+          [class.selected]="newSubject.color === color"
+          (click)="newSubject.color = color"
+          class="color-circle">
+        </div>
+      </div>
+    </div>
+    
+    <button (click)="isEditing ? updateSubject() : addSubject()" [disabled]="!newSubject.nameSubject">
+      {{ isEditing ? 'Update Subject' : 'Add Subject' }}
+    </button>
+    <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+  </div>
+
+  <div class="subject-list">
+    <h3>Existing Subjects</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Year</th>
+          <th>Color</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let subject of subjects">
+          <td>{{ subject.nameSubject }}</td>
+          <td>{{ subject.academicYear }}</td>
+          <td>
+            <div class="color-preview" [style.background-color]="subject.color"></div>
+            {{ subject.color }}
+          </td>
+          <td>
+            <button class="edit-btn" (click)="editSubject(subject)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
+            <button class="delete-btn" (click)="deleteSubject(subject.subjectId)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+package com.example.studyflow.ui.login;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.studyflow.databinding.ActivityLoginBinding;
+
+public class LoginActivity extends AppCompatActivity {
+    private LoginViewModel viewModel;
+    private ActivityLoginBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+
+        binding.btnLogin.setOnClickListener(v -> {
+            String email = binding.etEmail.getText().toString().trim();
+            String pass = binding.etPassword.getText().toString().trim();
+            if (!email.isEmpty() && !pass.isEmpty()) {
+                viewModel.login(email, pass);
+            } else {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.btnRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            startActivity(intent);
+        });
+
+        viewModel.getUser().observe(this, user -> {
+            if (user != null) {
+                Toast.makeText(this, "Welcome " + user.getName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, com.example.studyflow.MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        viewModel.getError().observe(this, error ->
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show());
+    }
+}

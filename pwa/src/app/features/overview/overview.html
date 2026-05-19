@@ -1,0 +1,34 @@
+<div class="overview-container">
+  <h2>Overview</h2>
+
+  <div class="dashboard-grid">
+    <div class="card gpa-card">
+      <h3>Current GPA</h3>
+      <div class="gpa-value">{{ gpa }}</div>
+    </div>
+
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <h3>Upcoming for the next:</h3>
+        <select [(ngModel)]="selectedWeeks" (change)="updateCalendar()">
+          <option [ngValue]="1">1 Week</option>
+          <option [ngValue]="2">2 Weeks</option>
+          <option [ngValue]="3">3 Weeks</option>
+          <option [ngValue]="4">4 Weeks</option>
+        </select>
+      </div>
+
+      <div *ngIf="getDates().length === 0" class="no-items">
+        No upcoming items for the selected period.
+      </div>
+
+      <div *ngFor="let date of getDates()" class="day-group">
+        <div class="day-header">{{ date | date:'fullDate' }}</div>
+        <div *ngFor="let item of groupedItems[date]" class="calendar-item" [style.border-left]="'4px solid ' + item.subjectColor">
+          <span class="item-type">{{ item.type }}</span>
+          <span class="item-title">{{ item.title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
