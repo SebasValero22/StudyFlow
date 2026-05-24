@@ -28,4 +28,7 @@ public class Exam {
 
     @Column(name = "classroom")
     private String classroom;
+
+    @Column(name = "isCompleted")
+    private Boolean isCompleted = false;
 }

@@ -52,6 +52,9 @@ public class ExamService {
         exam.setExamType(dto.getExamType());
         exam.setExamDate(dto.getExamDate());
         exam.setClassroom(dto.getClassroom());
+        if (dto.getIsCompleted() != null) {
+            exam.setIsCompleted(dto.getIsCompleted());
+        }
 
         return ExamDTO.convertToDTO(examRepository.save(exam));
     }

@@ -15,6 +15,7 @@ public class ExamDTO {
     private Integer subjectId;
     private String subjectName;
     private String subjectColor;
+    private Boolean isCompleted;
 
     public static ExamDTO convertToDTO(Exam exam) {
         ExamDTO dto = new ExamDTO();
@@ -29,6 +30,7 @@ public class ExamDTO {
             dto.setSubjectName(exam.getSubject().getNameSubject());
             dto.setSubjectColor(exam.getSubject().getColor());
         }
+        dto.setIsCompleted(exam.getIsCompleted() != null ? exam.getIsCompleted() : false);
         return dto;
     }
 }
