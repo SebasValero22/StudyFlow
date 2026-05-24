@@ -82,12 +82,21 @@ export class ExamsComponent implements OnInit {
 
   toggleComplete(exam: Exam) {
     if (!exam.examId) return;
-    const updatedExam = { ...exam, isCompleted: !exam.isCompleted };
-    this.api.updateExam(exam.examId, updatedExam).subscribe({
+    // Optimistic update — flip immediately so UI responds instantly
+    exam.isCompleted = !exam.isCompleted;
+    this.cdr.detectChanges();
+
+    this.api.updateExam(exam.examId, { ...exam }).subscribe({
       next: (updated) => {
         exam.isCompleted = updated.isCompleted;
+        this.cdr.detectChanges();
       },
-      error: (err) => this.error = 'Failed to update exam'
+      error: () => {
+        // Revert if API call fails
+        exam.isCompleted = !exam.isCompleted;
+        this.cdr.detectChanges();
+        this.error = 'Failed to update exam';
+      }
     });
   }
 
