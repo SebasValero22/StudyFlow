@@ -1,7 +1,7 @@
 # netlify.toml - Configuración monorepo para StudyFlow (PWA en subdirectorio)
 [build]
-  command = "cd pwa && npm install && npm run build"
-  publish = "pwa/dist/studyflow-pwa/browser"
+  command = "npm run build"
+  publish = "dist/studyflow-pwa/browser"
 
 # Reglas de redirección para Single Page Application (SPA) y Angular Router
 [[redirects]]
