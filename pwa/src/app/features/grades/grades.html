@@ -10,17 +10,31 @@
   <div class="grade-form">
     <h3>Add New Grade</h3>
     <div class="input-group">
-      <input type="text" [(ngModel)]="newGrade.concept" placeholder="Concept (e.g. Exam 1, Project)">
-      <input type="number" [(ngModel)]="newGrade.score" placeholder="Score (0-10)">
-      <input type="number" [(ngModel)]="newGrade.weight" placeholder="Weight %">
-      <select [(ngModel)]="newGrade.subjectId">
-        <option value="0" disabled>Select Subject</option>
-        <option *ngFor="let subject of subjects" [value]="subject.subjectId">
-          {{ subject.nameSubject }}
-        </option>
-      </select>
-      <button (click)="isEditing ? updateGrade() : addGrade()">{{ isEditing ? 'Update Grade' : 'Add Grade' }}</button>
-      <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+      <div class="form-field">
+        <label>Concept / Description</label>
+        <input type="text" [(ngModel)]="newGrade.concept" placeholder="e.g. Exam 1, Project">
+      </div>
+      <div class="form-field">
+        <label>Grade (0 - 10)</label>
+        <input type="number" [(ngModel)]="newGrade.score" placeholder="e.g. 8.5">
+      </div>
+      <div class="form-field">
+        <label>Weight (%)</label>
+        <input type="number" [(ngModel)]="newGrade.weight" placeholder="e.g. 30">
+      </div>
+      <div class="form-field">
+        <label>Subject</label>
+        <select [(ngModel)]="newGrade.subjectId">
+          <option value="0" disabled>Select Subject</option>
+          <option *ngFor="let subject of subjects" [value]="subject.subjectId">
+            {{ subject.nameSubject }}
+          </option>
+        </select>
+      </div>
+      <div class="actions-field" style="margin-bottom: 2px;">
+        <button (click)="isEditing ? updateGrade() : addGrade()">{{ isEditing ? 'Update' : 'Add' }}</button>
+        <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+      </div>
     </div>
   </div>
 
