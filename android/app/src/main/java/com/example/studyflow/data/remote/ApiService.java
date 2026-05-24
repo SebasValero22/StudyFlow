@@ -33,6 +33,12 @@ public interface ApiService {
     @POST("subjects")
     Call<SubjectResponseDTO> createSubject(@Body SubjectResponseDTO subject);
 
+    @PUT("subjects/{id}")
+    Call<SubjectResponseDTO> updateSubject(@Path("id") Integer id, @Body SubjectResponseDTO subject);
+
+    @DELETE("subjects/{id}")
+    Call<Void> deleteSubject(@Path("id") Integer id);
+
     // Exams
     @GET("exams")
     Call<List<ExamResponseDTO>> getExams(@Query("userId") Integer userId);

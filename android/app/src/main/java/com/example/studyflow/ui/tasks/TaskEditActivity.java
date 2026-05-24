@@ -59,6 +59,16 @@ public class TaskEditActivity extends AppCompatActivity {
             if (getSupportActionBar() != null) getSupportActionBar().setTitle("Edit Task");
             binding.etTitle.setText(getIntent().getStringExtra("title"));
             binding.etDescription.setText(getIntent().getStringExtra("description"));
+            
+            String dueDateStr = getIntent().getStringExtra("due_date");
+            if (dueDateStr != null && !dueDateStr.isEmpty()) {
+                try {
+                    selectedDate = LocalDate.parse(dueDateStr);
+                } catch (Exception e) {
+                    selectedDate = LocalDate.now();
+                }
+            }
+            
             String priority = getIntent().getStringExtra("priority");
             if (priority != null) {
                 for (int i = 0; i < priorities.length; i++) {
@@ -72,6 +82,7 @@ public class TaskEditActivity extends AppCompatActivity {
             if (getSupportActionBar() != null) getSupportActionBar().setTitle("New Task");
         }
 
+        binding.btnDatePicker.setText(selectedDate.toString());
         binding.btnDatePicker.setOnClickListener(v -> showDatePicker());
         binding.btnSave.setOnClickListener(v -> saveTask());
     }

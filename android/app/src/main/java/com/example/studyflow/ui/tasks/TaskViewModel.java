@@ -47,4 +47,18 @@ public class TaskViewModel extends ViewModel {
             }
         });
     }
+
+    public void updateTask(Integer id, TaskResponseDTO task) {
+        repository.updateTask(id, task, new TaskRepository.RepositoryCallback<TaskResponseDTO>() {
+            @Override
+            public void onSuccess(TaskResponseDTO result) {
+                loadTasks();
+            }
+
+            @Override
+            public void onError(String message) {
+                _error.postValue(message);
+            }
+        });
+    }
 }

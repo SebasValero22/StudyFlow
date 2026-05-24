@@ -4,9 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,7 +15,7 @@
 
         <View
             android:id="@+id/viewColorIndicator"
-            android:layout_width="12dp"
+            android:layout_width="16dp"
             android:layout_height="0dp"
             android:background="#2196F3"
             app:layout_constraintTop_toTopOf="parent"
@@ -26,25 +27,27 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Matemáticas"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#2C3E50"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:textColor="#1E293B"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="24dp"
             app:layout_constraintStart_toEndOf="@id/viewColorIndicator"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <!-- Campo auxiliar para compatibilidad -->
         <TextView
             android:id="@+id/tvAcademicYear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2023-2024"
-            android:textColor="#757575"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintTop_toBottomOf="@id/tvSubjectName"
-            app:layout_constraintStart_toEndOf="@id/viewColorIndicator"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            android:visibility="gone"
+            android:text=""
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

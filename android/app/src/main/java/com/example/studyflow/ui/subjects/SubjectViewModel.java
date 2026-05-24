@@ -29,4 +29,46 @@ public class SubjectViewModel extends ViewModel {
             }
         });
     }
+
+    public void createSubject(SubjectResponseDTO subject) {
+        repository.createSubject(subject, new TaskRepository.RepositoryCallback<SubjectResponseDTO>() {
+            @Override
+            public void onSuccess(SubjectResponseDTO result) {
+                loadSubjects();
+            }
+
+            @Override
+            public void onError(String message) {
+                error.postValue(message);
+            }
+        });
+    }
+
+    public void updateSubject(Integer id, SubjectResponseDTO subject) {
+        repository.updateSubject(id, subject, new TaskRepository.RepositoryCallback<SubjectResponseDTO>() {
+            @Override
+            public void onSuccess(SubjectResponseDTO result) {
+                loadSubjects();
+            }
+
+            @Override
+            public void onError(String message) {
+                error.postValue(message);
+            }
+        });
+    }
+
+    public void deleteSubject(Integer id) {
+        repository.deleteSubject(id, new TaskRepository.RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                loadSubjects();
+            }
+
+            @Override
+            public void onError(String message) {
+                error.postValue(message);
+            }
+        });
+    }
 }

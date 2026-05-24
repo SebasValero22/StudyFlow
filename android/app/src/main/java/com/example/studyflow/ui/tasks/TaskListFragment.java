@@ -49,6 +49,9 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
         intent.putExtra("taskId", task.getTaskId());
         intent.putExtra("title", task.getTitle());
         intent.putExtra("description", task.getDescription());
+        intent.putExtra("priority", task.getPriority());
+        intent.putExtra("subjectId", task.getSubjectId());
+        intent.putExtra("due_date", task.getDue_date() != null ? task.getDue_date().toString() : "");
         startActivity(intent);
     }
 
@@ -59,6 +62,6 @@ public class TaskListFragment extends Fragment implements TaskAdapter.OnTaskClic
 
     @Override
     public void onToggle(TaskResponseDTO task) {
-        // Implement toggle logic in ViewModel
+        viewModel.updateTask(task.getTaskId(), task);
     }
 }
