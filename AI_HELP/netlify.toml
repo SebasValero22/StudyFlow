@@ -1,0 +1,25 @@
+# netlify.toml - Configuración monorepo para StudyFlow (PWA en subdirectorio)
+[build]
+  command = "npm run build"
+  publish = "dist/studyflow-pwa/browser"
+
+# Reglas de redirección para Single Page Application (SPA) y Angular Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cabeceras de optimización para la PWA (Service Workers sin caché)
+[[headers]]
+  for = "/ngsw.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
+[[headers]]
+  for = "/ngsw-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"

@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow - Teleprónter y Auditor de Calidad (Defensa de Proyecto)</title>
+  
+  <!-- Tipografías Premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ----------------------------------------------------
+       SISTEMA DE DISEÑO - ESTILO DE ALTA FIDELIDAD Y RENDIMIENTO
+       ---------------------------------------------------- */
+    :root {
+      --bg-dark: #080c14;
+      --bg-card: rgba(15, 23, 42, 0.7);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.25);
+      --accent-orange: #f59e0b;
+      --accent-red: #f43f5e;
+      --text-white: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-light: rgba(255, 255, 255, 0.08);
+      --font-title: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+      color: var(--text-white);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Scrollbar Estilizada */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.3);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* CABECERA PRINCIPAL */
+    header {
+      background: rgba(10, 15, 30, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #042f1a;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .brand-title {
+      font-size: 1.4rem;
+      background: linear-gradient(90deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--primary);
+      padding: 0.15rem 0.6rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    /* CRONÓMETRO Y ESTATAL */
+    .timer-panel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-light);
+      padding: 0.4rem 1rem;
+      border-radius: 12px;
+    }
+
+    .timer-display {
+      font-family: 'Fira Code', monospace;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+    }
+
+    .timer-target {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .timer-target strong {
+      color: var(--accent-cyan);
+    }
+
+    .timer-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: var(--transition-smooth);
+    }
+
+    .timer-btn:hover {
+      background: var(--primary);
+      color: #042f1a;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .timer-btn.active {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      color: white;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .app-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      height: calc(100vh - 62px);
+      overflow: hidden;
+    }
+
+    /* BARRA LATERAL - NAVEGACIÓN Y ESTRUCTURA */
+    .sidebar {
+      background: rgba(10, 15, 28, 0.95);
+      border-right: 1px solid var(--border-light);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      padding-left: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      list-style: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.88rem;
+      transition: var(--transition-smooth);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-white);
+    }
+
+    .nav-item.active {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.25);
+      color: var(--primary);
+      box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.05);
+    }
+
+    .nav-item-num {
+      font-family: var(--font-title);
+      font-size: 0.75rem;
+      width: 22px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .nav-item.active .nav-item-num {
+      background: var(--primary);
+      color: #042f1a;
+    }
+
+    .nav-item-time {
+      font-size: 0.7rem;
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    .nav-item.active .nav-item-time {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--primary);
+    }
+
+    /* AREA DE CONTENIDO */
+    .content-area {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+      background: rgba(8, 12, 20, 0.5);
+    }
+
+    /* BARRA DE HERRAMIENTAS */
+    .toolbar {
+      background: rgba(15, 23, 42, 0.45);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .view-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.25rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: var(--transition-smooth);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #042f1a;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+
+    /* CONTROLES DEL TELEPROMPTER */
+    .prompter-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .control-input {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      width: 55px;
+      font-family: 'Fira Code', monospace;
+      text-align: center;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--primary);
+    }
+
+    /* ESPACIO DE TRABAJO SPLIT */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* VISOR CENTRAL DE TEXTOS */
+    .script-viewer {
+      padding: 2.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: relative;
+    }
+
+    /* MODO TELEPROMPTER ACTIVO */
+    .script-viewer.prompter-mode {
+      overflow-y: hidden;
+      padding: 0;
+      background: #05080e;
+    }
+
+    .prompter-container {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 28vh 3rem; /* Foco centralizado */
+      scroll-behavior: smooth;
+    }
+
+    .prompter-canvas {
+      font-family: var(--font-title);
+      font-size: 2.3rem;
+      font-weight: 500;
+      line-height: 1.8;
+      color: #94a3b8;
+      max-width: 950px;
+      margin: 0 auto;
+      text-align: center;
+      transition: font-size 0.2s ease;
+    }
+
+    .prompter-canvas p {
+      margin-bottom: 3rem;
+    }
+
+    .prompter-canvas em {
+      color: var(--accent-cyan);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .prompter-canvas strong {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .prompter-focus-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 120px;
+      transform: translateY(-50%);
+      border-top: 1px dashed rgba(16, 185, 129, 0.25);
+      border-bottom: 1px dashed rgba(16, 185, 129, 0.25);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.02) 0%, transparent 50%, rgba(16, 185, 129, 0.02) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* MODO DIRECTRICES DE CALIDAD DEL PDF */
+    .pdf-auditor-container {
+      padding: 2.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      background: #090d16;
+    }
+
+    /* SECCIONES Y TARJETAS */
+    .script-section {
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    .script-section.active {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #ffffff 40%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+    }
+
+    .cue-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      transition: var(--transition-smooth);
+    }
+
+    .cue-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .cue-card-header {
+      padding: 0.85rem 1.5rem;
+      font-weight: 800;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .cue-card-header.visual {
+      background: rgba(6, 182, 212, 0.08);
+      color: var(--accent-cyan);
+    }
+
+    .cue-card-header.action {
+      background: rgba(245, 158, 11, 0.08);
+      color: var(--accent-orange);
+    }
+
+    .cue-card-header.speech {
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--primary);
+    }
+
+    .cue-card-body {
+      padding: 1.5rem;
+      font-size: 1.12rem;
+      line-height: 1.65;
+    }
+
+    .speech-box {
+      font-size: 1.28rem;
+      line-height: 1.75;
+      color: #f1f5f9;
+      border-left: 4px solid var(--primary);
+      padding-left: 1.5rem;
+      font-family: var(--font-title);
+      font-weight: 400;
+    }
+
+    .speech-box blockquote {
+      font-style: italic;
+    }
+
+    /* BADGES DE CORRECCIÓN DEL PDF */
+    .pdf-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: 0.5rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .pdf-badge.critic {
+      background: rgba(244, 63, 94, 0.1);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #f87171;
+    }
+
+    .pdf-badge.ux {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+
+    .pdf-badge.audio {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.3);
+      color: #22d3ee;
+    }
+
+    /* TELEPROMPTER FLOATING ACTION BADGE */
+    .action-cue {
+      display: block;
+      font-size: 1.15rem;
+      font-family: var(--font-body);
+      color: var(--accent-orange);
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px dashed rgba(245, 158, 11, 0.3);
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem auto;
+      max-width: 750px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    /* AUDITOR DE COMENTARIOS DEL PDF */
+    .audit-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .audit-card {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 1.2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: var(--transition-smooth);
+    }
+
+    .audit-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .audit-check {
+      accent-color: var(--primary);
+      width: 20px;
+      height: 20px;
+      margin-top: 0.2rem;
+      cursor: pointer;
+    }
+
+    .audit-body {
+      flex: 1;
+    }
+
+    .audit-header-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+      align-items: center;
+    }
+
+    .audit-code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--primary);
+      background: rgba(16, 185, 129, 0.08);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .audit-desc {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text-white);
+      margin-bottom: 0.5rem;
+    }
+
+    .audit-fix {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.02);
+      border-left: 2px solid var(--accent-cyan);
+      padding-left: 0.6rem;
+    }
+
+    .audit-target-link {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .audit-target-link:hover {
+      text-decoration: underline;
+    }
+
+    /* PANEL DERECHO - CHULETA */
+    .cheat-sheet-panel {
+      background: rgba(10, 15, 28, 0.95);
+      border-left: 1px solid var(--border-light);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .panel-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-white);
+      font-weight: 800;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .quick-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.83rem;
+      line-height: 1.4;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .quick-checkbox {
+      margin-top: 0.15rem;
+      accent-color: var(--primary);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .quick-checkbox:checked + span {
+      color: var(--text-white);
+      text-decoration: line-through rgba(255,255,255,0.3);
+    }
+
+    .code-box {
+      background: #04060b;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.72rem;
+    }
+
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .code-copy {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .code-copy:hover {
+      color: var(--primary);
+    }
+
+    .code-body {
+      padding: 0.75rem;
+      overflow-x: auto;
+      max-height: 200px;
+      line-height: 1.45;
+    }
+
+    .code-comment { color: #6b7280; font-style: italic; }
+    .code-keyword { color: #f43f5e; }
+    .code-type { color: #06b6d4; }
+    .code-string { color: #10b981; }
+
+    /* TECLAS INFERIORES FLOTANTES */
+    .keyboard-overlay {
+      position: fixed;
+      bottom: 2rem;
+      right: 370px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-light);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.5);
+      z-index: 90;
+      pointer-events: none;
+    }
+
+    .key-cap {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    @media (max-width: 1250px) {
+      .workspace { grid-template-columns: 1fr; }
+      .cheat-sheet-panel { display: none; }
+      .keyboard-overlay { right: 2rem; }
+    }
+
+    /* Ocultar Barra Lateral Izquierda */
+    .app-container.hide-left-sidebar {
+      grid-template-columns: 1fr;
+    }
+    .app-container.hide-left-sidebar .sidebar {
+      display: none;
+    }
+
+    /* Ocultar Barra Lateral Derecha */
+    .workspace.hide-right-sidebar {
+      grid-template-columns: 1fr;
+    }
+    .workspace.hide-right-sidebar .cheat-sheet-panel {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">S</div>
+      <div>
+        <h1 class="brand-title">StudyFlow</h1>
+      </div>
+      <span class="brand-tag">Auditor y Teleprónter</span>
+    </div>
+    
+    <!-- CRONOMETRO DE DEFENSA -->
+    <div class="timer-panel">
+      <span class="timer-target">Cronómetro: <strong>00:00</strong> / 22m</span>
+      <div class="timer-display" id="sessionTimer">00:00:00</div>
+      <button class="timer-btn" id="timerStartBtn" onclick="toggleTimer()">▶</button>
+      <button class="timer-btn" onclick="resetTimer()">⟳</button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR DE LA APLICACIÓN -->
+  <div class="app-container">
+    
+    <!-- BARRA LATERAL IZQUIERDA: TEMAS Y SLIDES -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-section-title">
+          <span>PARTE 1: TEORÍA (Slides)</span>
+          <span style="font-size: 0.65rem; color: var(--accent-cyan);">~10 MIN</span>
+        </div>
+        <ul class="nav-list">
+          <li class="nav-item active" id="nav-1" onclick="goToSlide(1)">
+            <span class="nav-item-num">1</span>
+            <span>Portada del Proyecto</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+          <li class="nav-item" id="nav-2" onclick="goToSlide(2)">
+            <span class="nav-item-num">2</span>
+            <span>Hoja de Ruta / Agenda</span>
+            <span class="nav-item-time">1:00</span>
+          </li>
+          <li class="nav-item" id="nav-3" onclick="goToSlide(3)">
+            <span class="nav-item-num">3</span>
+            <span>El Vacío y la Solución</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+          <li class="nav-item" id="nav-4" onclick="goToSlide(4)">
+            <span class="nav-item-num">4</span>
+            <span>Stack Tecnológico</span>
+            <span class="nav-item-time">2:00</span>
+          </li>
+          <li class="nav-item" id="nav-5" onclick="goToSlide(5)">
+            <span class="nav-item-num">5</span>
+            <span>Arquitectura Servidor</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+          <li class="nav-item" id="nav-6" onclick="goToSlide(6)">
+            <span class="nav-item-num">6</span>
+            <span>Clientes y Calidad 2.0</span>
+            <span class="nav-item-time">2:00</span>
+          </li>
+          <li class="nav-item" id="nav-7" onclick="goToSlide(7)">
+            <span class="nav-item-num">7</span>
+            <span>Viabilidad y Costes</span>
+            <span class="nav-item-time">1:00</span>
+          </li>
+          <li class="nav-item" id="nav-8" onclick="goToSlide(8)">
+            <span class="nav-item-num">8</span>
+            <span>Roadmap Escalable</span>
+            <span class="nav-item-time">1:00</span>
+          </li>
+          <li class="nav-item" id="nav-9" onclick="goToSlide(9)">
+            <span class="nav-item-num">9</span>
+            <span>Cierre y Transición</span>
+            <span class="nav-item-time">0:30</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">
+          <span>PARTE 2: LIVE DEMO (Pasos)</span>
+          <span style="font-size: 0.65rem; color: var(--primary);">~12 MIN</span>
+        </div>
+        <ul class="nav-list">
+          <li class="nav-item" id="nav-10" onclick="goToSlide(10)">
+            <span class="nav-item-num">D1</span>
+            <span>Acceso y Seguridad</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+          <li class="nav-item" id="nav-11" onclick="goToSlide(11)">
+            <span class="nav-item-num">D2</span>
+            <span>Asignaturas y Estilo</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+          <li class="nav-item" id="nav-12" onclick="goToSlide(12)">
+            <span class="nav-item-num">D3</span>
+            <span>Tareas y Exámenes</span>
+            <span class="nav-item-time">2:00</span>
+          </li>
+          <li class="nav-item" id="nav-13" onclick="goToSlide(13)">
+            <span class="nav-item-num">D4</span>
+            <span>Checkbox y Lombok</span>
+            <span class="nav-item-time">2:00</span>
+          </li>
+          <li class="nav-item" id="nav-14" onclick="goToSlide(14)">
+            <span class="nav-item-num">D5</span>
+            <span>Promedio REST</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+          <li class="nav-item" id="nav-15" onclick="goToSlide(15)">
+            <span class="nav-item-num">D6</span>
+            <span>Sincronía PWA/Android</span>
+            <span class="nav-item-time">2:00</span>
+          </li>
+          <li class="nav-item" id="nav-16" onclick="goToSlide(16)">
+            <span class="nav-item-num">D7</span>
+            <span>Código en el IDE</span>
+            <span class="nav-item-time">1:30</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- AREA CENTRAL DE CONTENIDO -->
+    <main class="content-area">
+      
+      <!-- TABS Y CONTROLES -->
+      <div class="toolbar">
+        <div class="view-tabs">
+          <button class="tab-btn active" id="btn-tab-script" onclick="switchTab('script')">
+            <span>📋</span> Guión Estructurado
+          </button>
+          <button class="tab-btn" id="btn-tab-prompter" onclick="switchTab('prompter')">
+            <span>📺</span> Teleprónter
+          </button>
+          <button class="tab-btn" id="btn-tab-pdf" onclick="switchTab('pdf')">
+            <span>🚨</span> Auditoría PDF
+            <span id="pendingAuditBadge" style="background:#ef4444; color:white; font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:4px; margin-left:0.3rem;">12</span>
+          </button>
+          <button class="tab-btn" id="btn-toggle-sidebars" onclick="toggleSidebars()" style="border-left: 1px solid var(--border-light); margin-left: 0.5rem; padding-left: 1rem; color: var(--text-white);">
+            <span>👁️‍🗨️</span> <span>Ocultar Paneles (F)</span>
+          </button>
+        </div>
+
+        <!-- CONTROLES ADICIONALES PARA TELEPROMPTER -->
+        <div class="prompter-controls" id="prompterControls" style="display: none;">
+          <div class="control-group">
+            <span>Velocidad (WPM):</span>
+            <button class="control-btn" onclick="adjustWpm(-10)">-</button>
+            <input type="text" class="control-input" id="wpmDisplay" value="130" readonly>
+            <button class="control-btn" onclick="adjustWpm(10)">+</button>
+          </div>
+          
+          <div class="control-group">
+            <span>Letra (px):</span>
+            <button class="control-btn" onclick="adjustFontSize(-2)">-</button>
+            <input type="text" class="control-input" id="fontSizeDisplay" value="34" readonly>
+            <button class="control-btn" onclick="adjustFontSize(2)">+</button>
+          </div>
+
+          <button class="tab-btn" id="prompterPlayBtn" onclick="togglePrompterScroll()" style="background: rgba(16, 185, 129, 0.1); color: var(--primary); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <span id="playIcon">▶</span> <span id="playText">Autoplay</span>
+          </button>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          Defensa Oficial: <strong>J. Sebastián Valero Marulanda</strong>
+        </div>
+      </div>
+
+      <!-- WORKSPACE PRINCIPAL -->
+      <div class="workspace">
+        
+        <!-- VISOR CENTRAL -->
+        <div class="script-viewer" id="mainViewer">
+          <!-- DIAPOSITIVA 1 (Se renderiza dinámicamente o por JS) -->
+        </div>
+
+        <!-- PANEL DERECHO - CHULETA DE DEFENSA -->
+        <aside class="cheat-sheet-panel">
+          <div>
+            <h3 class="panel-section-title">🎙️ Checklist de Audio y Grabación</h3>
+            <div style="margin-top: 1rem;">
+              <label class="quick-list-item">
+                <input type="checkbox" class="quick-checkbox">
+                <span>Micro fijo y lejos de golpes <span class="pdf-badge audio" style="margin:0;" onclick="switchTab('pdf')">PDF C6</span></span>
+              </label>
+              <label class="quick-list-item">
+                <input type="checkbox" class="quick-checkbox">
+                <span>Prueba de audio grabada (cero ruidos)</span>
+              </label>
+              <label class="quick-list-item">
+                <input type="checkbox" class="quick-checkbox">
+                <span>Lienzo OBS en 1080p, 60 FPS</span>
+              </label>
+              <label class="quick-list-item">
+                <input type="checkbox" class="quick-checkbox">
+                <span>Emulador Android Studio configurado <span class="pdf-badge critic" style="margin:0;" onclick="switchTab('pdf')">PDF C11</span></span>
+              </label>
+              <label class="quick-list-item">
+                <input type="checkbox" class="quick-checkbox">
+                <span>Datos iniciales reales ya listos</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="panel-section-title">💻 Ficha Técnica - ComboBox Lombok</h3>
+            <div style="margin-top: 0.8rem;">
+              <div class="code-box">
+                <div class="code-box-header">
+                  <span>ExamFormController.java</span>
+                  <button class="code-copy" onclick="copyCode('codeCombo')">Copiar</button>
+                </div>
+                <div class="code-body">
+                  <pre id="codeCombo"><span class="code-comment">// Muestra el nombre, no la dirección de memoria</span>
+<span class="code-type">Callback</span>&lt;<span class="code-type">ListView</span>&lt;<span class="code-type">Subject</span>&gt;, <span class="code-type">ListCell</span>&lt;<span class="code-type">Subject</span>&gt;&gt; cellFactory = lv -&gt; <span class="code-keyword">new</span> <span class="code-type">ListCell</span>&lt;&gt;() {
+    <span class="code-keyword">@Override</span>
+    <span class="code-keyword">protected</span> <span class="code-type">void</span> updateItem(<span class="code-type">Subject</span> item, <span class="code-type">boolean</span> empty) {
+        <span class="code-keyword">super</span>.updateItem(item, empty);
+        setText(empty || item == <span class="code-keyword">null</span> ? <span class="code-string">""</span> : item.getNameSubject());
+    }
+};
+subjectCombo.setCellFactory(cellFactory);
+subjectCombo.setButtonCell(cellFactory.call(<span class="code-keyword">null</span>));</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="panel-section-title">💻 Ficha Técnica - Lombok & Jackson</h3>
+            <div style="margin-top: 0.8rem;">
+              <div class="code-box">
+                <div class="code-box-header">
+                  <span>Task.java</span>
+                  <button class="code-copy" onclick="copyCode('codeLombok')">Copiar</button>
+                </div>
+                <div class="code-body">
+                  <pre id="codeLombok"><span class="code-comment">// Serialización simétrica isCompleted</span>
+<span class="code-keyword">@JsonProperty</span>(<span class="code-string">"isCompleted"</span>)
+<span class="code-keyword">private</span> <span class="code-type">Boolean</span> isCompleted = <span class="code-keyword">false</span>;
+
+<span class="code-keyword">@JsonProperty</span>(<span class="code-string">"isCompleted"</span>)
+<span class="code-keyword">public</span> <span class="code-type">Boolean</span> getIsCompleted() {
+    <span class="code-keyword">return</span> isCompleted;
+}
+
+<span class="code-keyword">@JsonProperty</span>(<span class="code-string">"isCompleted"</span>)
+<span class="code-keyword">public</span> <span class="code-type">void</span> setIsCompleted(<span class="code-type">Boolean</span> completed) {
+    <span class="code-keyword">this</span>.isCompleted = completed;
+}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- TECLAS FLOTANTES -->
+      <div class="keyboard-overlay">
+        <span>Navegar: <span class="key-cap">←</span> / <span class="key-cap">→</span></span>
+        <span>Modo Vista: <span class="key-cap">N</span></span>
+        <span>Autoplay: <span class="key-cap">Espacio</span></span>
+        <span>Enfoque: <span class="key-cap">F</span></span>
+      </div>
+    </main>
+  </div>
+
+  <!-- CONTROLADORES Y LÓGICA DE INTERACTIVIDAD -->
+  <script>
+    // ----------------------------------------------------
+    // BASE DE DATOS DE COMENTARIOS EXTRAÍDOS DEL PDF
+    // ----------------------------------------------------
+    const pdfComments = [
+      {
+        id: "C1",
+        category: "ux",
+        badge: "Incidencia UX",
+        desc: "En la web PWA, la columna DONE no debe mostrar un booleano TRUE/FALSE directamente, debe tratarse para que diga 'HECHA' o 'SIN HACER' de forma visual.",
+        fix: "Corregido en Angular PWA e inyectado visualmente con etiquetas coloreadas en verde/gris en lugar de texto crudo.",
+        targets: [6, 13] // Diapositiva 6 y Demo 4
+      },
+      {
+        id: "C2",
+        category: "critic",
+        badge: "Seguridad / UX",
+        desc: "Las tablas no deben mostrar los IDs técnicos autoincrementales de las asignaturas. El usuario no los necesita y representa una vulnerabilidad de seguridad (Enumeración).",
+        fix: "Ocultados todos los identificadores técnicos internos en las tablas del frontend en Angular PWA, Android y JavaFX.",
+        targets: [6, 10] // Diapositiva 6 y Demo 1
+      },
+      {
+        id: "C3",
+        category: "ux",
+        badge: "Contraste / Accesibilidad",
+        desc: "Los colores elegidos para las asignaturas son demasiado claros y no se ven bien en la presentación ni en la aplicación final.",
+        fix: "Reemplazados por colores Pantone oscuros y sólidos. En JavaFX, eliminamos el fondo de tarjeta chillón y añadimos un elegante borde izquierdo indicador de 5px.",
+        targets: [6, 11] // Diapositiva 6 y Demo 2
+      },
+      {
+        id: "C4",
+        category: "critic",
+        badge: "Higiene de Datos",
+        desc: "Higiene de datos en el documento y la demo: no usar nombres aleatorios como 'b' o 'asjdasdsa' sin tareas ni notas asociadas. Usar textos realistas.",
+        fix: "Utilizaremos nombres de asignaturas de DAM reales ('Sistemas de Gestión Empresarial', 'Acceso a Datos') y cargaremos tareas y exámenes válidos.",
+        targets: [11, 12, 13, 14] // Demo 2, 3, 4, 5
+      },
+      {
+        id: "C5",
+        category: "critic",
+        badge: "Flujo Continuo",
+        desc: "Evitar capturar o grabar pantallas vacías sin nada creado en las demostraciones de clientes. Se debe mostrar que ya está todo funcionando.",
+        fix: "El guión incluye un flujo lógico continuado: se crea la asignatura, se le asocia una tarea, se agenda su examen, se califica y se sincroniza.",
+        targets: [10, 11, 12, 13, 14, 15] // Demo 1 a 6
+      },
+      {
+        id: "C6",
+        category: "audio",
+        badge: "Calidad de Audio",
+        desc: "Calidad de audio grave en el vídeo anterior: golpes constantes al mover/agarrar el micro y voz inaudible que obligó al tribunal a usar subtítulos autogenerados.",
+        fix: "Colocar el micrófono en un soporte estático antes de grabar, ajustar los niveles de volumen/ganancia en OBS y evitar ruidos mecánicos.",
+        targets: [1] // Slide 1 / Checklist
+      },
+      {
+        id: "C7",
+        category: "critic",
+        badge: "Definición de API",
+        desc: "Explicar rigurosamente el rol de la API REST en el proyecto. No decir solo que es el 'cerebro', sino detallar para qué sirve y dónde se usa.",
+        fix: "Añadida justificación técnica en la Slide 5 y Demo 1. API centralizada stateless que provee lógica matemática y aislamiento multiusuario de base de datos.",
+        targets: [5, 10] // Diapositiva 5 y Demo 1
+      },
+      {
+        id: "C8",
+        category: "ux",
+        badge: "Estructura Demo",
+        desc: "La parte de código en el vídeo anterior duraba 5 minutos innecesarios mostrando directorios. Recortarla y mostrar solo lo más relevante explicando el porqué.",
+        fix: "Demo 7 recortada a solo 2 ficheros clave (ExamFormController.java y Task.java) para explicar las incidencias de Lombok y Jackson resueltas.",
+        targets: [16] // Demo 7
+      },
+      {
+        id: "C9",
+        category: "critic",
+        badge: "Incidencia ComboBox",
+        desc: "En el selector de asignaturas (minuto 23:13) se mostraba el volcado del objeto relacional con su dirección de memoria en lugar del nombre.",
+        fix: "Implementado ListCell cellFactory y StringConverter en JavaFX para desvincular el objeto Lombok y representar limpiamente el nombre de la asignatura.",
+        targets: [6, 12] // Diapositiva 6 y Demo 3
+      },
+      {
+        id: "C10",
+        category: "critic",
+        badge: "Bug de Reseteo",
+        desc: "Bug crítico en el minuto 24:46: al marcar una tarea como completada (TRUE), al añadir elementos o refrescar, el checkbox se volvía a cambiar a FALSE.",
+        fix: "Corregido el mapeo asimétrico de Jackson-Lombok inyectando explícitamente @JsonProperty('isCompleted') en campo, getter y setter de la clase Task.java.",
+        targets: [6, 13] // Diapositiva 6 y Demo 4
+      },
+      {
+        id: "C11",
+        category: "ux",
+        badge: "Demo Móvil",
+        desc: "Para mostrar la parte móvil, utilizar un emulador en pantalla en lugar de grabarlo con una cámara externa. Será más fácil y se verá mucho mejor.",
+        fix: "Uso del emulador de Android Studio capturado directamente por OBS a pantalla dividida al lado del navegador web.",
+        targets: [15] // Demo 6
+      },
+      {
+        id: "C12",
+        category: "ux",
+        badge: "Duración Vídeo",
+        desc: "La exposición del vídeo debe estar estrictamente entre los 20 y los 30 minutos de duración total.",
+        fix: "Cronometración establecida en 22-25 minutos globales (10 minutos teoría + 12 minutos demostración práctica).",
+        targets: [2] // Diapositiva 2
+      }
+    ];
+
+    // ----------------------------------------------------
+    // BASE DE DATOS DE NOTAS Y DISCURSO POR SLIDE
+    // ----------------------------------------------------
+    const prompterTexts = {
+      1: `<p><span class="action-cue">Presenta a cámara con entusiasmo y seguridad</span></p>
+          <p>"Hola, buenos días o tardes a los miembros del tribunal calificador. Mi nombre es <strong>Juan Sebastián Valero Marulanda</strong>, estudiante del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Multiplataforma en el IES Camp de Morvedre."</p>
+          <p>"Es un verdadero placer estar hoy aquí para presentarles la defensa técnica y práctica de mi proyecto final intermodular: <strong>StudyFlow</strong>."</p>
+          <p>"Este proyecto ha sido concebido desde sus cimientos no solo como una aplicación académica aislada, sino como un <em>ecosistema multiplataforma unificado</em> de nivel profesional."</p>
+          <p>"Su propósito de negocio es modernizar, automatizar e integrar completamente el flujo organizativo del estudiante del siglo XXI, ofreciéndole control absoluto en tiempo real sobre sus asignaturas, tareas y cómputos de calificación en cualquier dispositivo."</p>`,
+      
+      2: `<p><span class="action-cue">Pasa a la Slide 2 de Agenda usando las flechas de tu teclado</span></p>
+          <p>"Para guiar esta exposición técnica de la manera más fluida y profesional posible, seguiremos la hoja de ruta estructurada que ven ahora mismo en pantalla."</p>
+          <p>"Comenzaremos justificando la necesidad en el mercado y las carencias organizativas que pretendemos solucionar. A continuación, nos detendremos en el core tecnológico detallando la arquitectura del servidor REST y las soluciones multiplataforma clientes."</p>
+          <p>"Haremos un alto especial en la sección de <strong>Calidad del Software 2.0</strong>, donde les demostraré detalladamente cómo he resuelto y verificado cada una de las incidencias técnicas de pre-entrega."</p>
+          <p>"Posteriormente, analizaremos la viabilidad económica y el roadmap de escalabilidad, para dar paso de inmediato a la demostración práctica interactiva en tiempo real consumiendo los endpoints en producción en la nube."</p>`,
+      
+      3: `<p><span class="action-cue">Muestra el diagrama comparativo de la Slide 3</span></p>
+          <p>"El problema principal al que se enfrenta cualquier estudiante es la dispersión y desorganización de su información. Para paliar esto, los estudiantes recurren históricamente a tres tipos de herramientas fragmentadas:"</p>
+          <p>"Primero, herramientas de notas estáticas como <em>Notion</em>, que permiten almacenar apuntes pero carecen de dinamismo y flujo académico."</p>
+          <p>"Segundo, gestores de tareas simples como <em>Todoist</em>, que registran recordatorios generales pero desconocen el contexto de las asignaturas."</p>
+          <p>"Y tercero, hojas de cálculo complejas en <em>Excel</em> que requieren un mantenimiento manual y diario para estimar si se aprueba o suspende una materia."</p>
+          <p>"StudyFlow irrumpe en este escenario para cubrir ese vacío crítico, integrando en una única solución inteligente, nativa y multiplataforma todo lo que el estudiante moderno necesita: gestión de asignaturas, programación de exámenes, ponderaciones y el cálculo automático de su promedio de rendimiento académico en tiempo real."</p>`,
+      
+      4: `<p><span class="action-cue">Enfoca el stack tecnológico en la Slide 4 y destaca la interoperabilidad</span></p>
+          <p>"La verdadera potencia técnica de StudyFlow reside en su capacidad para unificar entornos tecnológicos radicalmente heterogéneos mediante un estándar de comunicación robusto e interoperable."</p>
+          <p>"En el backend, el cerebro lógico y de almacenamiento está desarrollado con <strong>Java 17/21 y Spring Boot 3.x</strong>, apoyándose en <strong>Spring Data JPA e Hibernate</strong> para el mapeo objeto-relacional."</p>
+          <p>"Para los datos de producción en la nube, utilizamos <strong>MySQL 8</strong> administrado en los clústeres de alta disponibilidad de <strong>Aiven Cloud</strong>."</p>
+          <p>"En la capa cliente, hemos desarrollado tres frontends independientes y nativos:"</p>
+          <p>"Primero, el cliente de escritorio con <strong>JavaFX 19</strong> y patrón arquitectónico MVC."</p>
+          <p>"Segundo, el cliente web responsive, que es una <strong>Progressive Web App desarrollada en Angular 17</strong> con Service Workers para soporte offline."</p>
+          <p>"Y tercero, el cliente móvil nativo en <strong>Android en Kotlin y Java</strong>, consumiendo el API centralizada mediante peticiones HTTP asíncronas con <strong>Retrofit 2</strong> y respetando las pautas oficiales de diseño <strong>Material Design 3</strong>."</p>`,
+      
+      5: `<p><span class="action-cue">Enfoca la arquitectura multicapa de la Slide 5</span></p>
+          <p>"Como desarrolladores multiplataforma, no podemos cometer el error de duplicar lógica de negocio compleja en cada cliente. Por ello, StudyFlow implementa una <strong>Arquitectura orientada a servicios (SOA)</strong>."</p>
+          <p>"Nuestro API REST actúa como el verdadero cerebro sin estado o stateless. Toda lógica matemática —por ejemplo, el promedio ponderado de calificaciones— se ejecuta exclusivamente en el servidor. Esto nos garantiza una consistencia matemática del 100% en todas las plataformas clientes."</p>
+          <p>"Como ven a la derecha, el backend está estrictamente estructurado en capas desacopladas: los <em>Controllers</em> que exponen endpoints y mapean los DTOs; los <em>Services</em> que encapsulan la lógica pura de negocio y validación; los <em>Repositories</em> que aíslan las operaciones SQL mediante interfaces JPA; y la capa de datos segura MySQL en nube."</p>`,
+      
+      6: `<p><span class="action-cue">Muestra los mockups de Calidad 2.0 en la Slide 6</span></p>
+          <p>"El desarrollo de esta Versión 2.0 se ha centrado exhaustivamente en la calidad, robustez e higiene del software, atendiendo rigurosamente al feedback evaluativo de la pre-entrega."</p>
+          <p>"En primer lugar, rediseñamos la visualización en la Web PWA y móvil sustituyendo los booleanos planos por etiquetas coloreadas y estilizadas: <strong>✓ HECHA</strong> en verde y <strong>✗ SIN HACER</strong> en gris."</p>
+          <p>"Por seguridad, ocultamos los IDs técnicos autoincrementales de la base de datos en todas las vistas de tablas para mitigar ataques de enumeración."</p>
+          <p>"En el cliente de escritorio en JavaFX, solucionamos el contraste visual de las tarjetas: eliminamos los fondos claros y agresivos y aplicamos un sofisticado borde indicador izquierdo de 5 píxeles con el color Pantone de la asignatura."</p>
+          <p>"Además, resolvimos dos fallos críticos en JavaFX y Spring Boot: solucionamos la inconsistencia de deserialización con Jackson en el campo <em>isCompleted</em> de Lombok para garantizar que el estado de las tareas persista simétricamente al refrescar, y refinamos los selectores desplegables con un <em>StringConverter</em> para que muestren nombres limpios en la UI. Pasemos a la demo a comprobarlo."</p>`,
+      
+      7: `<p><span class="action-cue">Enfoca el desglose financiero de la Slide 7</span></p>
+          <p>"Para garantizar la viabilidad económica real de StudyFlow, hemos realizado una estimación financiera rigurosa del esfuerzo de ingeniería y los costes operativos anuales en la nube."</p>
+          <p>"El proyecto se estructuró a lo largo de 5 quincenas de trabajo incremental. Computando un total de 240 horas de dedicación de ingeniería con una tarifa estándar de desarrollador junior de 18 euros la hora, el coste de personal asciende a <strong>4.320,00 euros</strong>."</p>
+          <p>"Adicionalmente, sumamos la infraestructura cloud: 60 euros anuales para el servidor Render API, 110 euros anuales para la base de datos administrada en Aiven MySQL y la tasa única de Google Play Console de 25 euros, aprovechando los alojamientos gratuitos de Vercel."</p>
+          <p>"El presupuesto de lanzamiento real se sitúa en <strong>4.515,00 euros</strong>, validando a StudyFlow como un software comercialmente viable y de altísima rentabilidad."</p>`,
+      
+      8: `<p><span class="action-cue">Muestra los peldaños interactivos de la Slide 8</span></p>
+          <p>"StudyFlow no concluye con esta entrega; ha sido diseñado con bases modulares preparadas para la escalabilidad técnica y el crecimiento a gran escala. Nuestro roadmap futuro se compone de 4 peldaños ascendentes:"</p>
+          <p>"En el primer escalón, integraremos notificaciones push nativas al móvil del estudiante para recordarles vencimientos."</p>
+          <p>"En el segundo, daremos el salto a la autenticación robusta centralizada mediante <strong>OAuth2</strong> para login social con Google y GitHub."</p>
+          <p>"En el tercero, implementaremos un entorno académico colaborativo real, permitiendo a estudiantes del mismo aula compartir agendas y recursos."</p>
+          <p>"Y en la cumbre, incorporaremos un planificador predictivo con <strong>Inteligencia Artificial</strong> y exportación automática de informes de rendimiento académico en PDF."</p>`,
+      
+      9: `<p><span class="action-cue">Muestra la slide de cierre de teoría (Botón central de Demo en vivo)</span></p>
+          <p>"Con esto doy por concluida la síntesis conceptual y teórica del proyecto."</p>
+          <p>"Pero un software de calidad se demuestra con el código en funcionamiento y datos reales en producción. Por ello, para comprobar la robustez, simetría y sincronización bidireccional de la que hemos hablado, daremos paso de inmediato a nuestra demostración técnica práctica en vivo."</p>
+          <p>"Agradezco su atención en esta primera parte y pasemos a la acción."</p>`,
+      
+      10: `<p><span class="action-cue">Pásate a la App JavaFX de Escritorio. Introduce credenciales y haz Login</span></p>
+          <p>"Comenzamos la demostración en nuestro cliente de escritorio desarrollado en JavaFX. Como pueden observar, nos recibe una interfaz de inicio de sesión de alta fidelidad estética y totalmente segura."</p>
+          <p>"Introducimos las credenciales de mi usuario de pruebas y hacemos clic en el botón de acceso."</p>
+          <p>"La aplicación realiza la solicitud HTTP de validación contra el API REST en la nube y, tras autorizarnos, nos abre nuestra área de trabajo personal."</p>
+          <p>"Quiero destacar un aspecto de seguridad crucial a nivel de arquitectura: implementamos un aislamiento multiusuario riguroso. Cada petición CRUD al API REST exige y valida el ID de usuario autenticado en sesión, inyectándolo en las consultas SQL del backend. Esto asegura que la información académica de cada estudiante sea completamente privada e inaccesible para otros usuarios."</p>`,
+      
+      11: `<p><span class="action-cue">Ve a Subjects (Asignaturas). Crea "Sistemas de Gestión Empresarial". Color Pantone</span></p>
+          <p>"Nos dirigimos a la sección de Asignaturas. Para dotar de total realismo a la demostración, he precargado asignaturas reales de nuestro ciclo de DAM. Vamos a crear una nueva asignatura haciendo clic en el botón de agregar."</p>
+          <p>"Le daremos el nombre de 'Sistemas de Gestión Empresarial' y la asociaremos al año lectivo actual."</p>
+          <p>"Les ruego observen con detenimiento la interfaz tras guardar. Siguiendo las directrices del informe de pre-evaluación, hemos resuelto un importante problema de contraste y accesibilidad."</p>
+          <p>"En lugar de aplicar un fondo claro y saturado en toda la tarjeta de la asignatura que dificultara la lectura del texto, ahora aplicamos un sofisticado borde indicador izquierdo de 5 píxeles con el color Pantone exacto seleccionado. Logramos un diseño limpio, moderno y de altísima accesibilidad para el estudiante."</p>`,
+      
+      12: `<p><span class="action-cue">Ve a Tasks y crea la tarea. Luego ve a Exams. Abre ComboBox de asignaturas lentamente</span></p>
+          <p>"Ahora vamos a dar de alta una tarea y a programar un examen. Nos dirigimos a la vista de Tareas, hacemos clic en nueva y registramos 'Mapeo Entidades JPA' con prioridad Alta, asociándola a nuestra asignatura recién creada."</p>
+          <p>"A continuación, nos dirigimos a la pestaña de Exámenes y pulsamos en añadir. Vamos a registrar el examen con el título 'Examen Hibernate y JPA'."</p>
+          <p>"<strong>Les pido que presten especial atención al selector desplegable de asignaturas.</strong> Como pueden observar, el ComboBox nos representa con total limpieza y legibilidad exclusivamente el nombre de la asignatura: 'Sistemas de Gestión Empresarial'."</p>
+          <p>"Esto soluciona la incidencia técnica crítica de la versión preliminar, en la cual por defecto JavaFX volcaba la representación interna String del objeto inyectado por Lombok en lugar del texto formateado. Implementando de forma nativa un <em>StringConverter</em> y configurando el cellFactory, conseguimos que la aplicación represente los objetos relacionales de forma perfectamente pulida."</p>`,
+      
+      13: `<p><span class="action-cue">Ve a Tareas en JavaFX. Marca el Checkbox DONE. Refresca la tabla</span></p>
+          <p>"Volvemos a nuestra tabla de tareas. Al completar nuestro trabajo, podemos marcarlo directamente haciendo clic sobre la casilla de verificación en la tabla."</p>
+          <p>"Al hacerlo, verán que la UI se actualiza con una etiqueta reactiva en color verde con el texto '✓ HECHA'."</p>
+          <p>"Pero lo verdaderamente importante ocurre detrás del telón: <strong>hemos erradicado por completo el bug de reseteo de tareas</strong>."</p>
+          <p>"En la versión pre-evaluada, existía una inconsistencia de serialización JSON que provocaba que al marcar una tarea e interactuar posteriormente con la interfaz, el estado se reseteara automáticamente a falso en la base de datos."</p>
+          <p>"Esto se debía a que Jackson y Lombok mapeaban de forma asimétrica el campo booleano <em>isCompleted</em>. Lo hemos solucionado reestructurando nuestro modelo de datos, inyectando la anotación <strong>@JsonProperty(\"isCompleted\")</strong> de forma simétrica en el atributo, el getter y el setter. Ahora la persistencia en la base de datos MySQL es perfectamente consistente y permanente."</p>`,
+      
+      14: `<p><span class="action-cue">Ve a Grades (Calificaciones). Introduce Nota 8 (60%) y Nota 9.5 (40%)</span></p>
+          <p>"Para poner a prueba el motor matemático del sistema, nos trasladamos a la sección de Calificaciones. Seleccionamos nuestra asignatura y vamos a registrar dos notas con diferentes pesos evaluativos:"</p>
+          <p>"Primero, introducimos una nota de 8.0 correspondiente a un examen teórico con un peso del 60%."</p>
+          <p>"A continuación, introducimos un 9.5 en una práctica de laboratorio con un peso del 40%."</p>
+          <p>"Al guardar, verán que el sistema calcula instantáneamente un promedio global exacto de <strong>8.60</strong>."</p>
+          <p>"Como he detallado en la arquitectura, este cálculo matemático no se calcula a la ligera de forma local en el cliente. La computación se realiza de manera segura en nuestro servidor REST Spring Boot. Así aseguramos que la media ponderada del alumno sea idéntica, consistente e inalterable en cualquier dispositivo."</p>`,
+      
+      15: `<p><span class="action-cue">Abre la Web Angular PWA y el Emulador de Android. Muestra los datos</span></p>
+          <p>"Ahora es el momento de comprobar la interoperabilidad multiplataforma en tiempo real."</p>
+          <p>"Abro mi navegador web donde tengo desplegada en producción nuestra <strong>Progressive Web App construida en Angular 17</strong>."</p>
+          <p>"Tras iniciar sesión con las mismas credenciales, verán cómo la asignatura 'Sistemas de Gestión Empresarial', la tarea completada y la nota promedio calculada de 8.6 ya aparecen perfectamente sincronizadas en caliente."</p>
+          <p>"Igualmente, si desplazamos el foco de la pantalla hacia nuestro <strong>Emulador de Android Nativo</strong>, verán cómo nuestra aplicación en Kotlin refleja con absoluta consistencia la tarea registrada y la asignatura creada."</p>
+          <p>"Esto demuestra que StudyFlow no son tres aplicaciones aisladas, sino un ecosistema multiplataforma robusto y altamente unificado en la nube que responde en tiempo real a las necesidades operativas del alumno."</p>`,
+      
+      16: `<p><span class="action-cue">Enfoca IntelliJ o VS Code en grande. Señala ExamFormController.java y Task.java</span></p>
+          <p>"Para concluir la demostración y como prueba de transparencia e higiene técnica, quiero enseñarles muy brevemente cómo se reflejan estas correcciones en el código fuente de nuestro cliente."</p>
+          <p>"Aquí en IntelliJ, en el archivo <strong>ExamFormController.java</strong>, pueden ver en pantalla cómo declaramos el callback <em>cellFactory</em> y lo inyectamos al ComboBox de JavaFX mediante setCellFactory y setButtonCell, vinculando el método getNameSubject para limpiar la interfaz."</p>
+          <p>"Y en este otro archivo, <strong>Task.java</strong> en el cliente de escritorio, pueden constatar cómo añadimos getters y setters explícitos serializados asimétricamente mediante la propiedad <em>@JsonProperty(\"isCompleted\")</em> de Jackson, lo que corrigió de raíz la asimetría."</p>
+          <p>"Esto evidencia que detrás de la interfaz de StudyFlow hay una ingeniería madura, limpia y sólidamente estructurada."</p>
+          <p>"Con esto doy por concluida la demostración práctica y la defensa de StudyFlow. Agradezco enormemente su atención y quedo a su entera disposición para responder cualquier pregunta o aclarar cualquier aspecto técnico. Muchas gracias."</p>`
+    };
+
+    // ----------------------------------------------------
+    // ESTADO GENERAL DE LA APLICACIÓN
+    // ----------------------------------------------------
+    let currentSlide = 1;
+    const totalSlides = 16;
+    let activeTab = 'script'; // 'script', 'prompter', 'pdf'
+    
+    // Configuración del prompter
+    let wpm = 130;
+    let fontSize = 34;
+    let prompterInterval = null;
+    let isPrompterScrolling = false;
+
+    // Configuración del cronómetro
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    // Inicializar aplicación
+    document.addEventListener("DOMContentLoaded", function() {
+      // Cargar checkboxes desde LocalStorage
+      initCheckboxes();
+      
+      // Renderizar vista inicial
+      switchTab('script');
+      
+      // Actualizar el contador de auditorías pendientes
+      updatePendingAuditBadge();
+    });
+
+    // ----------------------------------------------------
+    // PERSISTENCIA DE CHECKBOXES DE AUDITORÍA Y CHECKLIST
+    // ----------------------------------------------------
+    function initCheckboxes() {
+      // Checklist general
+      const checklistItems = document.querySelectorAll('.quick-checkbox');
+      checklistItems.forEach((box, idx) => {
+        const saved = localStorage.getItem(`checklist-${idx}`);
+        if (saved === 'true') box.checked = true;
+        box.addEventListener('change', () => {
+          localStorage.setItem(`checklist-${idx}`, box.checked);
+        });
+      });
+    }
+
+    function toggleAuditItem(id, isChecked) {
+      localStorage.setItem(`audit-${id}`, isChecked);
+      updatePendingAuditBadge();
+    }
+
+    function updatePendingAuditBadge() {
+      let pendingCount = 12;
+      pdfComments.forEach(c => {
+        const checked = localStorage.getItem(`audit-${c.id}`) === 'true';
+        if (checked) pendingCount--;
+      });
+      const badge = document.getElementById('pendingAuditBadge');
+      if (badge) {
+        badge.textContent = pendingCount;
+        badge.style.background = pendingCount > 0 ? '#ef4444' : '#10b981';
+      }
+    }
+
+    // ----------------------------------------------------
+    // NAVEGACIÓN Y TABS
+    // ----------------------------------------------------
+    function goToSlide(slideNum) {
+      if (slideNum < 1 || slideNum > totalSlides) return;
+      
+      if (isPrompterScrolling) {
+        togglePrompterScroll();
+      }
+
+      currentSlide = slideNum;
+
+      // Actualizar menú lateral
+      for (let i = 1; i <= totalSlides; i++) {
+        const navItem = document.getElementById(`nav-${i}`);
+        if (navItem) {
+          if (i === currentSlide) {
+            navItem.classList.add('active');
+            navItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          } else {
+            navItem.classList.remove('active');
+          }
+        }
+      }
+
+      // Renderizar el tab activo correspondiente
+      renderActiveTabContent();
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      
+      // Desactivar botones de tab
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      // Activar botón del tab seleccionado
+      document.getElementById(`btn-tab-${tabName}`).classList.add('active');
+
+      // Ocultar / Mostrar controles del prompter
+      const pControls = document.getElementById('prompterControls');
+      if (tabName === 'prompter') {
+        pControls.style.display = 'flex';
+      } else {
+        pControls.style.display = 'none';
+        if (isPrompterScrolling) togglePrompterScroll();
+      }
+
+      renderActiveTabContent();
+    }
+
+    function renderActiveTabContent() {
+      const viewer = document.getElementById('mainViewer');
+      viewer.className = 'script-viewer'; // Reset class
+
+      if (activeTab === 'script') {
+        viewer.innerHTML = getStructuredSectionHTML(currentSlide);
+      } else if (activeTab === 'prompter') {
+        viewer.classList.add('prompter-mode');
+        viewer.innerHTML = `
+          <div class="prompter-focus-bar"></div>
+          <div class="prompter-container" id="prompterScrollContainer">
+            <div class="prompter-canvas" id="prompterText" style="font-size: ${fontSize}px;">
+              ${prompterTexts[currentSlide]}
+            </div>
+          </div>
+        `;
+      } else if (activeTab === 'pdf') {
+        renderPDFAuditorHTML();
+      }
+    }
+
+    // ----------------------------------------------------
+    // CONSTRUCCIÓN DINÁMICA DEL GUIÓN ESTRUCTURADO (SLIDES / DEMO)
+    // ----------------------------------------------------
+    function getStructuredSectionHTML(idx) {
+      const isTheory = idx <= 9;
+      const numLabel = isTheory ? `Slide ${idx}` : `Demo ${idx - 9}`;
+      const title = getSlideTitle(idx);
+      const time = getSlideTime(idx);
+      const visual = getSlideVisual(idx);
+      const action = getSlideAction(idx);
+      const speech = prompterTexts[idx].replace(/<span class="action-cue">.*?<\/span>/g, '').trim();
+
+      // Añadimos tags de corrección del PDF aplicados en esta sección
+      let badgesHTML = '';
+      pdfComments.forEach(c => {
+        if (c.targets.includes(idx)) {
+          badgesHTML += `<span class="pdf-badge ${c.category}" onclick="viewAuditItem('${c.id}')" title="${c.desc}">${c.id} - ${c.badge}</span>`;
+        }
+      });
+
+      return `
+        <section class="script-section active">
+          <div class="section-header">
+            <h2 class="section-title">${numLabel}: ${title}</h2>
+            <div class="section-meta">
+              ${badgesHTML}
+              <span>Tiempo sugerido: <strong>${time}</strong></span>
+            </div>
+          </div>
+          
+          <div class="cue-card">
+            <div class="cue-card-header visual">📺 Qué mostrar en pantalla</div>
+            <div class="cue-card-body">${visual}</div>
+          </div>
+
+          <div class="cue-card">
+            <div class="cue-card-header action">⚡ Acción a realizar</div>
+            <div class="cue-card-body">${action}</div>
+          </div>
+
+          <div class="cue-card">
+            <div class="cue-card-header speech">🗣️ Discurso palabra por palabra (Ensayo de voz)</div>
+            <div class="cue-card-body speech-box">
+              <blockquote>${speech}</blockquote>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function viewAuditItem(id) {
+      switchTab('pdf');
+      setTimeout(() => {
+        const card = document.getElementById(`audit-card-${id}`);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.style.borderColor = 'var(--primary)';
+          card.style.boxShadow = '0 0 15px var(--primary-glow)';
+          setTimeout(() => {
+            card.style.borderColor = 'var(--border-light)';
+            card.style.boxShadow = 'none';
+          }, 2000);
+        }
+      }, 100);
+    }
+
+    // ----------------------------------------------------
+    // CONSTRUCCIÓN DINÁMICA DEL AUDITOR DE CALIDAD
+    // ----------------------------------------------------
+    function renderPDFAuditorHTML() {
+      const viewer = document.getElementById('mainViewer');
+      
+      let html = `
+        <div class="pdf-auditor-container">
+          <div class="section-header">
+            <h2 class="section-title">Auditor de Calidad y Correcciones (PDF)</h2>
+            <div class="section-meta">
+              <span>Rúbrica de pre-evaluación al 100%</span>
+            </div>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.5;">
+            Este panel audita detalladamente los comentarios y fallos indicados en el documento <strong>F:\\proyecto intermodular\\StudyFlow-main\\Corrección Juan Sebastián.pdf</strong>. Puedes marcar cada incidencia como resuelta mientras ensayas para garantizar que tu vídeo final reciba una calificación perfecta de 10.
+          </p>
+          <div class="audit-grid">
+      `;
+
+      pdfComments.forEach(c => {
+        const isChecked = localStorage.getItem(`audit-${c.id}`) === 'true';
+        const checkedAttr = isChecked ? 'checked' : '';
+        const categoryBadge = c.category === 'critic' ? 'critic' : (c.category === 'ux' ? 'ux' : 'audio');
+
+        html += `
+          <div class="audit-card" id="audit-card-${c.id}">
+            <input type="checkbox" class="audit-check" id="check-${c.id}" ${checkedAttr} onchange="toggleAuditItem('${c.id}', this.checked)">
+            <div class="audit-body">
+              <div class="audit-header-line">
+                <span class="audit-code">${c.id}</span>
+                <span class="pdf-badge ${categoryBadge}" style="margin:0;">${c.badge}</span>
+              </div>
+              <div class="audit-desc"><strong>Incidencia del PDF:</strong> ${c.desc}</div>
+              <div class="audit-fix"><strong>Solución en la Ver. 2.0:</strong> ${c.fix}</div>
+              <div style="margin-top:0.6rem; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">🎯 Ver en Guión:</span>
+                <div style="display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center;">
+                  ${c.targets.map((t, i) => `
+                    <a class="audit-target-link" onclick="goToSlide(${t})">
+                      <strong>${t <= 9 ? 'Slide ' + t : 'Demo D' + (t - 9)}</strong>
+                    </a>
+                  `).join('<span style="color:rgba(255,255,255,0.2)">|</span>')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+      viewer.innerHTML = html;
+    }
+
+    // ----------------------------------------------------
+    // METADATOS DE DESCRIPCIÓN DE DIAPOSITIVAS Y ACCIONES
+    // ----------------------------------------------------
+    function getSlideTitle(num) {
+      const titles = {
+        1: "Portada de la Exposición", 2: "Hoja de Ruta del Proyecto", 3: "El Vacío en la Gestión Académica",
+        4: "Stack Tecnológico Unificado", 5: "Arquitectura y Estructura del Servidor", 6: "Clientes y Calidad del Software (Ver. 2.0)",
+        7: "Viabilidad del Proyecto y Costes", 8: "Roadmap Tecnológico de Escalabilidad", 9: "Transición al Live Demo",
+        10: "Login y Aislamiento de Datos", 11: "Alta de Asignaturas y Accesibilidad", 12: "Creación de Tareas y Exámenes",
+        13: "Marcado Completado y Lombok", 14: "Autocalculación de Calificaciones", 15: "Sincronización en Tiempo Real",
+        16: "Revisión de Código en el IDE"
+      };
+      return titles[num];
+    }
+
+    function getSlideTime(num) {
+      const times = {
+        1: "1:30 min", 2: "1:00 min", 3: "1:30 min", 4: "2:00 min", 5: "1:30 min", 6: "2:00 min", 7: "1:00 min", 8: "1:00 min", 9: "0:30 min",
+        10: "1:30 min", 11: "1:30 min", 12: "2:00 min", 13: "2:00 min", 14: "1:30 min", 15: "2:00 min", 16: "1:30 min"
+      };
+      return times[num];
+    }
+
+    function getSlideVisual(num) {
+      const visuals = {
+        1: "Diapositiva de portada del visor <span class='highlight-tech'>presentation.html</span>. Logotipo de StudyFlow iluminado en verde esmeralda y tus datos de identificación en pantalla.",
+        2: "Slide 2 en el navegador, que representa la cuadrícula interactiva con las 8 tarjetas visuales numeradas.",
+        3: "Slide 3. Diagrama comparativo de tarjetas grises que denotan Notion, Todoist y Excel versus la tarjeta brillante de StudyFlow.",
+        4: "Slide 4. Columnas coloreadas del stack tecnológico: Spring Boot, Aiven MySQL, JavaFX, Angular PWA y Android Kotlin.",
+        5: "Slide 5. Diagrama de flujo vertical de arquitectura multicapa (Controllers, Services, Repositories, Database).",
+        6: "Slide 6. Los tres mockups de dispositivos que señalan con orgullo los fixes de pre-evaluación aplicados a cada uno.",
+        7: "Slide 7. Las fases metodológicas organizadas por quincenas y el balance financiero de costes detallado.",
+        8: "Slide 8. Escalera interactiva en diagonal de 4 peldaños ascendentes hacia la escalabilidad de StudyFlow.",
+        9: "Slide 9. La portada de cierre formal con tu información de contacto y el botón central brillante de 'Demostración Técnica en Vivo'.",
+        10: "Cliente de Escritorio JavaFX en primer plano. La pantalla de Login limpia y elegante.",
+        11: "Vista de Asignaturas (Subjects) en JavaFX.",
+        12: "Vistas de Tareas (Tasks) y Exámenes (Exams) en JavaFX. Formulario de creación de examen abierto en pantalla.",
+        13: "Tabla de Tareas de JavaFX en pantalla.",
+        14: "Pestaña de Calificaciones (Grades) en JavaFX.",
+        15: "Navegador web mostrando la <strong>PWA en Angular</strong> y el <strong>Emulador de Android Studio</strong> a los lados en la pantalla.",
+        16: "Entorno de desarrollo IntelliJ IDEA o VS Code. Letra grande y legible."
+      };
+      return visuals[num];
+    }
+
+    function getSlideAction(num) {
+      const actions = {
+        1: "Comienza la grabación de OBS. Enciende la cámara web en la esquina de la pantalla. Sonríe, mira a la lente de forma directa y transmite una actitud calmada pero sumamente enérgica y confiada.",
+        2: "Pasa de slide usando la <strong>Flecha Derecha</strong>. Muestra la hoja de ruta y usa el ratón para señalar brevemente los bloques clave de la agenda (Tecnología, Calidad y Live Demo) para estructurar el vídeo.",
+        3: "Usa un tono empático. Enfatiza los dolores del estudiante tradicional (estrés, desorganización, dispersión de notas) para justificar la existencia del software.",
+        4: "Destaca la enorme complejidad de integrar y mantener tres entornos de desarrollo independientes y cómo se logra su cohesión a través de un formato de datos unificado (JSON).",
+        5: "Explica el principio 'DRY' (Don't Repeat Yourself). Argumenta la importancia de centralizar las reglas matemáticas de negocio en el backend y cómo eso protege la consistencia.",
+        6: "Usa un tono de orgullo profesional. Prepara el terreno indicando exactamente qué problemas de pre-entrega encontrasteis y cómo el pulido riguroso elevó la calidad del software a nivel comercial.",
+        7: "Explica los costes de manera realista, demostrando madurez al cuantificar el esfuerzo de ingeniería en horas y costes de servidores en la nube.",
+        8: "Pasa de slide. Explica que la base de código actual se diseñó modularmente pensando en la escalabilidad técnica y de negocio a futuro.",
+        9: "Agradece brevemente la atención a la parte teórica. Prepárate para cambiar de ventana limpiamente en OBS Studio enfocando tus aplicaciones abiertas (JavaFX de escritorio, navegador web de la PWA, y el emulador de Android).",
+        10: "Rellena las credenciales de tu cuenta de pruebas (ej: <code>sebastian@studyflow.com</code> y contraseña). Haz clic en el botón de Acceder de forma calmada. Navega por las pestañas vacías iniciales para mostrar la fluidez de la app de escritorio.",
+        11: "Haz clic en el botón de añadir asignatura. Rellena el campo de texto con la materia real <span class='highlight-focus'>\"Sistemas de Gestión Empresarial\"</span>. Elige un color corporativo (por ejemplo, verde esmeralda u azul Pantone) y haz clic en Guardar. **Señala el borde de color izquierdo de la asignatura creada.**",
+        12: "1. Ve a Tareas, crea una tarea nueva: <span class='highlight-focus'>\"Mapeo Entidades JPA\"</span>, prioridad Alta, asociada a la materia creada.<br>2. Cambia a Exámenes. Haz clic en añadir. Escribe el título del examen: <span class='highlight-focus'>\"Examen Hibernate y JPA\"</span>. **Despliega el ComboBox de asignaturas de forma pausada y muestra que se lee perfectamente el nombre de la asignatura.**",
+        13: "1. Haz clic en la casilla de verificación de la tarea creada para completarla. Muestra cómo se actualiza la badge al instante a <span class='highlight-focus'>✓ HECHA</span>.<br>2. Haz clic en el botón de **Refrescar** arriba en la tabla de tareas (o vuelve a abrir la pestaña) para constatar que el estado **persiste** y no se ha reseteado.",
+        14: "Añade dos calificaciones para Sistemas de Gestión Empresarial:<br>- Nota 1: <strong>8.0</strong> con peso <strong>60%</strong> (Examen Teórico).<br>- Nota 2: <strong>9.5</strong> con peso <strong>40%</strong> (Práctica de Laboratorio).<br>Muestra en pantalla cómo el sistema calcula instantáneamente el promedio de <strong>8.60</strong>.",
+        15: "1. Abre el navegador con la PWA e inicia sesión. Muestra que la materia \"Sistemas de Gestión\", la tarea como HECHA y el promedio matemático de **8.60** ya están ahí cargados.<br>2. Enfoca el emulador de Android con la misma cuenta y demuestra que se visualiza exactamente el mismo estado.",
+        16: "Muestra brevemente los archivos <span class='highlight-focus'>ExamFormController.java</span> (donde está el converter y cellFactory) y <span class='highlight-focus'>Task.java</span> (con las anotaciones JSONProperty). Señala las líneas de código con el ratón."
+      };
+      return actions[num];
+    }
+
+    // ----------------------------------------------------
+    // CONTROL DEL TELEPROMPTER AUTO-SCROLL
+    // ----------------------------------------------------
+    function adjustWpm(amount) {
+      wpm = Math.max(80, Math.min(300, wpm + amount));
+      document.getElementById('wpmDisplay').value = wpm;
+      if (isPrompterScrolling) {
+        stopScroll();
+        startScroll();
+      }
+    }
+
+    function adjustFontSize(amount) {
+      fontSize = Math.max(20, Math.min(50, fontSize + amount));
+      document.getElementById('fontSizeDisplay').value = fontSize;
+      const canvas = document.getElementById('prompterText');
+      if (canvas) canvas.style.fontSize = `${fontSize}px`;
+    }
+
+    function togglePrompterScroll() {
+      if (activeTab !== 'prompter') return;
+
+      isPrompterScrolling = !isPrompterScrolling;
+      const playIcon = document.getElementById('playIcon');
+      const playText = document.getElementById('playText');
+      const playBtn = document.getElementById('prompterPlayBtn');
+
+      if (isPrompterScrolling) {
+        playIcon.textContent = '⏸';
+        playText.textContent = 'Pausar';
+        playBtn.style.background = 'rgba(244, 63, 94, 0.1)';
+        playBtn.style.color = '#ef4444';
+        playBtn.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+        startScroll();
+      } else {
+        playIcon.textContent = '▶';
+        playText.textContent = 'Autoplay';
+        playBtn.style.background = 'rgba(16, 185, 129, 0.1)';
+        playBtn.style.color = '#10b981';
+        playBtn.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        stopScroll();
+      }
+    }
+
+    function startScroll() {
+      const container = document.getElementById('prompterScrollContainer');
+      if (!container) return;
+
+      const pixelsPerSecond = (wpm / 60) * 11.5; 
+      const intervalMs = 25; // 40 FPS
+      const stepPixels = (pixelsPerSecond * intervalMs) / 1000;
+      
+      let currentScroll = container.scrollTop;
+
+      prompterInterval = setInterval(() => {
+        currentScroll += stepPixels;
+        container.scrollTop = Math.floor(currentScroll);
+
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 5) {
+          togglePrompterScroll();
+        }
+      }, intervalMs);
+    }
+
+    function stopScroll() {
+      if (prompterInterval) {
+        clearInterval(prompterInterval);
+        prompterInterval = null;
+      }
+    }
+
+    // ----------------------------------------------------
+    // CRONÓMETRO DE SESIÓN
+    // ----------------------------------------------------
+    function toggleTimer() {
+      isTimerRunning = !isTimerRunning;
+      const btn = document.getElementById('timerStartBtn');
+
+      if (isTimerRunning) {
+        btn.textContent = '⏸';
+        btn.classList.add('active');
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          updateTimerDisplay();
+        }, 1000);
+      } else {
+        btn.textContent = '▶';
+        btn.classList.remove('active');
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      isTimerRunning = false;
+      const btn = document.getElementById('timerStartBtn');
+      if (btn) {
+        btn.textContent = '▶';
+        btn.classList.remove('active');
+      }
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerSeconds = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const hours = Math.floor(timerSeconds / 3600);
+      const minutes = Math.floor((timerSeconds % 3600) / 60);
+      const seconds = timerSeconds % 60;
+
+      const formatted = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      
+      document.getElementById('sessionTimer').textContent = formatted;
+
+      // Límites 20-30 minutos (1200 - 1800 segundos)
+      const timerDisplay = document.getElementById('sessionTimer');
+      if (timerSeconds > 1200 && timerSeconds <= 1800) {
+        timerDisplay.style.color = 'var(--accent-orange)';
+      } else if (timerSeconds > 1800) {
+        timerDisplay.style.color = 'var(--accent-red)';
+      } else {
+        timerDisplay.style.color = 'var(--text-white)';
+      }
+    }
+
+    // ----------------------------------------------------
+    // ATRAJO DE TECLADO
+    // ----------------------------------------------------
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        goToSlide(currentSlide + 1);
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        goToSlide(currentSlide - 1);
+      } else if (event.key === ' ' && activeTab === 'prompter') {
+        event.preventDefault();
+        togglePrompterScroll();
+      } else if (event.key.toLowerCase() === 'n') {
+        event.preventDefault();
+        const nextTab = (activeTab === 'script') ? 'prompter' : 'script';
+        switchTab(nextTab);
+      } else if (event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        toggleSidebars();
+      }
+    });
+
+    // CONTROL DE ENFOQUE (TIPO FULLSCREEN TELEPROMPTER)
+    let sidebarsHidden = false;
+    function toggleSidebars() {
+      sidebarsHidden = !sidebarsHidden;
+      const appContainer = document.querySelector('.app-container');
+      const workspace = document.querySelector('.workspace');
+      const toggleBtn = document.getElementById('btn-toggle-sidebars');
+
+      if (sidebarsHidden) {
+        appContainer.classList.add('hide-left-sidebar');
+        workspace.classList.add('hide-right-sidebar');
+        if (toggleBtn) {
+          toggleBtn.innerHTML = '<span>👁️</span> <span>Mostrar Paneles (F)</span>';
+          toggleBtn.style.color = 'var(--primary)';
+        }
+      } else {
+        appContainer.classList.remove('hide-left-sidebar');
+        workspace.classList.remove('hide-right-sidebar');
+        if (toggleBtn) {
+          toggleBtn.innerHTML = '<span>👁️‍🗨️</span> <span>Ocultar Paneles (F)</span>';
+          toggleBtn.style.color = 'var(--text-white)';
+        }
+      }
+    }
+
+    // COPIAR CÓDIGO
+    function copyCode(elementId) {
+      const codeElement = document.getElementById(elementId);
+      if (!codeElement) return;
+
+      const textToCopy = codeElement.innerText;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const btn = codeElement.parentElement.parentElement.querySelector('.code-copy');
+        const origText = btn.textContent;
+        btn.textContent = '¡Copiado!';
+        btn.style.color = 'var(--primary)';
+        setTimeout(() => {
+          btn.textContent = origText;
+          btn.style.color = 'var(--text-muted)';
+        }, 1500);
+      }).catch(err => {
+        console.error('Error al copiar: ', err);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -82,7 +82,8 @@ export class ExamsComponent implements OnInit {
 
   toggleComplete(exam: Exam) {
     if (!exam.examId) return;
-    this.api.completeExam(exam.examId).subscribe({
+    const updatedExam = { ...exam, isCompleted: !exam.isCompleted };
+    this.api.updateExam(exam.examId, updatedExam).subscribe({
       next: (updated) => {
         exam.isCompleted = updated.isCompleted;
       },

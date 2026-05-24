@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow - Defensa de Proyecto Intermodular</title>
+  
+  <!-- Tipografías Premium de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ----------------------------------------------------
+       SISTEMA DE DISEÑO Y CONFIGURACIÓN GENERAL
+       ---------------------------------------------------- */
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --bg-card-hover: rgba(31, 41, 55, 0.85);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.25);
+      --text-white: #f3f4f6;
+      --text-muted: #9ca3af;
+      --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --border-light: rgba(255, 255, 255, 0.07);
+      --color-gray-dark: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+      color: var(--text-white);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+    }
+
+    /* Scrollbar estilizada */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.3);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* ----------------------------------------------------
+       CONTENEDOR DE PRESENTACIÓN Y ANIMACIÓN DE SLIDES
+       ---------------------------------------------------- */
+    .presentation-container {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+    }
+
+    .slide {
+      position: absolute;
+      width: 98%;
+      max-width: 1920px;
+      height: 97%;
+      max-height: 1040px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 3rem 4.5rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      pointer-events: none;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+    }
+
+    /* Efecto de borde superior decorativo en cada slide */
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+      border-radius: 24px 24px 0 0;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    /* ----------------------------------------------------
+       ESTILOS DEL CONTENIDO DE CADA DIAPOSITIVA
+       ---------------------------------------------------- */
+    .slide-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .slide-title {
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, #ffffff 40%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.025em;
+    }
+
+    .slide-category {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: grid;
+      gap: 3rem;
+      align-content: center;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Diseños de rejilla para estructurar la info */
+    .grid-2-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .grid-2-cols-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    /* Tarjetas conceptuales */
+    .glass-card {
+      background: rgba(17, 24, 39, 0.45);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 2.5rem 3rem;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .glass-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(16, 185, 129, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -10px var(--primary-glow);
+    }
+
+    .glass-card h3 {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .glass-card p {
+      color: var(--text-white);
+      font-size: 1.4rem;
+      line-height: 1.55;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 1: PORTADA
+       ---------------------------------------------------- */
+    .cover-layout {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 1.5rem 0;
+    }
+
+    .logo-container {
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-glow {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      filter: blur(25px);
+      opacity: 0.65;
+      border-radius: 50%;
+      animation: pulse 4s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.5; }
+      100% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .logo-icon {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      background: #111827;
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo-svg {
+      width: 44px;
+      height: 44px;
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .cover-badge {
+      background: var(--primary-glow);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 0.4rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .cover-title {
+      font-size: 6.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, var(--primary) 70%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    }
+
+    .cover-subtitle {
+      font-size: 2rem;
+      color: var(--text-muted);
+      max-width: 950px;
+      margin-bottom: 2.5rem;
+      line-height: 1.5;
+    }
+
+    .cover-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      border-top: 1px solid var(--border-light);
+      padding-top: 2rem;
+      width: 100%;
+      max-width: 1080px;
+    }
+
+    .meta-item span {
+      display: block;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .meta-item h4 {
+      font-size: 1.5rem;
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 2: HOJA DE RUTA (TIMELINE VERTICAL)
+       ---------------------------------------------------- */
+    .timeline-vertical {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.25rem;
+      padding: 0.5rem 0;
+    }
+
+    .timeline-card {
+      background: rgba(17, 24, 39, 0.4);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 2.25rem 2rem;
+      position: relative;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .timeline-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px -10px var(--primary-glow);
+    }
+
+    .timeline-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      color: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .timeline-card h3 {
+      font-size: 1.8rem;
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    .timeline-card p {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 3: EL VACÍO VS SOLUCIÓN
+       ---------------------------------------------------- */
+    .fragmented-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .fragmented-card {
+      background: rgba(31, 41, 55, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      filter: grayscale(80%);
+      opacity: 0.7;
+      transition: var(--transition-smooth);
+    }
+
+    .fragmented-card:hover {
+      filter: grayscale(0%);
+      opacity: 1;
+      border-color: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03);
+    }
+
+    .fragmented-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 1.25rem;
+    }
+
+    .icon-notion { background: #1a1a1a; }
+    .icon-todo { background: #e44332; }
+    .icon-excel { background: #107c41; }
+
+    .fragmented-info h4 {
+      font-size: 1.5rem;
+      color: var(--text-white);
+    }
+    .fragmented-info p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+    }
+
+    .arrow-flow-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .glow-solucion {
+      border: 2px solid var(--primary) !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.04) 100%) !important;
+      box-shadow: 0 0 35px var(--primary-glow) !important;
+      padding: 4.5rem !important;
+    }
+
+    .glow-solucion:hover {
+      transform: scale(1.02) !important;
+    }
+
+    .solucion-badge {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--primary);
+      color: #090d16;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 0.35rem 1rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 4: STACK TECNOLÓGICO (5 COLUMNAS)
+       ---------------------------------------------------- */
+    .tech-panels-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2rem;
+      height: 100%;
+    }
+
+    .tech-panel {
+      background: rgba(17, 24, 39, 0.45);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 650px;
+      position: relative;
+    }
+
+    .tech-panel:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-6px);
+      box-shadow: 0 15px 30px -10px rgba(16, 185, 129, 0.2);
+    }
+
+    .tech-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 3px;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .tech-panel.tech-backend::before { background: #3b82f6; }
+    .tech-panel.tech-database::before { background: #06b6d4; }
+    .tech-panel.tech-desktop::before { background: #eab308; }
+    .tech-panel.tech-pwa::before { background: #ef4444; }
+    .tech-panel.tech-android::before { background: #22c55e; }
+
+    .tech-panel.tech-backend:hover { border-color: #3b82f6; }
+    .tech-panel.tech-database:hover { border-color: #06b6d4; }
+    .tech-panel.tech-desktop:hover { border-color: #eab308; }
+    .tech-panel.tech-pwa:hover { border-color: #ef4444; }
+    .tech-panel.tech-android:hover { border-color: #22c55e; }
+
+    .tech-icon-container {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .tech-panel h3 {
+      font-size: 1.8rem;
+      color: var(--text-white);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .tech-label {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .tech-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      text-align: left;
+      padding: 0 0.5rem;
+    }
+
+    .tech-list li {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .tech-list li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.3rem;
+      top: -2px;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 5: ARQUITECTURA Y ESTRUCTURA FLOWCHART
+       ---------------------------------------------------- */
+    .flowchart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      position: relative;
+    }
+
+    .flowchart-node {
+      background: rgba(17, 24, 39, 0.6);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 1.5rem 2.5rem;
+      width: 90%;
+      text-align: center;
+      transition: var(--transition-smooth);
+      position: relative;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    }
+
+    .flowchart-node:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.06);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px var(--accent-cyan-glow);
+    }
+
+    .flowchart-node h4 {
+      font-size: 1.6rem;
+      color: var(--accent-cyan);
+      margin-bottom: 0.15rem;
+    }
+
+    .flowchart-node p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+    }
+
+    .flowchart-arrow {
+      height: 45px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary), var(--accent-cyan));
+      position: relative;
+    }
+
+    .flowchart-arrow::after {
+      content: '▼';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0.7);
+      color: var(--accent-cyan);
+      font-size: 0.6rem;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 6: DESARROLLO MULTIPLATAFORMA E INCIDENCIAS
+       ---------------------------------------------------- */
+    .platform-cards-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+    }
+
+    .platform-card {
+      background: rgba(17, 24, 39, 0.45);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      position: relative;
+    }
+
+    .platform-card:hover {
+      border-color: var(--primary);
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+    }
+
+    .platform-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .platform-header h3 {
+      font-size: 1.8rem;
+      color: var(--text-white);
+    }
+
+    .platform-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-desktop { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; }
+    .badge-pwa { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; }
+    .badge-android { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; }
+
+    /* CSS Mockups minimalistas */
+    .css-mockup {
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0.75rem;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .mockup-header-bar {
+      display: flex;
+      gap: 3px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mockup-circle {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .mockup-content-box {
+      flex: 1;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .mockup-line-left {
+      width: 7px;
+      height: 100%;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .mockup-text-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .mockup-text-row {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      width: 80%;
+    }
+    .mockup-text-row:nth-child(2) { width: 50%; }
+
+    .incidencias-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-top: 1px dashed var(--border-light);
+      padding-top: 1rem;
+    }
+
+    .incidencias-list li {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      position: relative;
+      padding-left: 1.25rem;
+    }
+
+    .incidencias-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 7: GESTIÓN Y VIABILIDAD LEDGER INVOICE
+       ---------------------------------------------------- */
+    .ledger-container {
+      background: rgba(17, 24, 39, 0.5);
+      border: 2px dashed rgba(16, 185, 129, 0.2);
+      border-radius: 20px;
+      padding: 3rem 4rem;
+      font-family: monospace;
+      color: #99f6e4;
+      position: relative;
+    }
+
+    .ledger-container::before {
+      content: 'FACTURA DE INGENIERÍA';
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: #0f172a;
+      padding: 0 0.5rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .ledger-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px dotted rgba(16, 185, 129, 0.15);
+      padding-bottom: 0.25rem;
+      font-size: 1.35rem;
+    }
+
+    .ledger-row span:first-child {
+      color: var(--text-white);
+    }
+
+    .ledger-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1.9rem;
+      color: var(--primary);
+      border-top: 1.5px solid var(--primary);
+      padding-top: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .methodology-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .methodology-step {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .methodology-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--primary);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .methodology-step p {
+      font-size: 1.35rem;
+      color: var(--text-white);
+    }
+
+    /* ----------------------------------------------------
+       SLIDE 8: ROADMAP Y ESCALABILIDAD (STAIRCASE)
+       ---------------------------------------------------- */
+    .staircase-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 2.25rem;
+      height: 650px;
+      position: relative;
+    }
+
+    .staircase-step {
+      background: rgba(17, 24, 39, 0.5);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: var(--transition-smooth);
+      position: relative;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .staircase-step::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-cyan);
+      border-radius: 16px 0 0 16px;
+    }
+
+    .staircase-step:hover {
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px var(--accent-cyan-glow);
+    }
+
+    .staircase-step h3 {
+      font-size: 1.8rem;
+      color: var(--text-white);
+      margin-bottom: 0.35rem;
+    }
+
+    .staircase-step p {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .step-1 { grid-column: 1; grid-row: 4; }
+    .step-2 { grid-column: 2; grid-row: 3; }
+    .step-3 { grid-column: 3; grid-row: 2; }
+    .step-4 { grid-column: 4; grid-row: 1; }
+
+    /* Líneas de conexión decorativas en escalera */
+    .stair-connector {
+      position: absolute;
+      border: 2px dashed rgba(6, 182, 212, 0.15);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .conn-1-2 {
+      left: 23%; bottom: 25%; width: 5%; height: 25%;
+      border-left: none; border-bottom: none;
+    }
+    .conn-2-3 {
+      left: 48%; bottom: 50%; width: 5%; height: 25%;
+      border-left: none; border-bottom: none;
+    }
+    .conn-3-4 {
+      left: 73%; bottom: 75%; width: 5%; height: 25%;
+      border-left: none; border-bottom: none;
+    }
+
+    /* ----------------------------------------------------
+       CONTROLES DE DIAPOSITIVAS Y PIE DE PÁGINA
+       ---------------------------------------------------- */
+    .controls-bar {
+      background: rgba(9, 13, 22, 0.95);
+      border-top: 1px solid var(--border-light);
+      padding: 1.25rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .left-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: rgba(31, 41, 55, 0.6);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      padding: 0.65rem 1.35rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .btn-notes {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.4);
+      color: #22d3ee;
+    }
+
+    .btn-notes:hover {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: white;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+
+    .btn-demo {
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border: none;
+      color: #090d16;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 0.85rem 2rem;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-demo:hover {
+      transform: scale(1.03) translateY(-2px);
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+    }
+
+    .slide-indicator {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .slide-indicator strong {
+      color: var(--primary);
+    }
+
+    /* Barra de progreso de lectura */
+    .progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(15, 23, 42, 0.5);
+      z-index: 101;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+      transition: width 0.3s ease;
+    }
+
+    /* ----------------------------------------------------
+       PANEL LATERAL: NOTAS DEL PRESENTADOR (DRAWER)
+       ---------------------------------------------------- */
+    .notes-drawer {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      height: 100%;
+      background: rgba(9, 13, 22, 0.96);
+      border-left: 1px solid var(--border-light);
+      box-shadow: -15px 0 35px rgba(0,0,0,0.6);
+      z-index: 1000;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+    }
+
+    .notes-drawer.open {
+      right: 0;
+    }
+
+    .notes-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notes-header h3 {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+    }
+
+    .close-notes {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .close-notes:hover {
+      color: var(--text-white);
+    }
+
+    .notes-content {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      line-height: 1.65;
+      font-size: 0.92rem;
+      color: #e5e7eb;
+    }
+
+    .notes-content p {
+      margin-bottom: 0.85rem;
+    }
+
+    .notes-content strong {
+      color: var(--primary);
+    }
+
+    /* Instrucción en teclado */
+    .keyboard-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border-light);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(31, 41, 55, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de progreso superior -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- CONTENEDOR DE DIAPOSITIVAS -->
+  <div class="presentation-container">
+
+    <!-- DIAPOSITIVA 1: PORTADA -->
+    <div class="slide active" id="slide-1" data-category="Proyecto Intermodular">
+      <div class="cover-layout">
+        <div class="logo-container">
+          <div class="logo-glow"></div>
+          <div class="logo-icon">
+            <svg class="logo-svg" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="cover-badge">DEFENSA DE PROYECTO FINAL</div>
+        <h1 class="cover-title">STUDYFLOW</h1>
+        <p class="cover-subtitle">Gestión Académica Multiplataforma</p>
+        
+        <div class="cover-meta">
+          <div class="meta-item">
+            <span>AUTOR</span>
+            <h4>J. Sebastián Valero Marulanda</h4>
+          </div>
+          <div class="meta-item">
+            <span>CICLO FORMATIVO</span>
+            <h4>2º DAM (Multiplataforma)</h4>
+          </div>
+          <div class="meta-item">
+            <span>INSTITUCIÓN</span>
+            <h4>IES Camp de Morvedre</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 2: HOJA DE RUTA -->
+    <div class="slide" id="slide-2" data-category="Índice de la Exposición">
+      <div class="slide-header">
+        <h2 class="slide-title">Hoja de Ruta del Proyecto</h2>
+        <span class="slide-category">01 / Estructura</span>
+      </div>
+      <div class="slide-body">
+        <div class="timeline-vertical">
+          <div class="timeline-card">
+            <div class="timeline-badge">1</div>
+            <h3>Planteamiento</h3>
+            <p>Análisis de Mercado</p>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-badge">2</div>
+            <h3>Arquitectura</h3>
+            <p>Core API REST</p>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-badge">3</div>
+            <h3>Stack Tecnológico</h3>
+            <p>Java, Kotlin & Angular</p>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-badge">4</div>
+            <h3>Modelo de Datos</h3>
+            <p>MySQL Nube (Aiven)</p>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-badge">5</div>
+            <h3>Calidad de Software</h3>
+            <p>Auditoría Ver. 2.0</p>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-badge">6</div>
+            <h3>Viabilidad</h3>
+            <p>Presupuesto & Horas</p>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-badge">7</div>
+            <h3>Roadmap y Futuro</h3>
+            <p>Escalabilidad</p>
+          </div>
+          <div class="timeline-card" style="border-color: var(--primary); background: rgba(16, 185, 129, 0.03);">
+            <div class="timeline-badge">8</div>
+            <h3>Demo Técnica</h3>
+            <p>Live Demo Activa</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 3: EL VACÍO EN LA GESTIÓN ACADÉMICA -->
+    <div class="slide" id="slide-3" data-category="Problemática de Partida">
+      <div class="slide-header">
+        <h2 class="slide-title">El Vacío en la Gestión Académica</h2>
+        <span class="slide-category">02 / Motivación</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2-cols">
+          <div class="fragmented-container">
+            <h3 style="color: #ef4444; font-size: 1.25rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span>⚠️</span> Herramientas Fragmentadas
+            </h3>
+            
+            <div class="fragmented-card">
+              <div class="fragmented-icon icon-notion">N</div>
+              <div class="fragmented-info">
+                <h4>Notion (Notas)</h4>
+                <p>Datos Estáticos</p>
+              </div>
+            </div>
+
+            <div class="fragmented-card">
+              <div class="fragmented-icon icon-todo">✓</div>
+              <div class="fragmented-info">
+                <h4>Todoist (Tareas)</h4>
+                <p>Sin Contexto Escolar</p>
+              </div>
+            </div>
+
+            <div class="fragmented-card">
+              <div class="fragmented-icon icon-excel">X</div>
+              <div class="fragmented-info">
+                <h4>Excel (Calendario)</h4>
+                <p>Flujo Rígido</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="arrow-flow-container">
+            <!-- Icono o indicador central -->
+            <div style="font-size: 3rem; color: var(--primary); margin-right: 1.5rem; animation: pulse 2s infinite alternate;">➔</div>
+            
+            <div class="glass-card glow-solucion" style="flex: 1;">
+              <span class="solucion-badge">La Solución</span>
+              <h3>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                StudyFlow All-in-One
+              </h3>
+              <p style="font-size: 1.4rem; line-height: 1.6; color: var(--text-white); text-align: center;">
+                Multiplataforma Inteligente
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 4: STACK TECNOLÓGICO (5 PANELS) -->
+    <div class="slide" id="slide-4" data-category="Infraestructura Técnica">
+      <div class="slide-header">
+        <h2 class="slide-title">Stack Tecnológico Unificado</h2>
+        <span class="slide-category">03 / Tecnologías</span>
+      </div>
+      <div class="slide-body">
+        <div class="tech-panels-container">
+          <!-- Backend -->
+          <div class="tech-panel tech-backend">
+            <div class="tech-icon-container">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                <line x1="6" y1="6" x2="6.01" y2="6"/>
+                <line x1="6" y1="18" x2="6.01" y2="18"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Backend</h3>
+              <div class="tech-label">Core REST API</div>
+            </div>
+            <ul class="tech-list">
+              <li>Java 17 / 21</li>
+              <li>Spring Boot 3.x</li>
+              <li>Spring Data JPA</li>
+              <li>Hibernate ORM</li>
+            </ul>
+          </div>
+
+          <!-- Base de datos -->
+          <div class="tech-panel tech-database">
+            <div class="tech-icon-container">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Database</h3>
+              <div class="tech-label">Almacenamiento</div>
+            </div>
+            <ul class="tech-list">
+              <li>MySQL 8.x</li>
+              <li>Aiven Cloud</li>
+              <li>Borrados Cascade</li>
+              <li>Índices de FK</li>
+            </ul>
+          </div>
+
+          <!-- Escritorio -->
+          <div class="tech-panel tech-desktop">
+            <div class="tech-icon-container">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Escritorio</h3>
+              <div class="tech-label">Cliente JavaFX</div>
+            </div>
+            <ul class="tech-list">
+              <li>JavaFX 19</li>
+              <li>Patrón MVC</li>
+              <li>Maven Build</li>
+              <li>Jackson JSON</li>
+            </ul>
+          </div>
+
+          <!-- Web PWA -->
+          <div class="tech-panel tech-pwa">
+            <div class="tech-icon-container">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Web PWA</h3>
+              <div class="tech-label">Cliente Angular</div>
+            </div>
+            <ul class="tech-list">
+              <li>Angular 17</li>
+              <li>TypeScript</li>
+              <li>Service Workers</li>
+              <li>CSS Vanilla</li>
+            </ul>
+          </div>
+
+          <!-- Móvil Android -->
+          <div class="tech-panel tech-android">
+            <div class="tech-icon-container">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Android</h3>
+              <div class="tech-label">Cliente Nativo</div>
+            </div>
+            <ul class="tech-list">
+              <li>Kotlin / Java</li>
+              <li>Material Design 3</li>
+              <li>Retrofit 2 REST</li>
+              <li>Gson Sincro</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 5: ARQUITECTURA Y ESTRUCTURA -->
+    <div class="slide" id="slide-5" data-category="Diseño de Software">
+      <div class="slide-header">
+        <h2 class="slide-title">Arquitectura y Estructura del Servidor</h2>
+        <span class="slide-category">04 / Backend</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2-cols">
+          <div class="glass-card" style="height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
+            <h3>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+              Estructura Multicapa REST
+            </h3>
+            <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text-white); margin-bottom: 0.5rem;">
+              API REST sin estado. Cómputo centralizado.
+            </p>
+            <ul class="tech-list">
+              <li><strong>Desacoplamiento:</strong> Clientes sin lógica de negocio.</li>
+              <li><strong>Aislamiento:</strong> Filtro obligatorio por <code>userId</code>.</li>
+            </ul>
+          </div>
+
+          <div class="flowchart-container">
+            <div class="flowchart-node">
+              <h4>1. Controllers</h4>
+              <p>Endpoints & DTOs</p>
+            </div>
+            <div class="flowchart-arrow"></div>
+            <div class="flowchart-node">
+              <h4>2. Services</h4>
+              <p>Lógica & Medias Ponderadas</p>
+            </div>
+            <div class="flowchart-arrow"></div>
+            <div class="flowchart-node">
+              <h4>3. Repositories</h4>
+              <p>Spring Data JPA</p>
+            </div>
+            <div class="flowchart-arrow"></div>
+            <div class="flowchart-node" style="border-color: var(--primary);">
+              <h4>4. Base de Datos</h4>
+              <p>MySQL Nube (Aiven)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 6: DESARROLLO 100% MULTIPLATAFORMA -->
+    <div class="slide" id="slide-6" data-category="Ecosistema de Clientes">
+      <div class="slide-header">
+        <h2 class="slide-title">Clientes y Calidad de Software (Ver. 2.0)</h2>
+        <span class="slide-category">05 / Desarrollo</span>
+      </div>
+      <div class="slide-body">
+        <div class="platform-cards-container">
+          <!-- Escritorio -->
+          <div class="platform-card">
+            <div class="platform-header">
+              <h3>Desktop Client</h3>
+              <span class="platform-badge badge-desktop">JavaFX</span>
+            </div>
+            <div class="css-mockup">
+              <div class="mockup-header-bar">
+                <div class="mockup-circle"></div>
+                <div class="mockup-circle"></div>
+                <div class="mockup-circle"></div>
+              </div>
+              <div class="mockup-content-box">
+                <div class="mockup-line-left" style="background: #3b82f6;"></div>
+                <div class="mockup-text-block">
+                  <div class="mockup-text-row"></div>
+                  <div class="mockup-text-row"></div>
+                </div>
+              </div>
+            </div>
+            <ul class="incidencias-list">
+              <li><strong>ComboBox:</strong> <code>StringConverter</code></li>
+              <li><strong>Bordes Pantone:</strong> Accesibilidad visual</li>
+            </ul>
+          </div>
+
+          <!-- Web PWA -->
+          <div class="platform-card" style="border-color: rgba(16, 185, 129, 0.25);">
+            <div class="platform-header">
+              <h3>Progressive Web App</h3>
+              <span class="platform-badge badge-pwa">Angular 17</span>
+            </div>
+            <div class="css-mockup">
+              <div class="mockup-header-bar">
+                <div class="mockup-circle" style="background:var(--primary);"></div>
+                <div class="mockup-text-row" style="width:30px; height:3px; margin-left: 5px;"></div>
+              </div>
+              <div class="mockup-content-box">
+                <div class="mockup-line-left" style="background: var(--primary);"></div>
+                <div class="mockup-text-block">
+                  <div class="mockup-text-row"></div>
+                  <div class="mockup-text-row"></div>
+                </div>
+              </div>
+            </div>
+            <ul class="incidencias-list">
+              <li><strong>Badges:</strong> <code>✓ HECHA</code> / <code>✗ SIN HACER</code></li>
+              <li><strong>Seguridad:</strong> Ocultación de IDs técnicos</li>
+            </ul>
+          </div>
+
+          <!-- Móvil Android -->
+          <div class="platform-card">
+            <div class="platform-header">
+              <h3>Android App</h3>
+              <span class="platform-badge badge-android">Kotlin / Java</span>
+            </div>
+            <div class="css-mockup" style="width: 140px; margin: 0 auto; border-radius: 14px 14px 0 0;">
+              <div class="mockup-header-bar" style="justify-content: center; padding-bottom: 2px;">
+                <div style="width: 25px; height: 3px; background: rgba(255,255,255,0.2); border-radius: 5px;"></div>
+              </div>
+              <div class="mockup-content-box" style="justify-content: center; padding: 0.25rem;">
+                <div class="mockup-text-block" style="align-items: center;">
+                  <div class="mockup-text-row" style="width: 90%;"></div>
+                  <div class="mockup-text-row" style="width: 70%;"></div>
+                </div>
+              </div>
+            </div>
+            <ul class="incidencias-list">
+              <li><strong>Persistencia:</strong> Mapeo con <code>@JsonProperty</code></li>
+              <li><strong>UI asíncrona:</strong> Material Design 3</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 7: GESTIÓN DEL PROYECTO Y VIABILIDAD -->
+    <div class="slide" id="slide-7" data-category="Viabilidad Económica">
+      <div class="slide-header">
+        <h2 class="slide-title">Viabilidad del Proyecto y Costes</h2>
+        <span class="slide-category">06 / Finanzas</span>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2-cols">
+          <div class="methodology-stack">
+            <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 0.5rem;">Fases de la Metodología</h3>
+            
+            <div class="methodology-step">
+              <div class="methodology-num">Q1</div>
+              <p>Requisitos, DB e Infraestructura</p>
+            </div>
+
+            <div class="methodology-step">
+              <div class="methodology-num">Q2</div>
+              <p>API REST Spring Boot 3</p>
+            </div>
+
+            <div class="methodology-step">
+              <div class="methodology-num">Q3</div>
+              <p>Escritorio JavaFX & MVC</p>
+            </div>
+
+            <div class="methodology-step">
+              <div class="methodology-num">Q4</div>
+              <p>PWA Angular & Android Nativo</p>
+            </div>
+
+            <div class="methodology-step" style="border-color: rgba(16, 185, 129, 0.3);">
+              <div class="methodology-num" style="background: var(--primary); color: #090d16;">Q5</div>
+              <p>Auditoría & Calidad de Software</p>
+            </div>
+          </div>
+
+          <div class="ledger-container">
+            <div class="ledger-row">
+              <span>Ingeniería de Software (240 Horas / 18 €/h)</span>
+              <span>4.320,00 €</span>
+            </div>
+            <div class="ledger-row">
+              <span>Infraestructura Render (Servidor API)</span>
+              <span>60,00 €</span>
+            </div>
+            <div class="ledger-row">
+              <span>Infraestructura Aiven (MySQL)</span>
+              <span>110,00 €</span>
+            </div>
+            <div class="ledger-row">
+              <span>Licencia Google Play Console</span>
+              <span>25,00 €</span>
+            </div>
+            <div class="ledger-row">
+              <span>Hosting Frontends (Vercel)</span>
+              <span>Gratis</span>
+            </div>
+            
+            <div class="ledger-total">
+              <span>PRESUPUESTO TOTAL</span>
+              <span>4.515,00 €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 8: ROADMAP Y ESCALABILIDAD -->
+    <div class="slide" id="slide-8" data-category="Escalabilidad y Proyección">
+      <div class="slide-header">
+        <h2 class="slide-title">Roadmap Tecnológico de Escalabilidad</h2>
+        <span class="slide-category">07 / Futuro</span>
+      </div>
+      <div class="slide-body">
+        <div class="staircase-container">
+          <!-- Conectores CSS decorativos entre peldaños -->
+          <div class="stair-connector conn-1-2"></div>
+          <div class="stair-connector conn-2-3"></div>
+          <div class="stair-connector conn-3-4"></div>
+
+          <!-- Peldaño 1 (Base) -->
+          <div class="staircase-step step-1">
+            <h3>1. Notificaciones Push</h3>
+            <p>Vencimientos y Alertas Móviles</p>
+          </div>
+
+          <!-- Peldaño 2 -->
+          <div class="staircase-step step-2" style="border-color: rgba(6, 182, 212, 0.2);">
+            <h3>2. Autenticación OAuth2</h3>
+            <p>OAuth2 Google & GitHub</p>
+          </div>
+
+          <!-- Peldaño 3 -->
+          <div class="staircase-step step-3" style="border-color: rgba(6, 182, 212, 0.4);">
+            <h3>3. Entorno Colaborativo</h3>
+            <p>Calendarios & Apuntes Compartidos</p>
+          </div>
+
+          <!-- Peldaño 4 (Cumbre) -->
+          <div class="staircase-step step-4" style="border-color: var(--accent-cyan); box-shadow: 0 4px 15px var(--accent-cyan-glow);">
+            <h3>4. Exportación e IA</h3>
+            <p>Planificación IA & Reportes PDF</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAPOSITIVA 9: PORTADA DE CIERRE -->
+    <div class="slide" id="slide-9" data-category="Cierre de Presentación">
+      <div class="cover-layout">
+        <div class="logo-container" style="margin-bottom: 2rem;">
+          <div class="logo-glow" style="width: 110px; height: 110px;"></div>
+          <div class="logo-icon" style="width: 86px; height: 86px;">
+            <svg class="logo-svg" viewBox="0 0 24 24" style="width: 50px; height: 50px;">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+        </div>
+
+        <h1 class="cover-title" style="font-size: 5rem; margin-bottom: 0.5rem;">STUDYFLOW</h1>
+        <p class="cover-subtitle" style="color: var(--primary); font-weight: 700; font-size: 1.5rem; margin-bottom: 2.5rem; font-family: 'Outfit', sans-serif;">
+          ¡Muchas gracias por su atención!
+        </p>
+
+        <div style="margin-bottom: 2.5rem;">
+          <button class="btn-demo" onclick="alert('Dando paso al live demo con las aplicaciones activas...')">
+            <span>⚡</span>
+            Demostración Técnica en Vivo
+          </button>
+        </div>
+
+        <div class="cover-meta" style="max-width: 520px; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
+          <div class="meta-item" style="grid-column: span 3; text-align: center;">
+            <span>EXPOSITOR</span>
+            <h4 style="font-size: 1.15rem; color: var(--text-white); font-weight: 600;">J. Sebastián Valero Marulanda</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECCIÓN DE CONTROLES INFERIORES -->
+  <div class="controls-bar">
+    <div class="left-controls">
+      <button class="btn" id="prevBtn" onclick="prevSlide()">◀ Anterior</button>
+      <button class="btn" id="nextBtn" onclick="nextSlide()">Siguiente ▶</button>
+      <span class="keyboard-hint">Puedes usar <strong>Espacio</strong> o <strong>Flechas</strong></span>
+    </div>
+    
+    <div class="slide-indicator" id="slideIndicator">
+      Diapositiva <strong>1</strong> de 9
+    </div>
+
+    <div>
+      <button class="btn btn-notes" id="notesToggleBtn" onclick="toggleNotes()">📝 Notas del Orador</button>
+    </div>
+  </div>
+
+  <!-- CAJÓN DE NOTAS DEL PRESENTADOR (DRAWER) -->
+  <div class="notes-drawer" id="notesDrawer">
+    <div class="notes-header">
+      <h3>📝 Notas del Orador</h3>
+      <button class="close-notes" onclick="toggleNotes()">✕</button>
+    </div>
+    <div class="notes-content" id="notesContent">
+      <!-- Inyectado dinámicamente según la slide activa -->
+    </div>
+  </div>
+
+  <!-- LÓGICA DE CONTROL E INTERACTIVIDAD -->
+  <script>
+    // ----------------------------------------------------
+    // DATOS DE NOTAS DEL ORADOR DE CADA DIAPOSITIVA
+    // ----------------------------------------------------
+    const speakerNotes = {
+      1: `<p><strong>Saludo y Portada:</strong></p>
+          <p>"Hola, buenos días/tardes. Mi nombre es Juan Sebastián Valero Marulanda, estudiante de 2º de DAM (Desarrollo de Aplicaciones Multiplataforma), y hoy voy a presentar mi proyecto intermodular: <strong>StudyFlow</strong>."</p>
+          <p>"Este proyecto representa la culminación del ciclo formativo y ha sido diseñado de principio a fin como un ecosistema multiplataforma moderno, robusto y 100% orientado a optimizar la vida académica del estudiante."</p>
+          <p>"A lo largo de esta defensa técnica, analizaremos los problemas de gestión actuales, cómo la arquitectura multiplataforma orientada a servicios los resuelve de forma nativa, las tecnologías involucradas, el modelado y persistencia de datos, y el riguroso pulido técnico que hemos llevado a cabo en la versión 2.0 para garantizar un producto de nivel profesional."</p>`,
+      2: `<p><strong>Hoja de Ruta del Proyecto:</strong></p>
+          <p>"Para guiar esta exposición de la forma más estructurada posible, seguiremos la hoja de ruta oficial ilustrada en pantalla."</p>
+          <p>"Comenzaremos exponiendo el planteamiento inicial de la idea y las carencias críticas que detectamos en el mercado académico. Luego, nos detendremos en el diseño de arquitectura y la interoperabilidad de nuestro ecosistema SOA, detallando el stack tecnológico elegido para cada plataforma cliente."</p>
+          <p>"A continuación, explicaremos el esquema relacional de base de datos normalizado y daremos paso a la sección de Calidad del Software. Aquí demostraré detalladamente cómo he resuelto cada una de las incidencias señaladas por los evaluadores en la pre-entrega. Finalmente, cerraremos con el balance financiero de costes y la planificación futura, dando paso inmediato a la demostración práctica interactiva."</p>`,
+      3: `<p><strong>El Vacío en la Gestión Académica:</strong></p>
+          <p>"Cualquier alumno de secundaria, formación profesional o universidad se enfrenta a un desafío diario estresante: la desorganización."</p>
+          <p>"La información académica se fragmenta de forma crítica en canales inconexos. Para resolver esto, los alumnos recurren a herramientas generalistas: <strong>Notion</strong> sirve para almacenar notas estáticas pero no tiene concepto de planificación; <strong>Todoist</strong> gestiona tareas pero ignora por completo el flujo escolar; y <strong>Excel o Google Calendar</strong> resultan tediosos de configurar diariamente y no calculan medias ponderadas."</p>
+          <p>"Por ello, StudyFlow nace para cubrir ese vacío crítico, integrando en una única solución multiplataforma intuitiva todo lo que un estudiante necesita: asignaturas, entregas y cómputo automático de rendimiento en tiempo real."</p>`,
+      4: `<p><strong>Stack Tecnológico Unificado:</strong></p>
+          <p>"StudyFlow demuestra el valor del desarrollo multiplataforma integrando tecnologías de vanguardia y entornos heterogéneos de forma robusta."</p>
+          <p>"En el Backend, el núcleo lógico está desarrollado en <strong>Java 17/21 con Spring Boot 3</strong> y persistencia Hibernate. La base de datos es <strong>MySQL 8</strong> alojada en la nube con Aiven Cloud, y la API se encuentra desplegada en producción en Render."</p>
+          <p>"Para el cliente de Escritorio, usamos <strong>JavaFX 19</strong> con patrón MVC y automatización mediante Maven. El cliente web es una <strong>PWA construida en Angular 17</strong> con Service Workers para soporte sin red local. Y en dispositivos móviles, optamos por desarrollo nativo en <strong>Android con Kotlin/Java</strong>, consumo HTTP vía Retrofit 2 y maquetación basada en las directrices visuales modernas de Material Design 3."</p>`,
+      5: `<p><strong>Arquitectura del Servidor (SOA):</strong></p>
+          <p>"La solidez y consistencia matemática de StudyFlow se debe a su diseño de arquitectura distribuida."</p>
+          <p>"No duplicamos lógica de cálculo en las interfaces de usuario. La API REST actúa como el verdadero cerebro sin estado (stateless). El motor de negocio y validación opera exclusivamente en el servidor."</p>
+          <p>"Esto garantiza tres ventajas clave: consistencia matemática absoluta de promedios ponderados entre todos los clientes; total aislamiento de datos multiusuario gracias a que todas las consultas SQL filtran proactivamente por el <code>userId</code> activo; y un desacoplamiento limpio mediante la separación en capas ilustrada a la derecha: controladores REST, servicios lógicos y repositorios Spring Data JPA mapeados físicamente sobre Aiven MySQL."</p>`,
+      6: `<p><strong>Clientes y Calidad de Software (Ver. 2.0):</strong></p>
+          <p>"Este es el apartado del que más orgulloso me siento, ya que demuestra un control total sobre el código del proyecto atendiendo exhaustivamente al pulido de calidad."</p>
+          <p>"En primer lugar, mejoramos radicalmente la UX de la columna DONE en la Web PWA y móviles. Reemplazamos los booleanos crudos true/false por bonitas etiquetas coloreadas de estado <code>✓ HECHA</code> en verde y <code>✗ SIN HACER</code> en gris."</p>
+          <p>"Por seguridad, ocultamos todos los IDs técnicos autoincrementales en las tablas para mitigar vulnerabilidades de enumeración. En la aplicación de escritorio, solucionamos la accesibilidad de colores de asignaturas: ya no se pintan fondos claros que queman la vista; ahora usamos un sofisticado borde indicador izquierdo de 5px con el color Pantone correspondiente. También implementamos un <code>StringConverter</code> para que los ComboBoxes muestren nombres limpios y corregimos la persistencia de tareas Jackson bidireccional aplicando <code>@JsonProperty(\"isCompleted\")</code> de forma simétrica."</p>`,
+      7: `<p><strong>Viabilidad del Proyecto y Costes:</strong></p>
+          <p>"Para validar la viabilidad económica real de StudyFlow, hemos realizado una estimación financiera rigurosa de costes de ingeniería e infraestructura."</p>
+          <p>"El desarrollo del proyecto se estructuró a lo largo de 5 quincenas de trabajo incremental. Estimando un total de 240 horas de dedicación de ingeniería con una tarifa estándar junior de 18 euros la hora, el coste de personal es de <strong>4.320 euros</strong>."</p>
+          <p>"Adicionalmente, calculamos los gastos de infraestructura en la nube: 60 euros anuales para el servidor Render API, 110 euros anuales para el alojamiento Aiven MySQL, la licencia vitalicia de Google Play de 25 euros y hosting gratuito en Vercel para la PWA. El presupuesto de lanzamiento real se sitúa en <strong>4.515 euros</strong>, demostrando ser un producto sumamente viable y económicamente competitivo."</p>`,
+      8: `<p><strong>Roadmap Tecnológico de Escalabilidad:</strong></p>
+          <p>"StudyFlow no se detiene en esta entrega; se ha diseñado con bases preparadas para una escalabilidad masiva y proyección a futuro."</p>
+          <p>"Nuestra hoja de ruta tecnológica se compone de 4 peldaños ascendentes ilustrados en pantalla: en el primer escalón, implementaremos notificaciones push nativas al móvil del estudiante. Subiendo en el roadmap, integraremos autenticación robusta mediante OAuth2 con login social de Google y GitHub."</p>
+          <p>"El tercer nivel dotará a la aplicación de un entorno colaborativo real, permitiendo a alumnos del mismo ciclo compartir tareas y calendarios académicos. En la cumbre, integraremos un planificador predictivo con Inteligencia Artificial y exportación de informes analíticos en PDF."</p>`,
+      9: `<p><strong>Cierre y Paso a la Demostración Práctica:</strong></p>
+          <p>"Con esta diapositiva doy por concluida la síntesis teórica del proyecto."</p>
+          <p>"Para demostrar la robustez, consistencia y sincronización en tiempo real multiplataforma de la que hemos estado hablando, iniciaremos la demostración técnica práctica."</p>
+          <p>"Procederé a abrir el cliente de escritorio en JavaFX para dar de alta asignaturas con colores representativos reales, agregaré exámenes ponderados y tareas; seguidamente veremos cómo esa información se sincroniza instantáneamente tanto en la Progressive Web App en el navegador como en el emulador de Android Nativo. Muchas gracias."</p>`
+    };
+
+    // ----------------------------------------------------
+    // ESTADO DE LA PRESENTACIÓN Y NAVEGACIÓN
+    // ----------------------------------------------------
+    let currentSlide = 1;
+    const totalSlides = 9;
+    const notesDrawer = document.getElementById('notesDrawer');
+    const notesContent = document.getElementById('notesContent');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+
+    // Inicializar
+    updateSlideView();
+
+    function updateSlideView() {
+      // Activar slide correspondiente
+      for (let i = 1; i <= totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (i === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      }
+
+      // Actualizar notas
+      notesContent.innerHTML = speakerNotes[currentSlide] || '<p>Sin notas para esta diapositiva.</p>';
+
+      // Actualizar indicador inferior
+      slideIndicator.innerHTML = `Diapositiva <strong>${currentSlide}</strong> de ${totalSlides}`;
+
+      // Actualizar barra de progreso
+      const progressPercent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Habilitar / deshabilitar botones
+      document.getElementById('prevBtn').disabled = (currentSlide === 1);
+      document.getElementById('nextBtn').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlideView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlideView();
+      }
+    }
+
+    function toggleNotes() {
+      notesDrawer.classList.toggle('open');
+    }
+
+    // ----------------------------------------------------
+    // CONTROLADORES DE TECLADO
+    // ----------------------------------------------------
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowRight' || event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        nextSlide();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        prevSlide();
+      } else if (event.key.toLowerCase() === 'n') {
+        event.preventDefault();
+        toggleNotes();
+      }
+    });
+  </script>
+</body>
+</html>
