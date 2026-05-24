@@ -13,4 +13,5 @@ public class Exam {
     private String classroom; // Coincide con colRoom -> "classroom"
     private String subjectName;
     private String subjectColor;
+    private boolean isCompleted;
 }
