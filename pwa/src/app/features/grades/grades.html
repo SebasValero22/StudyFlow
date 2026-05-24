@@ -10,6 +10,7 @@
   <div class="grade-form">
     <h3>Add New Grade</h3>
     <div class="input-group">
+      <input type="text" [(ngModel)]="newGrade.concept" placeholder="Concept (e.g. Exam 1, Project)">
       <input type="number" [(ngModel)]="newGrade.score" placeholder="Score (0-10)">
       <input type="number" [(ngModel)]="newGrade.weight" placeholder="Weight %">
       <select [(ngModel)]="newGrade.subjectId">
@@ -28,6 +29,7 @@
       <thead>
         <tr>
           <th>Subject</th>
+          <th>Concept</th>
           <th>Score</th>
           <th>Weight</th>
           <th>Actions</th>
@@ -36,6 +38,7 @@
       <tbody>
         <tr *ngFor="let grade of grades">
           <td>{{ getSubjectName(grade.subjectId) }}</td>
+          <td>{{ grade.concept }}</td>
           <td>{{ grade.score }}</td>
           <td>{{ grade.weight }}%</td>
           <td>

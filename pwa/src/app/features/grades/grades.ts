@@ -18,6 +18,7 @@ export class GradesComponent implements OnInit {
   isEditing = false;
 
   newGrade: Grade = {
+    concept: '',
     score: 0,
     weight: 100,
     subjectId: 0
@@ -53,7 +54,7 @@ export class GradesComponent implements OnInit {
     this.api.addGrade(this.newGrade).subscribe({
       next: () => {
         this.loadData();
-        this.newGrade = { score: 0, weight: 100, subjectId: 0 };
+        this.newGrade = { concept: '', score: 0, weight: 100, subjectId: 0 };
       },
       error: (err) => this.error = 'Failed to add grade'
     });
@@ -66,7 +67,7 @@ export class GradesComponent implements OnInit {
 
   cancelEdit() {
     this.isEditing = false;
-    this.newGrade = { score: 0, weight: 100, subjectId: 0 };
+    this.newGrade = { concept: '', score: 0, weight: 100, subjectId: 0 };
   }
 
   updateGrade() {
@@ -76,7 +77,7 @@ export class GradesComponent implements OnInit {
       next: () => {
         this.isEditing = false;
         this.loadData();
-        this.newGrade = { score: 0, weight: 100, subjectId: 0 };
+        this.newGrade = { concept: '', score: 0, weight: 100, subjectId: 0 };
       },
       error: (err) => this.error = 'Failed to update grade'
     });
@@ -95,12 +96,35 @@ export class GradesComponent implements OnInit {
 
   calculateGPA() {
     if (this.grades.length === 0) return 0;
-    let totalScore = 0;
-    let totalWeight = 0;
+
+    // Group grades by subjectId
+    const gradesBySubject: { [key: number]: Grade[] } = {};
     this.grades.forEach(g => {
-      totalScore += (g.score * (g.weight / 100));
-      totalWeight += (g.weight / 100);
+      if (!gradesBySubject[g.subjectId]) {
+        gradesBySubject[g.subjectId] = [];
+      }
+      gradesBySubject[g.subjectId].push(g);
     });
-    return totalWeight > 0 ? (totalScore / totalWeight).toFixed(2) : 0;
+
+    let totalSubjectAveragesSum = 0;
+    let subjectsWithGradesCount = 0;
+
+    Object.keys(gradesBySubject).forEach(subIdStr => {
+      const subjectGrades = gradesBySubject[Number(subIdStr)];
+      let totalScore = 0;
+      let totalWeight = 0;
+      subjectGrades.forEach(g => {
+        totalScore += (g.score * (g.weight / 100));
+        totalWeight += (g.weight / 100);
+      });
+
+      if (totalWeight > 0) {
+        const subjectAverage = totalScore / totalWeight;
+        totalSubjectAveragesSum += subjectAverage;
+        subjectsWithGradesCount++;
+      }
+    });
+
+    return subjectsWithGradesCount > 0 ? (totalSubjectAveragesSum / subjectsWithGradesCount).toFixed(2) : 0;
   }
 }

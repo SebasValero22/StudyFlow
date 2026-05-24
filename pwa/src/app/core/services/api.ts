@@ -57,6 +57,7 @@ export interface Exam {
 
 export interface Grade {
   gradeId?: number;
+  concept?: string;
   score: number;
   weight: number;
   subjectId: number;
@@ -193,6 +194,7 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/grades?userId=${userId}`).pipe(
       map(grades => grades.map(g => ({
         gradeId: g.gradeId,
+        concept: g.concept || '',
         score: g.score,
         weight: g.weight,
         subjectId: g.subject ? g.subject.subjectId : 0
@@ -201,6 +203,7 @@ export class ApiService {
   }
   addGrade(grade: Grade): Observable<Grade> {
     const payload = {
+      concept: grade.concept || '',
       score: grade.score,
       weight: grade.weight,
       subject: {
@@ -210,6 +213,7 @@ export class ApiService {
     return this.http.post<any>(`${this.baseUrl}/grades`, payload).pipe(
       map(g => ({
         gradeId: g.gradeId,
+        concept: g.concept || '',
         score: g.score,
         weight: g.weight,
         subjectId: g.subject ? g.subject.subjectId : 0
@@ -219,6 +223,7 @@ export class ApiService {
   updateGrade(id: number, grade: Grade): Observable<Grade> {
     const payload = {
       gradeId: grade.gradeId,
+      concept: grade.concept || '',
       score: grade.score,
       weight: grade.weight,
       subject: {
@@ -228,6 +233,7 @@ export class ApiService {
     return this.http.put<any>(`${this.baseUrl}/grades/${id}`, payload).pipe(
       map(g => ({
         gradeId: g.gradeId,
+        concept: g.concept || '',
         score: g.score,
         weight: g.weight,
         subjectId: g.subject ? g.subject.subjectId : 0
