@@ -16,9 +16,24 @@ public class Task {
     @JsonProperty("description") // <--- ESTO SOLUCIONA EL MAPEO
     private String descriptionTask;
 
+    @JsonProperty("due_date")
     private LocalDate dueDate;
+
     private String priority;
+
+    @JsonProperty("isCompleted")
     private Boolean isCompleted = false;
+
     private String subjectName;
     private String subjectColor;
+
+    @JsonProperty("isCompleted")
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+
+    @JsonProperty("isCompleted")
+    public void setIsCompleted(Boolean completed) {
+        this.isCompleted = completed;
+    }
 }

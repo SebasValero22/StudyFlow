@@ -17,7 +17,7 @@ public class TaskRepository {
     }
 
     public void getTasks(RepositoryCallback<List<TaskResponseDTO>> callback) {
-        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getId() : null;
+        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getUserId() : null;
         apiService.getTasks(userId).enqueue(new Callback<List<TaskResponseDTO>>() {
             @Override
             public void onResponse(Call<List<TaskResponseDTO>> call, Response<List<TaskResponseDTO>> response) {

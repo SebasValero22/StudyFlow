@@ -48,7 +48,8 @@ export class GradesComponent implements OnInit {
   }
 
   addGrade() {
-    if (this.newGrade.score < 0 || !this.newGrade.subjectId) return;
+    const subId = Number(this.newGrade.subjectId);
+    if (this.newGrade.score < 0 || !subId) return;
     this.api.addGrade(this.newGrade).subscribe({
       next: () => {
         this.loadData();
@@ -69,7 +70,8 @@ export class GradesComponent implements OnInit {
   }
 
   updateGrade() {
-    if (!this.newGrade.gradeId) return;
+    const subId = Number(this.newGrade.subjectId);
+    if (!this.newGrade.gradeId || !subId) return;
     this.api.updateGrade(this.newGrade.gradeId, this.newGrade).subscribe({
       next: () => {
         this.isEditing = false;

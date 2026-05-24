@@ -15,10 +15,23 @@ public class TaskResponseDTO {
     private String title;
     private String description;
     private Priority priority;
+
+    @JsonProperty("isCompleted")
     private boolean isCompleted;
+
     private Integer subjectId;
     private String subjectName;
     private String subjectColor;
+
+    @JsonProperty("isCompleted")
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    @JsonProperty("isCompleted")
+    public void setCompleted(boolean completed) {
+        this.isCompleted = completed;
+    }
 
     // Campos de fecha: aceptan milisegundos (epoch)
     private LocalDate start_date;

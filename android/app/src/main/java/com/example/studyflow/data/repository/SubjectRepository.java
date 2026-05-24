@@ -17,7 +17,7 @@ public class SubjectRepository {
     }
 
     public void getSubjects(TaskRepository.RepositoryCallback<List<SubjectResponseDTO>> callback) {
-        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getId() : null;
+        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getUserId() : null;
         apiService.getSubjects(userId).enqueue(new Callback<List<SubjectResponseDTO>>() {
             @Override
             public void onResponse(Call<List<SubjectResponseDTO>> call, Response<List<SubjectResponseDTO>> response) {

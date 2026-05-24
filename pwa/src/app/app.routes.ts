@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import { Routes, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { ApiService } from './core/services/api';
 import { OverviewComponent } from './features/overview/overview';
 import { TasksComponent } from './features/tasks/tasks';
 import { ExamsComponent } from './features/exams/exams';
@@ -9,15 +11,33 @@ import { SettingsComponent } from './features/settings/settings';
 import { LoginComponent } from './features/auth/login/login';
 import { RegisterComponent } from './features/auth/register/register';
 
+const authGuard = () => {
+  const apiService = inject(ApiService);
+  const router = inject(Router);
+  if (apiService.isLoggedIn()) {
+    return true;
+  }
+  return router.parseUrl('/login');
+};
+
+const redirectIfLoggedIn = () => {
+  const apiService = inject(ApiService);
+  const router = inject(Router);
+  if (apiService.isLoggedIn()) {
+    return router.parseUrl('/overview');
+  }
+  return true;
+};
+
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'overview', component: OverviewComponent },
-  { path: 'tasks', component: TasksComponent },
-  { path: 'exams', component: ExamsComponent },
-  { path: 'subjects', component: SubjectsComponent },
-  { path: 'grades', component: GradesComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'settings', component: SettingsComponent }
+  { path: '', redirectTo: 'overview', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent, canActivate: [redirectIfLoggedIn] },
+  { path: 'register', component: RegisterComponent, canActivate: [redirectIfLoggedIn] },
+  { path: 'overview', component: OverviewComponent, canActivate: [authGuard] },
+  { path: 'tasks', component: TasksComponent, canActivate: [authGuard] },
+  { path: 'exams', component: ExamsComponent, canActivate: [authGuard] },
+  { path: 'subjects', component: SubjectsComponent, canActivate: [authGuard] },
+  { path: 'grades', component: GradesComponent, canActivate: [authGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] }
 ];

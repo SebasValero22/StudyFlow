@@ -17,7 +17,7 @@ public class GradeRepository {
     }
 
     public void getGrades(TaskRepository.RepositoryCallback<List<GradeResponseDTO>> callback) {
-        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getId() : null;
+        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getUserId() : null;
         apiService.getGrades(userId).enqueue(new Callback<List<GradeResponseDTO>>() {
             @Override
             public void onResponse(Call<List<GradeResponseDTO>> call, Response<List<GradeResponseDTO>> response) {

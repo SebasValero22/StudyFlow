@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javafx.util.StringConverter;
+
 public class ExamFormController {
     @FXML private ComboBox<Subject> subjectCombo;
     @FXML private TextField nameField, typeField, roomField;
@@ -23,6 +25,17 @@ public class ExamFormController {
     @FXML
     public void initialize() {
         try {
+            // Configurar celdas personalizadas para evitar volcados de objetos en texto crudo en la lista y en la seleccion
+            javafx.util.Callback<ListView<Subject>, ListCell<Subject>> cellFactory = lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Subject item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? "" : item.getNameSubject());
+                }
+            };
+            subjectCombo.setCellFactory(cellFactory);
+            subjectCombo.setButtonCell(cellFactory.call(null));
+
             subjectCombo.setItems(FXCollections.observableArrayList(subjectService.getAllSubjects()));
         } catch (Exception e) {
             e.printStackTrace();

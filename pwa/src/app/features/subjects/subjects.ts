@@ -86,7 +86,7 @@ export class SubjectsComponent implements OnInit {
   resetNewSubject() {
     this.newSubject = { 
       nameSubject: '', 
-      color: '#FFB7B2', 
+      color: '#3498db', 
       userId: 1,
       academicYear: '2025/2026',
       activeSubject: true

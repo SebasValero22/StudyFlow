@@ -44,16 +44,19 @@ public class TaskFormController {
 
     private void loadSubjects() {
         try {
+            // Configurar celdas personalizadas para evitar volcados de objetos en texto crudo en la lista y en la seleccion
+            javafx.util.Callback<ListView<Subject>, ListCell<Subject>> cellFactory = lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Subject item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? "" : item.getNameSubject());
+                }
+            };
+            subjectCombo.setCellFactory(cellFactory);
+            subjectCombo.setButtonCell(cellFactory.call(null));
+
             List<Subject> subjects = subjectService.getAllSubjects();
             subjectCombo.setItems(FXCollections.observableArrayList(subjects));
-
-            // Convertidor para mostrar solo el nombre
-            subjectCombo.setConverter(new StringConverter<>() {
-                @Override
-                public String toString(Subject s) { return (s != null) ? s.getNameSubject() : ""; }
-                @Override
-                public Subject fromString(String string) { return null; }
-            });
 
         } catch (Exception e) {
             formStatusLabel.setText("Error loading subjects: " + e.getMessage());

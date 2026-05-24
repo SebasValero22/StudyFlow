@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface User {
   id?: number;
@@ -72,25 +72,54 @@ export class ApiService {
   constructor(private http: HttpClient) {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      this.currentUser.set(JSON.parse(savedUser));
+      try {
+        const userObj = JSON.parse(savedUser);
+        // Map from backend response keys (userId, name) if they exist
+        const mappedUser: UserResponseDTO = {
+          id: userObj.id !== undefined ? userObj.id : userObj.userId,
+          userName: userObj.userName !== undefined ? userObj.userName : userObj.name,
+          email: userObj.email
+        };
+        
+        // If it was in the backend format, update localStorage immediately to standard client format
+        if (userObj.userId !== undefined || userObj.name !== undefined) {
+          localStorage.setItem('user', JSON.stringify(mappedUser));
+        }
+        
+        this.currentUser.set(mappedUser);
+      } catch (e) {
+        console.error('Error parsing saved user:', e);
+      }
     }
   }
 
   // Auth
   login(credentials: UserLoginDTO): Observable<UserResponseDTO> {
-    return this.http.post<UserResponseDTO>(`${this.baseUrl}/users/login`, credentials).pipe(
-      tap(user => {
+    return this.http.post<any>(`${`${this.baseUrl}/users/login`}`, credentials).pipe(
+      map(res => {
+        const user: UserResponseDTO = {
+          id: res.userId,
+          userName: res.name,
+          email: res.email
+        };
         this.currentUser.set(user);
         localStorage.setItem('user', JSON.stringify(user));
+        return user;
       })
     );
   }
 
   register(userData: UserRegisterDTO): Observable<UserResponseDTO> {
-    return this.http.post<UserResponseDTO>(`${this.baseUrl}/users/register`, userData).pipe(
-      tap(user => {
+    return this.http.post<any>(`${`${this.baseUrl}/users/register`}`, userData).pipe(
+      map(res => {
+        const user: UserResponseDTO = {
+          id: res.userId,
+          userName: res.name,
+          email: res.email
+        };
         this.currentUser.set(user);
         localStorage.setItem('user', JSON.stringify(user));
+        return user;
       })
     );
   }
@@ -161,13 +190,49 @@ export class ApiService {
   // Grades
   getGrades(): Observable<Grade[]> {
     const userId = this.currentUser()?.id || 1;
-    return this.http.get<Grade[]>(`${this.baseUrl}/grades?userId=${userId}`);
+    return this.http.get<any[]>(`${this.baseUrl}/grades?userId=${userId}`).pipe(
+      map(grades => grades.map(g => ({
+        gradeId: g.gradeId,
+        score: g.score,
+        weight: g.weight,
+        subjectId: g.subject ? g.subject.subjectId : 0
+      })))
+    );
   }
   addGrade(grade: Grade): Observable<Grade> {
-    return this.http.post<Grade>(`${this.baseUrl}/grades`, grade);
+    const payload = {
+      score: grade.score,
+      weight: grade.weight,
+      subject: {
+        subjectId: Number(grade.subjectId)
+      }
+    };
+    return this.http.post<any>(`${this.baseUrl}/grades`, payload).pipe(
+      map(g => ({
+        gradeId: g.gradeId,
+        score: g.score,
+        weight: g.weight,
+        subjectId: g.subject ? g.subject.subjectId : 0
+      }))
+    );
   }
   updateGrade(id: number, grade: Grade): Observable<Grade> {
-    return this.http.put<Grade>(`${this.baseUrl}/grades/${id}`, grade);
+    const payload = {
+      gradeId: grade.gradeId,
+      score: grade.score,
+      weight: grade.weight,
+      subject: {
+        subjectId: Number(grade.subjectId)
+      }
+    };
+    return this.http.put<any>(`${this.baseUrl}/grades/${id}`, payload).pipe(
+      map(g => ({
+        gradeId: g.gradeId,
+        score: g.score,
+        weight: g.weight,
+        subjectId: g.subject ? g.subject.subjectId : 0
+      }))
+    );
   }
   deleteGrade(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/grades/${id}`);
