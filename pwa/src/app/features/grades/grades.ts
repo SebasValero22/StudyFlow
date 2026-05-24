@@ -31,7 +31,7 @@ export class GradesComponent implements OnInit {
   }
 
   loadData() {
-    // Independent loading
+    // Carga independiente de datos
     this.api.getSubjects().subscribe(subs => {
       this.subjects = subs;
       this.cdr.detectChanges();
@@ -97,7 +97,7 @@ export class GradesComponent implements OnInit {
   calculateGPA() {
     if (this.grades.length === 0) return 0;
 
-    // Group grades by subjectId
+    // Agrupar calificaciones por asignatura (subjectId)
     const gradesBySubject: { [key: number]: Grade[] } = {};
     this.grades.forEach(g => {
       if (!gradesBySubject[g.subjectId]) {

@@ -34,4 +34,58 @@ public class SubjectRepository {
             }
         });
     }
+
+    public void createSubject(SubjectResponseDTO subject, TaskRepository.RepositoryCallback<SubjectResponseDTO> callback) {
+        apiService.createSubject(subject).enqueue(new Callback<SubjectResponseDTO>() {
+            @Override
+            public void onResponse(Call<SubjectResponseDTO> call, Response<SubjectResponseDTO> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error creating subject");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SubjectResponseDTO> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void updateSubject(Integer id, SubjectResponseDTO subject, TaskRepository.RepositoryCallback<SubjectResponseDTO> callback) {
+        apiService.updateSubject(id, subject).enqueue(new Callback<SubjectResponseDTO>() {
+            @Override
+            public void onResponse(Call<SubjectResponseDTO> call, Response<SubjectResponseDTO> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error updating subject");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SubjectResponseDTO> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void deleteSubject(Integer id, TaskRepository.RepositoryCallback<Void> callback) {
+        apiService.deleteSubject(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Error deleting subject");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
 }

@@ -75,14 +75,14 @@ export class ApiService {
     if (savedUser) {
       try {
         const userObj = JSON.parse(savedUser);
-        // Map from backend response keys (userId, name) if they exist
+        // Mapear campos de la respuesta del backend (userId, name) si existen
         const mappedUser: UserResponseDTO = {
           id: userObj.id !== undefined ? userObj.id : userObj.userId,
           userName: userObj.userName !== undefined ? userObj.userName : userObj.name,
           email: userObj.email
         };
         
-        // If it was in the backend format, update localStorage immediately to standard client format
+        // Si estaba en el formato del backend, actualizar localStorage al formato estándar del cliente
         if (userObj.userId !== undefined || userObj.name !== undefined) {
           localStorage.setItem('user', JSON.stringify(mappedUser));
         }
