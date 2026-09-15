@@ -13,7 +13,7 @@ public class UserConfigController {
 
     @FXML
     public void initialize() {
-        // Cargamos los datos actuales de la sesion
+        // Cargamos los datos actuales de la sesión
         User currentUser = UserSession.getInstance().getUser();
         if (currentUser != null) {
             txtUsername.setText(currentUser.getName());
@@ -23,7 +23,7 @@ public class UserConfigController {
 
     @FXML
     private void handleUpdateUser() {
-        // Aqui llamarias a tu userService.update(...)
+        // Aquí llamarías a tu userService.update(...)
         System.out.println("Updating user...");
     }
 }

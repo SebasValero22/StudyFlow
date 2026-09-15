@@ -1,43 +1,18 @@
-import { Routes, Router } from '@angular/router';
-import { inject } from '@angular/core';
-import { ApiService } from './core/services/api';
-import { OverviewComponent } from './features/overview/overview';
-import { TasksComponent } from './features/tasks/tasks';
-import { ExamsComponent } from './features/exams/exams';
-import { SubjectsComponent } from './features/subjects/subjects';
-import { GradesComponent } from './features/grades/grades';
-import { ProfileComponent } from './features/profile/profile';
-import { SettingsComponent } from './features/settings/settings';
-import { LoginComponent } from './features/auth/login/login';
-import { RegisterComponent } from './features/auth/register/register';
-
-const authGuard = () => {
-  const apiService = inject(ApiService);
-  const router = inject(Router);
-  if (apiService.isLoggedIn()) {
-    return true;
-  }
-  return router.parseUrl('/login');
-};
-
-const redirectIfLoggedIn = () => {
-  const apiService = inject(ApiService);
-  const router = inject(Router);
-  if (apiService.isLoggedIn()) {
-    return router.parseUrl('/overview');
-  }
-  return true;
-};
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'overview', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate: [redirectIfLoggedIn] },
-  { path: 'register', component: RegisterComponent, canActivate: [redirectIfLoggedIn] },
-  { path: 'overview', component: OverviewComponent, canActivate: [authGuard] },
-  { path: 'tasks', component: TasksComponent, canActivate: [authGuard] },
-  { path: 'exams', component: ExamsComponent, canActivate: [authGuard] },
-  { path: 'subjects', component: SubjectsComponent, canActivate: [authGuard] },
-  { path: 'grades', component: GradesComponent, canActivate: [authGuard] },
-  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] }
+  { path: 'login', loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent) },
+  { path: 'register', loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent) },
+  { path: 'overview', canActivate: [authGuard], loadComponent: () => import('./features/overview/overview').then(m => m.OverviewComponent) },
+  { path: 'tasks', canActivate: [authGuard], loadComponent: () => import('./features/tasks/tasks').then(m => m.TasksComponent) },
+  { path: 'exams', canActivate: [authGuard], loadComponent: () => import('./features/exams/exams').then(m => m.ExamsComponent) },
+  { path: 'subjects', canActivate: [authGuard], loadComponent: () => import('./features/subjects/subjects').then(m => m.SubjectsComponent) },
+  { path: 'grades', canActivate: [authGuard], loadComponent: () => import('./features/grades/grades').then(m => m.GradesComponent) },
+  { path: 'profile', canActivate: [authGuard], loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent) },
+  { path: 'settings', canActivate: [authGuard], loadComponent: () => import('./features/settings/settings').then(m => m.SettingsComponent) },
+  { path: 'timer', canActivate: [authGuard], loadComponent: () => import('./features/timer/timer').then(m => m.TimerComponent) },
+  { path: 'focus-report', canActivate: [authGuard], loadComponent: () => import('./features/focus-report/focus-report').then(m => m.FocusReportComponent) },
+  { path: 'journal', canActivate: [authGuard], loadComponent: () => import('./features/journal/journal').then(m => m.JournalComponent) }
 ];

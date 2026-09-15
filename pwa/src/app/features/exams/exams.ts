@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService, Exam, Subject } from '../../core/services/api';
+import { ApiService, Exam, LifeArea } from '../../core/services/api';
 
 @Component({
   selector: 'app-exams',
@@ -12,7 +12,7 @@ import { ApiService, Exam, Subject } from '../../core/services/api';
 })
 export class ExamsComponent implements OnInit {
   exams: Exam[] = [];
-  subjects: Subject[] = [];
+  subjects: LifeArea[] = [];
   selectedSubjectId: number | null = null;
   loading = false;
   error = '';
@@ -23,8 +23,7 @@ export class ExamsComponent implements OnInit {
     examType: 'EXAM',
     examDate: new Date().toISOString().split('T')[0],
     classroom: '',
-    subjectId: 0,
-    isCompleted: false
+    lifeAreaId: 0
   };
 
   constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
@@ -48,7 +47,7 @@ export class ExamsComponent implements OnInit {
   }
 
   addExam() {
-    if (!this.newExam.nameExam || !this.newExam.subjectId) return;
+    if (!this.newExam.nameExam || !this.newExam.lifeAreaId) return;
     this.api.addExam(this.newExam).subscribe({
       next: () => {
         this.loadData();
@@ -80,26 +79,6 @@ export class ExamsComponent implements OnInit {
     });
   }
 
-  toggleComplete(exam: Exam) {
-    if (!exam.examId) return;
-    // Optimistic update — flip immediately so UI responds instantly
-    exam.isCompleted = !exam.isCompleted;
-    this.cdr.detectChanges();
-
-    this.api.updateExam(exam.examId, { ...exam }).subscribe({
-      next: (updated) => {
-        exam.isCompleted = updated.isCompleted;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        // Revert if API call fails
-        exam.isCompleted = !exam.isCompleted;
-        this.cdr.detectChanges();
-        this.error = 'Failed to update exam';
-      }
-    });
-  }
-
   deleteExam(id: number | undefined) {
     if (!id) return;
     this.api.deleteExam(id).subscribe({
@@ -110,11 +89,12 @@ export class ExamsComponent implements OnInit {
 
   get filteredExams() {
     if (!this.selectedSubjectId) return this.exams;
-    return this.exams.filter(e => e.subjectId === +this.selectedSubjectId!);
+    return this.exams.filter(e => e.lifeAreaId === +this.selectedSubjectId!);
   }
 
-  getSubjectColor(subjectId: number) {
-    return this.subjects.find(s => s.subjectId === subjectId)?.color || '#ccc';
+  getSubjectColor(lifeAreaId?: number | null) {
+    if (!lifeAreaId) return '#ccc';
+    return this.subjects.find(s => s.lifeAreaId === lifeAreaId)?.color || '#ccc';
   }
 
   getDaysRemaining(dateStr: string): string {
@@ -136,8 +116,7 @@ export class ExamsComponent implements OnInit {
       examType: 'EXAM',
       examDate: new Date().toISOString().split('T')[0],
       classroom: '',
-      subjectId: 0,
-      isCompleted: false
+      lifeAreaId: 0
     };
   }
 }

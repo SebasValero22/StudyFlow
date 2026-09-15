@@ -7,7 +7,8 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-@Entity @Table(name = "tasks")
+@Entity 
+@Table(name = "Tasks")
 public class Task {
 
     @Id
@@ -15,28 +16,38 @@ public class Task {
     @Column(name = "taskId")
     private Integer taskId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subjectId", nullable = false)
-    private Subject subjectId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "lifeAreaId", nullable = true)
+    private LifeArea lifeArea;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "projectId", nullable = true)
+    private Project project;
 
     @Column(nullable = false)
     private String title;
 
+    @Column(name = "userId", nullable = false)
+    private Integer userId;
+
     @Column(name = "descriptionTask")
     private String description;
 
-    // Asegurate de que los nombres coincidan con el DTO
     private LocalDate start_date;
     private LocalDate due_date;
 
-    // Cambiamos el nombre del campo para evitar conflictos de Lombok
     @Column(name = "isCompleted")
     private Boolean completed = false;
+
+    @Column(name = "isHabit")
+    private Boolean isHabit = false;
+
+    @Column(name = "orderIndex")
+    private Integer orderIndex = 0;
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    // Getter manual por si Lombok genera "isCompleted()" en lugar de "getCompleted()"
     public Boolean getIsCompleted() {
         return completed;
     }

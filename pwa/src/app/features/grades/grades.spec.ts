@@ -1,18 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpBackend, provideHttpClient } from '@angular/common/http';
+import { FakeBackend } from '../../../testing/fake-backend';
 
-import { Grades } from './grades';
+import { GradesComponent } from './grades';
 
 describe('Grades', () => {
-  let component: Grades;
-  let fixture: ComponentFixture<Grades>;
+  let component: GradesComponent;
+  let fixture: ComponentFixture<GradesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Grades]
+      providers: [provideHttpClient(), { provide: HttpBackend, useClass: FakeBackend }],
+      imports: [GradesComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Grades);
+    fixture = TestBed.createComponent(GradesComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

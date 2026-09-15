@@ -1,18 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpBackend, provideHttpClient } from '@angular/common/http';
+import { FakeBackend } from '../../../testing/fake-backend';
 
-import { Settings } from './settings';
+import { SettingsComponent } from './settings';
 
 describe('Settings', () => {
-  let component: Settings;
-  let fixture: ComponentFixture<Settings>;
+  let component: SettingsComponent;
+  let fixture: ComponentFixture<SettingsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Settings]
+      providers: [provideHttpClient(), { provide: HttpBackend, useClass: FakeBackend }],
+      imports: [SettingsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Settings);
+    fixture = TestBed.createComponent(SettingsComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

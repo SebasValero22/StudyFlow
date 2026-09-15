@@ -15,7 +15,7 @@ public interface ApiService {
 
     // Tasks
     @GET("tasks")
-    Call<List<TaskResponseDTO>> getTasks(@Query("userId") Integer userId);
+    Call<List<TaskResponseDTO>> getTasks();
 
     @POST("tasks")
     Call<TaskResponseDTO> createTask(@Body TaskResponseDTO task);
@@ -28,22 +28,16 @@ public interface ApiService {
 
     // Subjects
     @GET("subjects")
-    Call<List<SubjectResponseDTO>> getSubjects(@Query("userId") Integer userId);
+    Call<List<SubjectResponseDTO>> getSubjects();
 
     @POST("subjects")
     Call<SubjectResponseDTO> createSubject(@Body SubjectResponseDTO subject);
 
-    @PUT("subjects/{id}")
-    Call<SubjectResponseDTO> updateSubject(@Path("id") Integer id, @Body SubjectResponseDTO subject);
-
-    @DELETE("subjects/{id}")
-    Call<Void> deleteSubject(@Path("id") Integer id);
-
-    // Exams
+    // Exams (Placeholder DTOs if needed or generic)
     @GET("exams")
-    Call<List<ExamResponseDTO>> getExams(@Query("userId") Integer userId);
+    Call<List<TaskResponseDTO>> getExams(); // Often similar to tasks in logic
 
     // Grades
     @GET("grades")
-    Call<List<GradeResponseDTO>> getGrades(@Query("userId") Integer userId);
+    Call<List<GradeResponseDTO>> getGrades();
 }

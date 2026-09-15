@@ -7,6 +7,7 @@ import com.iescamp.studyflow_api.model.User;
 import com.iescamp.studyflow_api.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -15,25 +16,18 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserResponseDTO register(UserRegisterDTO dto) {
-        // Convertimos el DTO a entidad
-        User user = new User();
-        user.setUserName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword()); // En un entorno real, aqui se encriptaria
+    private final AuthService authService;
 
-        User savedUser = userRepository.save(user);
-        return UserResponseDTO.convertToDTO(savedUser);
+    public UserService(@Lazy AuthService authService) {
+        this.authService = authService;
+    }
+
+    public UserResponseDTO register(UserRegisterDTO dto) {
+        return authService.register(dto).getUser();
     }
 
     public UserResponseDTO login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Contraseña incorrecta");
-        }
-        return UserResponseDTO.convertToDTO(user);
+        return authService.login(email, password).getUser();
     }
 
     @Transactional
@@ -42,20 +36,26 @@ public class UserService {
     }
 
     public UserResponseDTO findByEmail(String email) {
-        // Buscamos; si no existe, lanzamos error
+        // Buscamos, si no existe lanzamos error
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
-        // Convertimos a DTO
+        // Ahora lo convertimos
         return UserResponseDTO.convertToDTO(user);
     }
+//    public List<User> findAll() {
+//        return userRepository.findAll(); //  ya viene en JpaRepository
+//    }
 
     public UserResponseDTO modify(String email, UserRegisterDTO dto) {
+        // 1. Find the existing user (assuming you have a findByEmail in your repository)
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
+        // 2. Update the fields
         user.setUserName(dto.getName());
-        // user.setPassword(dto.getPassword()); // Opcional: actualizar contrasena si hace falta
+        // user.setPassword(dto.getPassword()); // Optional: update password if needed
 
+        // 3. Save (JPA will perform an UPDATE because the object has an ID)
         User savedUser = userRepository.save(user);
 
         return UserResponseDTO.convertToDTO(savedUser);

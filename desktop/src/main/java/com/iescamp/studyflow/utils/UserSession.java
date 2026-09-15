@@ -3,9 +3,9 @@ package com.iescamp.studyflow.utils;
 import com.iescamp.studyflow.model.User;
 
 public class UserSession {
-    // Instancia unica (singleton)
+    // Instancia única (Singleton)
     private static UserSession instance;
-    private User loggedUser; // Aqui guardamos al usuario conectado
+    private User loggedUser; // Aquí guardaremos al usuario conectado
     private UserSession() {}
     public static UserSession getInstance() {
         if (instance == null) {
@@ -20,6 +20,6 @@ public class UserSession {
         return loggedUser;
     }
     public void cleanUserSession() {
-        loggedUser = null; // Para cuando hagas logout
+        loggedUser = null; // Para cuando hagas Logout
     }
 }

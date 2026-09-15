@@ -1,7 +1,7 @@
 package com.iescamp.studyflow_api.dto;
 
 import com.iescamp.studyflow_api.model.File;
-import com.iescamp.studyflow_api.model.Subject;
+import com.iescamp.studyflow_api.model.LifeArea;
 import com.iescamp.studyflow_api.model.enums.FileType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,7 +11,7 @@ import lombok.Data;
 public class FileDTO {
 
     private Integer fileID;
-    private Subject subjectId;
+    private LifeArea LifeAreaId;
     private String fileName;
     private String filePath;
     private String sizeBytes;
@@ -24,7 +24,7 @@ public class FileDTO {
         dto.setFilePath(file.getFilePath());
         dto.setFileType(file.getFileType());
         dto.setSizeBytes(file.getSizeBytes());
-        dto.setSubjectId(file.getSubjectId());
+        dto.setLifeAreaId(file.getLifeAreaId());
         return dto;
     }
 }

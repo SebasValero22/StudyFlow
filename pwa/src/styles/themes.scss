@@ -1,0 +1,90 @@
+/* CSS Custom Properties for Deep Theme Engine */
+
+:root {
+  /* Default Light Theme */
+  --bg-primary: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f2f6;
+  --text-main: #2f3542;
+  --text-muted: #747d8c;
+  
+  --sidebar-bg: #2c3e50;
+  --sidebar-hover: #34495e;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: #bdc3c7;
+  
+  --accent-primary: #3498db;
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --border-color: #e9ecef;
+  
+  --timer-focus: #e74c3c;
+  --timer-reward: #4ade80;
+  
+  --card-shadow: rgba(0,0,0,0.05);
+}
+
+:root[data-theme="cyberpunk"] {
+  --bg-primary: #0a0b10;
+  --bg-surface: #12131a;
+  --bg-surface-hover: #1a1b26;
+  --text-main: #00ffcc;
+  --text-muted: #565f89;
+  
+  --sidebar-bg: #0d0f18;
+  --sidebar-hover: #1a1b26;
+  --sidebar-text: #00ffcc;
+  --sidebar-text-muted: #565f89;
+  
+  --accent-primary: #ff007f;
+  --accent-gradient: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+  --border-color: #24283b;
+  
+  --timer-focus: #ff3366;
+  --timer-reward: #00ffcc;
+  
+  --card-shadow: rgba(255, 0, 127, 0.2);
+}
+
+:root[data-theme="lofi-cafe"] {
+  --bg-primary: #282421;
+  --bg-surface: #3c3836;
+  --bg-surface-hover: #504945;
+  --text-main: #ebdbb2;
+  --text-muted: #a89984;
+  
+  --sidebar-bg: #1d2021;
+  --sidebar-hover: #3c3836;
+  --sidebar-text: #ebdbb2;
+  --sidebar-text-muted: #928374;
+  
+  --accent-primary: #d79921;
+  --accent-gradient: linear-gradient(135deg, #d79921 0%, #cc241d 100%);
+  --border-color: #504945;
+  
+  --timer-focus: #b8bb26;
+  --timer-reward: #83a598;
+  
+  --card-shadow: rgba(0,0,0,0.5);
+}
+
+:root[data-theme="catppuccin"] {
+  --bg-primary: #24273a;
+  --bg-surface: #363a4f;
+  --bg-surface-hover: #494d64;
+  --text-main: #cad3f5;
+  --text-muted: #8087a2;
+  
+  --sidebar-bg: #1e2030;
+  --sidebar-hover: #363a4f;
+  --sidebar-text: #cad3f5;
+  --sidebar-text-muted: #8087a2;
+  
+  --accent-primary: #8aadf4;
+  --accent-gradient: linear-gradient(135deg, #8aadf4 0%, #c6a0f6 100%);
+  --border-color: #494d64;
+  
+  --timer-focus: #ed8796;
+  --timer-reward: #a6da95;
+  
+  --card-shadow: rgba(0,0,0,0.3);
+}

@@ -1,0 +1,63 @@
+<div class="focus-report-container">
+  <div class="header">
+    <h2>Focus Analytics</h2>
+    <div class="controls">
+      <input type="date" [(ngModel)]="fromDate" class="date-input">
+      <span class="separator">to</span>
+      <input type="date" [(ngModel)]="toDate" class="date-input">
+      <button class="btn btn-primary" (click)="loadReport()">Apply</button>
+      <button class="btn btn-secondary" (click)="exportCsv()">Export CSV</button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-spinner">Loading data...</div>
+  } @else if (report) {
+    <div class="summary-cards">
+      <div class="card">
+        <h3>Total Focus</h3>
+        <div class="value">{{ getHours(report.totalFocusSeconds || 0) }}<span class="unit">h</span></div>
+      </div>
+      <div class="card">
+        <h3>Total Sessions</h3>
+        <div class="value">{{ report.sessionCount || 0 }}</div>
+      </div>
+      <div class="card">
+        <h3>Daily Average</h3>
+        <div class="value">{{ getDailyAverage() }}<span class="unit">h/day</span></div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h3>Focus Heatmap</h3>
+      <div class="heatmap-container">
+        <div class="heatmap-grid">
+          @for (day of heatmapDays; track day) {
+            <div class="heatmap-row">
+              @for (week of heatmapWeeks; track week) {
+                <div class="heatmap-cell"
+                     [style.opacity]="getOpacityForCell(getSecondsForCell(week, day))"
+                     [title]="getDateForCell(week, day) + ': ' + getHours(getSecondsForCell(week, day)) + 'h'">
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h3>Daily Focus Trend (Hours)</h3>
+      <div class="bar-chart">
+        @for (entry of (report.byDay || []); track entry.date) {
+          <div class="bar-container" [title]="entry.date + ': ' + getHours(entry.seconds) + 'h'">
+            <div class="bar" 
+                 [style.height.%]="entry.seconds ? (entry.seconds / maxFocusSeconds * 100) : 0">
+            </div>
+            <div class="bar-label">{{ entry.date | date:'MMM d' }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

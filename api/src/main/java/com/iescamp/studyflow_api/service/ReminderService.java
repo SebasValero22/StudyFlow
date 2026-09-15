@@ -19,7 +19,7 @@ public class ReminderService {
         Reminder reminder = new Reminder();
         reminder.setMessage(dto.getMessage());
         reminder.setDateTime(dto.getDateTime());
-        // Enlaza estos campos si existen en el DTO
+        // link these if they exist in your DTO
         reminder.setTask(dto.getTask());
         reminder.setExam(dto.getExam());
         return ReminderDTO.convertToDTO(reminderRepository.save(reminder));
@@ -28,6 +28,7 @@ public class ReminderService {
     public void delete(Integer id){
         if (!reminderRepository.existsById(id)) throw new RuntimeException("Reminder not found");
         reminderRepository.deleteById(id);
+        // Remove the 'throw new RuntimeException' success message!
     }
     public ReminderDTO update
 

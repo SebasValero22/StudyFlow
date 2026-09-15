@@ -1,0 +1,41 @@
+<div class="timer-container" [ngClass]="{'break-mode': !isFocusMode}">
+  <div class="timer-header">
+    <h2>Animedoro Focus Engine</h2>
+    <p>{{ isFocusMode ? '40 Minutes of Deep Work' : '20 Minutes of Reward' }}</p>
+  </div>
+
+  <div class="task-selector" *ngIf="isFocusMode">
+    <label>Link Active Task:</label>
+    <select [(ngModel)]="selectedTaskId" [disabled]="isRunning">
+      <option [ngValue]="null" disabled selected>Select a task from your board...</option>
+      <option *ngFor="let task of tasks" [ngValue]="task.taskId">
+        {{ task.title }}
+      </option>
+    </select>
+  </div>
+
+  <div class="clock-display">
+    <span class="time">{{ formattedTime }}</span>
+  </div>
+
+  <div class="controls">
+    <button class="primary-btn" (click)="toggleTimer()">
+      {{ isRunning ? 'Pause' : 'Start' }}
+    </button>
+    <button class="secondary-btn" (click)="resetTimer()">Reset</button>
+  </div>
+
+  <div class="anime-reward-section" *ngIf="!isFocusMode">
+    <h3>Up Next on Your AniList:</h3>
+    <div class="loading" *ngIf="loadingAnime">Fetching anime list...</div>
+    
+    <div class="anime-grid" *ngIf="!loadingAnime">
+      <div class="anime-card" *ngFor="let anime of animeList">
+        <img [src]="anime.coverImage.large" [alt]="anime.title.romaji">
+        <div class="anime-info">
+          <h4>{{ anime.title.english || anime.title.romaji }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

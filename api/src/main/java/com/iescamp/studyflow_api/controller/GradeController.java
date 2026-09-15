@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/api/grades")
 public class GradeController {
@@ -14,25 +14,25 @@ public class GradeController {
     @Autowired
     private GradeService gradeService;
 
-    // POST /api/grades (crear)
+    // POST a /api/grades (Crear) - Añadido @RequestBody y quitado el /add
     @PostMapping
     public GradeDTO add(@RequestBody GradeDTO dto){
-        return gradeService.add(dto);
+        return gradeService.add(dto); // Arreglado el "1" que tenías colado al final
     }
 
-    // GET /api/grades (listar)
+    // GET a /api/grades (Listar todos)
     @GetMapping
-    public List<GradeDTO> findAll(@RequestParam(required = false) Integer userId){
-        return gradeService.findAll(userId);
+    public List<GradeDTO> findAll() {
+        return gradeService.findAll();
     }
 
-    // PUT /api/grades/5 (actualizar)
+    // PUT a /api/grades/5 (Actualizar)
     @PutMapping("/{id}")
     public GradeDTO update(@PathVariable Integer id, @RequestBody GradeDTO dto) {
         return gradeService.modify(id, dto);
     }
 
-    // DELETE /api/grades/5 (borrar)
+    // DELETE a /api/grades/5 (Borrar)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         gradeService.delete(id);

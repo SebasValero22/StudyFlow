@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
-    List<Exam> findBySubject_NameSubject(String nameSubject);
-    List<Exam> findBySubject_UserId(Integer userId);
+
+    List<Exam> findByLifeArea_name(String name);
 }

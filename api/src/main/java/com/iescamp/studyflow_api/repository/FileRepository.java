@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FileRepository extends JpaRepository<File, Integer> {
-    // Buscar por nombre de archivo
+    // Search by the file name
     List<File> findByFileName(String fileName);
-
-    // Buscar por tipo/extension
-    List<File> findByFileType(FileType fileType);
-}
+    // If you want to find files by their extension/type
+    List<File> findByFileType(FileType fileType);}

@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.studyflow.data.dto.TaskResponseDTO;
 import com.example.studyflow.databinding.ItemTaskBinding;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,39 +43,21 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         holder.binding.tvTaskTitle.setText(task.getTitle());
         
-        // Color de la asignatura
+        // Subject Color
         String colorHex = task.getSubjectColor();
         if (colorHex != null && !colorHex.isEmpty()) {
             try {
                 if (!colorHex.startsWith("#")) colorHex = "#" + colorHex;
                 holder.binding.tvTaskTitle.setTextColor(Color.parseColor(colorHex));
             } catch (Exception e) {
-                // Valor por defecto si falla el parseo del color
+                // Fallback color
             }
         }
 
-        // Mostrar fecha y dias restantes
-        if (task.getDue_date() != null) {
-            LocalDate dueDate = task.getDue_date();
-            LocalDate now = LocalDate.now();
-            long days = ChronoUnit.DAYS.between(now, dueDate);
-            String formattedDate = dueDate.toString();
-            if (days == 0) {
-                holder.binding.tvTaskDate.setText(formattedDate + " (Hoy)");
-            } else if (days == 1) {
-                holder.binding.tvTaskDate.setText(formattedDate + " (Falta 1 día)");
-            } else if (days > 1) {
-                holder.binding.tvTaskDate.setText(formattedDate + " (Faltan " + days + " días)");
-            } else {
-                holder.binding.tvTaskDate.setText(formattedDate + " (Vencida)");
-            }
-        } else {
-            holder.binding.tvTaskDate.setText("No date");
-        }
-        
+        holder.binding.tvTaskDate.setText(task.getDue_date() != null ? task.getDue_date().toString() : "No date");
         holder.binding.cbCompleted.setChecked(task.getIsCompleted() != null && task.getIsCompleted());
 
-        // Color segun prioridad
+        // Priority Color
         String priority = task.getPriority();
         if (priority != null) {
             switch (priority.toUpperCase()) {

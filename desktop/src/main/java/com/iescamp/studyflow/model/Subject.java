@@ -9,9 +9,4 @@ public class Subject {
     private String color;
     private boolean activeSubject;
     private String academicYear;
-
-    @Override
-    public String toString() {
-        return nameSubject != null ? nameSubject : "";
-    }
 }

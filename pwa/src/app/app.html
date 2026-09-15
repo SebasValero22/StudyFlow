@@ -13,10 +13,10 @@
         <li><a routerLink="/tasks" routerLinkActive="active"><span class="icon">✅</span> Tasks</a></li>
         <li><a routerLink="/exams" routerLinkActive="active"><span class="icon">📝</span> Exams</a></li>
         <li><a routerLink="/grades" routerLinkActive="active"><span class="icon">⭐</span> Grades</a></li>
+        <li><a routerLink="/journal" routerLinkActive="active"><span class="icon">📔</span> Journal</a></li>
+        <li><a routerLink="/timer" routerLinkActive="active"><span class="icon">⏱️</span> Timer</a></li>
+        <li><a routerLink="/focus-report" routerLinkActive="active"><span class="icon">📈</span> Focus Report</a></li>
       </ul>
-      <div class="sidebar-footer">
-        <a routerLink="/settings" class="settings-link"><span class="icon">⚙️</span> Settings</a>
-      </div>
     </nav>
   }
 
@@ -26,15 +26,18 @@
         <div class="sync-status">
           <span class="status-dot"></span>
           <span>Personal Cloud Sync: <strong>Active</strong></span>
+          <select class="theme-selector" style="margin-left: 20px; padding: 4px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-main);" (change)="changeTheme($event)" [value]="currentTheme$ | async">
+            <option value="light">YoRHa (Default Light)</option>
+            <option value="cyberpunk">Midnight Tokyo</option>
+            <option value="lofi-cafe">Matcha Morning</option>
+            <option value="catppuccin">Catppuccin (Mocha)</option>
+          </select>
         </div>
         <a routerLink="/profile" class="user-profile-link">
           <div class="user-profile">
             <div class="user-info">
-              <span class="user-name">{{ getCurrentUser()?.userName || 'Guest User' }}</span>
+              <span class="user-name">{{ getCurrentUser()?.name || 'Guest User' }}</span>
               <span class="user-role">{{ getCurrentUser()?.email || 'Student' }}</span>
-            </div>
-            <div class="avatar">
-              <img [src]="'https://ui-avatars.com/api/?name=' + (getCurrentUser()?.userName || 'Guest+User') + '&background=3498db&color=fff'" alt="User Avatar">
             </div>
           </div>
         </a>
@@ -45,4 +48,9 @@
       <router-outlet></router-outlet>
     </main>
   </div>
+
+  @if (isLoggedIn()) {
+    <app-nyra-voice-button></app-nyra-voice-button>
+    <app-audio-player></app-audio-player>
+  }
 </div>

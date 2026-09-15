@@ -14,15 +14,6 @@ import java.util.List;
 public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
 
     private List<SubjectResponseDTO> subjectList = new ArrayList<>();
-    private OnSubjectClickListener listener;
-
-    public interface OnSubjectClickListener {
-        void onSubjectClick(SubjectResponseDTO subject);
-    }
-
-    public void setOnSubjectClickListener(OnSubjectClickListener listener) {
-        this.listener = listener;
-    }
 
     public void setSubjects(List<SubjectResponseDTO> subjects) {
         this.subjectList = subjects;
@@ -41,30 +32,20 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
         SubjectResponseDTO subject = subjectList.get(position);
         holder.binding.tvSubjectName.setText(subject.getNameSubject());
         
-        // Color por defecto del indicador
-        holder.binding.viewColorIndicator.setBackgroundColor(Color.parseColor("#2196F3"));
-        holder.binding.viewColorIndicator.setVisibility(View.VISIBLE);
-        holder.binding.tvSubjectName.setTextColor(Color.parseColor("#1E293B"));
-
         if (subject.getColor() != null && !subject.getColor().isEmpty()) {
             try {
                 String colorHex = subject.getColor();
                 if (!colorHex.startsWith("#")) colorHex = "#" + colorHex;
                 int color = Color.parseColor(colorHex);
-                // Ponemos el color en la barra indicadora izquierda
-                holder.binding.viewColorIndicator.setBackgroundColor(color);
+                holder.binding.tvSubjectName.setTextColor(color);
+                // Hide the indicator as requested (color out of column)
+                holder.binding.viewColorIndicator.setVisibility(View.GONE);
             } catch (Exception e) {
-                // Si falla, se queda el color por defecto
+                // Fallback
             }
         }
         
         holder.binding.tvAcademicYear.setVisibility(View.GONE);
-
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onSubjectClick(subject);
-            }
-        });
     }
 
     @Override

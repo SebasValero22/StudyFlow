@@ -3,7 +3,6 @@ package com.example.studyflow.data.repository;
 import com.example.studyflow.data.dto.TaskResponseDTO;
 import com.example.studyflow.data.remote.ApiClient;
 import com.example.studyflow.data.remote.ApiService;
-import com.example.studyflow.utils.UserSession;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,8 +16,7 @@ public class TaskRepository {
     }
 
     public void getTasks(RepositoryCallback<List<TaskResponseDTO>> callback) {
-        Integer userId = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUser().getUserId() : null;
-        apiService.getTasks(userId).enqueue(new Callback<List<TaskResponseDTO>>() {
+        apiService.getTasks().enqueue(new Callback<List<TaskResponseDTO>>() {
             @Override
             public void onResponse(Call<List<TaskResponseDTO>> call, Response<List<TaskResponseDTO>> response) {
                 if (response.isSuccessful()) callback.onSuccess(response.body());

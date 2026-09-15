@@ -38,6 +38,12 @@ public class MainDashboardController {
     }
 
     @FXML
+    public void showTimer(ActionEvent actionEvent) {
+        loadView("timer_view.fxml");
+        updateUI(actionEvent, "Viewing: Animedoro Focus Engine");
+    }
+
+    @FXML
     public void showSubjects(ActionEvent actionEvent) {
         loadView("subjects_view.fxml");
         updateUI(actionEvent, "Viewing: Subjects");
@@ -58,11 +64,11 @@ public class MainDashboardController {
     @FXML
     private void loadView(String fxmlFile) {
         try {
-            // Usamos el parametro fxmlFile para construir la ruta
+            // CORRECCIÓN: Usa la variable fxmlFile, no pongas "register_view.fxml" a mano
             String path = "/com/iescamp/studyflow/fxml/" + fxmlFile;
 
             if (getClass().getResource(path) == null) {
-                // Si la vista no existe, mostramos error y salimos
+                // Este es el error que ves ahora, porque overview_view.fxml no existía
                 System.err.println("ERROR! FXML file not found at: " + path);
                 statusLabel.setText("Error: File " + fxmlFile + " not found.");
                 return;
@@ -78,11 +84,11 @@ public class MainDashboardController {
         }
     }
 
-    // Metodo auxiliar para limpiar el estilo de los botones y actualizar el texto
+    // Método auxiliar para limpiar el estilo de los botones y actualizar el label
     private void updateUI(Event event, String statusText) {
         statusLabel.setText(statusText);
 
-        // Resetear botones al color por defecto
+        // Reset all buttons to default grey color
         if (sidebarMenu != null) {
             for (javafx.scene.Node node : sidebarMenu.getChildren()) {
                 if (node instanceof Button btn) {
@@ -91,7 +97,7 @@ public class MainDashboardController {
             }
         }
 
-        // Resaltar el boton seleccionado
+        // Highlight the selected button in white
         if (event != null && event.getSource() instanceof Button btn) {
             btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-alignment: BASELINE_LEFT;");
         }
@@ -99,7 +105,7 @@ public class MainDashboardController {
 
     @FXML
     public void showUserConfig(ActionEvent actionEvent) {
-        loadView("user_config_view.fxml"); // Asegurate de que el nombre coincida con el archivo
+        loadView("user_config_view.fxml"); // Asegúrate de que el nombre coincida con tu archivo
         statusLabel.setText("Profile Settings");
     }
 }

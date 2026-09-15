@@ -21,6 +21,7 @@ public class Task {
     private Integer subjectId;
     private String subjectName;
     private String subjectColor;
+    private Integer orderIndex;
 
 
 
@@ -109,5 +110,13 @@ public class Task {
 
     public void setSubjectId(Integer subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public Integer getOrderIndex() {
+        return orderIndex;
+    }
+
+    public void setOrderIndex(Integer orderIndex) {
+        this.orderIndex = orderIndex;
     }
 }

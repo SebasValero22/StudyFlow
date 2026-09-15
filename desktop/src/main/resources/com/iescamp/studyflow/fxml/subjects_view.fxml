@@ -22,6 +22,8 @@
             </font>
         </Label>
         <Button onAction="#handleCreateSubject" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="+ New Subject" />
+        <Button onAction="#handleEditSubject" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Edit Selected" />
+        <Button onAction="#handleDeleteSubject" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Delete Selected" />
     </HBox>
 
     <javafx.scene.control.SplitPane dividerPositions="0.4" VBox.vgrow="ALWAYS">
@@ -30,14 +32,15 @@
                 <children>
                     <TableView fx:id="subjectsTable" VBox.vgrow="ALWAYS">
                         <columns>
-                            <TableColumn fx:id="nameColumn" text="Name" prefWidth="250">
+                            <TableColumn text="ID" prefWidth="50">
+                                <cellValueFactory><PropertyValueFactory property="subjectId" /></cellValueFactory>
+                            </TableColumn>
+                            <TableColumn fx:id="nameColumn" text="Name" prefWidth="200">
                                 <cellValueFactory><PropertyValueFactory property="nameSubject" /></cellValueFactory>
                             </TableColumn>
-                            <TableColumn text="Year" prefWidth="120">
+                            <TableColumn text="Year" prefWidth="100">
                                 <cellValueFactory><PropertyValueFactory property="academicYear" /></cellValueFactory>
                             </TableColumn>
-                            <TableColumn fx:id="colorColumn" text="Color" prefWidth="150" />
-                            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150" />
                         </columns>
                         <columnResizePolicy>
                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

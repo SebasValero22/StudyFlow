@@ -19,21 +19,21 @@ public class ViewSwitcher {
 
             String path = "/com/iescamp/studyflow/fxml/" + fxmlFile;
             URL resource = ViewSwitcher.class.getResource(path);
-            // Verificamos que el recurso exista
+            // we see if the root is failing
             if (resource == null) {
                 throw new RuntimeException("cannot find the fxml in : " + path);
             }
 
             Parent root = FXMLLoader.load(resource);
 
-            // Optimizacion: si ya existe una escena, solo cambiamos la raiz (mas rapido y suave)
+            // Optimización: Si ya existe una escena, solo cambiamos la raíz (es más rápido y suave)
             if (primaryStage.getScene() == null) {
                 primaryStage.setScene(new Scene(root));
             } else {
                 primaryStage.getScene().setRoot(root);
             }
 
-            primaryStage.sizeToScene(); // Ajusta el tamano de la ventana al nuevo contenido
+            primaryStage.sizeToScene(); // Ajusta el tamaño de la ventana al nuevo contenido
             primaryStage.centerOnScreen();
             primaryStage.show();
 

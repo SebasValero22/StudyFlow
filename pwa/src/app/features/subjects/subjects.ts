@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService, Subject } from '../../core/services/api';
+import { ApiService, LifeArea } from '../../core/services/api';
 
 @Component({
   selector: 'app-subjects',
@@ -11,15 +11,15 @@ import { ApiService, Subject } from '../../core/services/api';
   styleUrls: ['./subjects.scss']
 })
 export class SubjectsComponent implements OnInit {
-  subjects: Subject[] = [];
-  newSubject: Subject = { 
-    nameSubject: '', 
-    color: '#3498db', 
-    userId: 1,
+  subjects: LifeArea[] = [];
+  newSubject: LifeArea = {
+    name: '',
+    color: '#FFB7B2',
+    userId: 0, // real id assigned in ngOnInit
     academicYear: '2025/2026',
-    activeSubject: true
+    active: true
   };
-  pantoneColors: string[] = ['#c0392b', '#2980b9', '#27ae60', '#f39c12', '#8e44ad', '#d35400'];
+  pantoneColors: string[] = ['#FFB7B2', '#B2E2F2', '#B2F2BB', '#F2F2B2', '#E2F0CB', '#FFDAC1'];
   loading = false;
   error = '';
   isEditing = false;
@@ -27,6 +27,7 @@ export class SubjectsComponent implements OnInit {
   constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
+    this.newSubject.userId = this.api.getCurrentUser()?.userId ?? 1;
     this.loadSubjects();
   }
 
@@ -43,7 +44,7 @@ export class SubjectsComponent implements OnInit {
   }
 
   addSubject() {
-    if (!this.newSubject.nameSubject) return;
+    if (!this.newSubject.name) return;
     this.api.addSubject(this.newSubject).subscribe({
       next: () => {
         this.loadSubjects();
@@ -53,7 +54,7 @@ export class SubjectsComponent implements OnInit {
     });
   }
 
-  editSubject(subject: Subject) {
+  editSubject(subject: LifeArea) {
     this.isEditing = true;
     this.newSubject = { ...subject };
   }
@@ -64,8 +65,8 @@ export class SubjectsComponent implements OnInit {
   }
 
   updateSubject() {
-    if (!this.newSubject.subjectId) return;
-    this.api.updateSubject(this.newSubject.subjectId, this.newSubject).subscribe({
+    if (!this.newSubject.lifeAreaId) return;
+    this.api.updateSubject(this.newSubject.lifeAreaId, this.newSubject).subscribe({
       next: () => {
         this.isEditing = false;
         this.loadSubjects();
@@ -85,11 +86,11 @@ export class SubjectsComponent implements OnInit {
 
   resetNewSubject() {
     this.newSubject = { 
-      nameSubject: '', 
-      color: '#3498db', 
-      userId: 1,
+      name: '', 
+      color: '#FFB7B2', 
+      userId: this.api.getCurrentUser()?.userId ?? 1,
       academicYear: '2025/2026',
-      activeSubject: true
+      active: true
     };
   }
 }

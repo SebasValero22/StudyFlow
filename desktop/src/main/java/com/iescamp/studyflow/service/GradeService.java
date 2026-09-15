@@ -11,13 +11,7 @@ public class GradeService {
 
     // GET /api/grades
     public List<Grade> getAllGrades() throws Exception {
-        com.iescamp.studyflow.model.User currentUser = com.iescamp.studyflow.utils.UserSession.getInstance().getUser();
-        String endpoint = "/grades";
-        if (currentUser != null) {
-            endpoint += "?userId=" + currentUser.getUserId();
-        }
-
-        HttpRequest request = ApiClient.prepareRequest(endpoint).GET().build();
+        HttpRequest request = ApiClient.prepareRequest("/grades").GET().build();
         HttpResponse<String> response = ApiClient.sendRequest(request);
 
         if (response.statusCode() == 200) {

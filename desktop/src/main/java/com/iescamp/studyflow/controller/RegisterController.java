@@ -2,7 +2,7 @@ package com.iescamp.studyflow.controller;
 
 import com.iescamp.studyflow.model.User;
 import com.iescamp.studyflow.service.UserService;
-import com.iescamp.studyflow.utils.ViewSwitcher;
+import com.iescamp.studyflow.utils.ViewSwitcher; // Asumiendo que tienes tu gestor de vistas
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,52 +24,52 @@ public class RegisterController {
 
     @FXML
     public void handleRegister(ActionEvent event) {
-        // Recogida de datos
+        // 1. Recogida de datos
         String name = txtName.getText().trim();
         String email = txtEmail.getText().trim();
         String password = txtPassword.getText();
 
-        // Validacion local (RA4.3 - prevencion de errores)
+        // 2. Validación local (RA4.3 - Prevención de errores)
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
             showStatus("All fields are required.", Color.RED);
             return;
         }
 
-        // Validacion extra: formato de email (opcional pero recomendado)
+        // Validación extra: Email formato (opcional pero recomendado)
         if (!email.contains("@")) {
             showStatus("Please enter a valid email.", Color.RED);
             return;
         }
 
-        // Preparar el objeto User (segun tu modelo)
+        // 3. Preparar el objeto User (según tu modelo)
         User newUser = new User();
         newUser.setName(name);
         newUser.setEmail(email);
         newUser.setPassword(password);
-        // La fecha de registro la suele poner el backend automaticamente
+        // La fecha de registro la suele poner el backend automáticamente
 
-        // Gestion visual de estados (RA2.3)
+        // 4. Gestión Visual de Estados (RA2.3)
         btnRegister.setDisable(true); // Evitar doble clic
         showStatus("Creating account...", Color.BLUE);
 
-        // Proceso en segundo plano (PSP - hilos)
+        // 5. Proceso en segundo plano (PSP - Hilos)
         Task<Void> registerTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                userService.register(newUser);
+                userService.register(newUser); // Llamada a tu servicio
                 return null;
             }
         };
 
-        // Exito
+        // ÉXITO
         registerTask.setOnSucceeded(e -> {
             btnRegister.setDisable(false);
             showStatus("Account created! Redirecting...", Color.GREEN);
-            // Pequena pausa o redireccion inmediata al login
+            // Pequeña pausa o redirección inmediata al Login
             ViewSwitcher.loadView("login_view.fxml");
         });
 
-        // Fallo
+        // FALLO
         registerTask.setOnFailed(e -> {
             btnRegister.setDisable(false);
             Throwable error = registerTask.getException();

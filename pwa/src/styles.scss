@@ -1,16 +1,13 @@
-/* Puedes anadir estilos globales aqui y tambien importar otros archivos de estilos */
-
-:root {
-  --sidebar-blue: #2c3e50;
-  --sidebar-hover: #34495e;
-  --accent-blue: #3498db;
-}
+/* You can add global styles to this file, and also import other style files */
+@use 'styles/themes.scss';
 
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-  background-color: #f8f9fa;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-layout {
@@ -20,11 +17,12 @@ body {
 
 .sidebar {
   width: 260px !important;
-  background-color: var(--sidebar-blue) !important;
+  background-color: var(--sidebar-bg) !important;
   display: flex;
   flex-direction: column;
   padding: 1.5rem 0;
-  color: white;
+  color: var(--sidebar-text);
+  transition: background-color 0.3s ease;
 
   .brand {
     padding: 0 1.5rem;
@@ -36,8 +34,8 @@ body {
     margin-bottom: 2.5rem;
 
     .logo-icon {
-      background: white;
-      color: var(--sidebar-blue);
+      background: var(--sidebar-text);
+      color: var(--sidebar-bg);
       width: 40px;
       height: 40px;
       display: flex;
@@ -59,7 +57,7 @@ body {
 
       a {
         text-decoration: none;
-        color: #bdc3c7;
+        color: var(--sidebar-text-muted);
         display: flex;
         align-items: center;
         gap: 12px;
@@ -67,8 +65,8 @@ body {
         border-radius: 8px;
         transition: all 0.2s;
 
-        &:hover { background-color: var(--sidebar-hover); color: white; }
-        &.active { background-color: var(--accent-blue); color: white; font-weight: 600; }
+        &:hover { background-color: var(--sidebar-hover); color: var(--sidebar-text); }
+        &.active { background-color: var(--accent-primary); color: #fff; font-weight: 600; }
       }
     }
   }
@@ -76,7 +74,7 @@ body {
   .sidebar-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--sidebar-hover);
-    a { color: #bdc3c7; text-decoration: none; &:hover { color: white; } }
+    a { color: var(--sidebar-text-muted); text-decoration: none; &:hover { color: var(--sidebar-text); } }
   }
 }
 
@@ -89,12 +87,13 @@ body {
 
 .top-header {
   height: 70px;
-  background-color: white;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .content-area {

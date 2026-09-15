@@ -1,0 +1,104 @@
+<div class="journal-container">
+  <h2>Voice Journal</h2>
+  <p class="journal-subtitle">Dump your thoughts. Nyra cleans them up.</p>
+
+  <div *ngIf="error()" class="error-message">{{ error() }}</div>
+
+  <!-- Capture deck -->
+  <div class="capture-deck">
+    <button
+      class="record-btn"
+      [class.recording]="recorderState() === 'recording'"
+      [disabled]="recorderState() === 'processing'"
+      (click)="toggleRecording()"
+      [title]="recorderState() === 'recording' ? 'Stop recording' : 'Start recording'">
+      @if (recorderState() === 'recording') {
+        <span class="stop-square"></span>
+      } @else {
+        <span class="mic-icon">🎙️</span>
+      }
+    </button>
+
+    <div class="capture-status">
+      @switch (recorderState()) {
+        @case ('idle') {
+          <span class="status-line">Tap to record your thoughts</span>
+        }
+        @case ('recording') {
+          <span class="status-line recording-label">
+            Recording… {{ elapsedSeconds() }}s / {{ maxDuration }}s
+          </span>
+        }
+        @case ('processing') {
+          <span class="status-line processing-label">Nyra is cleaning up your entry…</span>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Text fallback: works today while STT pipeline is pending -->
+  <div class="text-entry">
+    <textarea
+      [(ngModel)]="textDraft"
+      rows="3"
+      placeholder="…or type it out instead (Nyra will still clean it up)"
+      [disabled]="recorderState() !== 'idle'"></textarea>
+    <button class="submit-btn" [disabled]="!canSubmitText()" (click)="submitTextEntry()">
+      Save & Clean Up
+    </button>
+  </div>
+
+  <!-- Latest entry spotlight -->
+  @if (latestEntry(); as entry) {
+    <div class="entry-card latest" [ngClass]="moodClass(entry.moodTag)">
+      <div class="entry-head">
+        <h3>{{ entry.title }}</h3>
+        <span class="mood-chip">{{ entry.moodTag || 'UNTAGGED' }}</span>
+      </div>
+      <markdown [data]="entry.transcript"></markdown>
+    </div>
+  }
+
+  <!-- History timeline -->
+  <div class="history">
+    <h3>History</h3>
+    @if (loading()) {
+      <p class="muted">Loading…</p>
+    } @else if (entries().length === 0) {
+      <p class="muted">No entries yet. Your future self is waiting.</p>
+    }
+    @for (entry of entries(); track entry.entryId) {
+      <article class="entry-card" [ngClass]="moodClass(entry.moodTag)">
+        <div class="entry-head">
+          <h4>{{ entry.title }}</h4>
+          <div class="entry-meta">
+            <span class="mood-chip">{{ entry.moodTag || 'UNTAGGED' }}</span>
+            <span class="date">{{ formatDate(entry.createdAt) }}</span>
+            @if (entry.durationSeconds) {
+              <span class="duration">· {{ entry.durationSeconds }}s</span>
+            }
+            <button class="delete-btn" (click)="deleteEntry(entry.entryId)">✕</button>
+          </div>
+        </div>
+      <markdown [data]="entry.transcript"></markdown>
+      @if (parseActions(entry.transcript).length > 0) {
+        <div class="action-items">
+          <span class="actions-label">Actions:</span>
+          @for (action of parseActions(entry.transcript); track action) {
+            <span class="action-chip" [class.done]="promoted().has(action)">
+              {{ action }}
+              @if (!promoted().has(action)) {
+                <button class="promote-btn" (click)="promoteAction(entry.entryId, action)" title="Create task">
+                  + Task
+                </button>
+              } @else {
+                <span class="promoted-check">✓ in Tasks</span>
+              }
+            </span>
+          }
+        </div>
+      }
+    </article>
+  }
+</div>
+</div>

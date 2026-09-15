@@ -28,7 +28,7 @@ public class ReminderService {
         }
     }
 
-    // POST /api/reminders
+    // SAVE REMINDER
     public void saveReminder(Reminder reminder) throws Exception {
         String json = JsonMapper.get().writeValueAsString(reminder);
         HttpRequest request = ApiClient.prepareRequest("/reminders")
@@ -37,8 +37,7 @@ public class ReminderService {
             throw new Exception("REMINDER COULDNT BE SAVED");
         }
     }
-
-    // PUT /api/reminders/{id}
+    // UPDATE REMINDER
     public void updateReminder (Integer id, Reminder reminder) throws Exception{
         String json = JsonMapper.get().writeValueAsString(reminder);
         HttpRequest request = ApiClient.prepareRequest("/reminders/" + id)

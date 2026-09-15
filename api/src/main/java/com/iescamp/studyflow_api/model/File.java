@@ -14,8 +14,8 @@ public class File {
     private Integer fileID;
 
     @ManyToOne
-    @JoinColumn(name = "subjectId", nullable = false)
-    private Subject subjectId;
+    @JoinColumn(name = "LifeAreaId", nullable = false)
+    private LifeArea LifeAreaId;
 
     private String fileName;
     private String filePath;

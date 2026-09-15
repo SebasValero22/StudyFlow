@@ -13,13 +13,7 @@ public class TaskService {
 
     // GET /api/tasks
     public List<Task> getAllTasks() throws Exception {
-        com.iescamp.studyflow.model.User currentUser = com.iescamp.studyflow.utils.UserSession.getInstance().getUser();
-        String endpoint = "/tasks";
-        if (currentUser != null) {
-            endpoint += "?userId=" + currentUser.getUserId();
-        }
-        
-        HttpRequest request = ApiClient.prepareRequest(endpoint).GET().build();
+        HttpRequest request = ApiClient.prepareRequest("/tasks").GET().build();
         HttpResponse<String> response = ApiClient.sendRequest(request);
 
         if (response.statusCode() == 200) {

@@ -11,13 +11,7 @@ public class ExamService {
 
     // GET /api/exams
     public List<Exam> getAllExams() throws Exception {
-        com.iescamp.studyflow.model.User currentUser = com.iescamp.studyflow.utils.UserSession.getInstance().getUser();
-        String endpoint = "/exams";
-        if (currentUser != null) {
-            endpoint += "?userId=" + currentUser.getUserId();
-        }
-
-        HttpRequest request = ApiClient.prepareRequest(endpoint).GET().build();
+        HttpRequest request = ApiClient.prepareRequest("/exams").GET().build();
         HttpResponse<String> response = ApiClient.sendRequest(request);
 
         if (response.statusCode() == 200) {
@@ -26,7 +20,7 @@ public class ExamService {
         throw new Exception("ERROR LOADING EXAMS ");
     }
 
-    // GET /api/exams/subject/{id} (muy util para filtrar en el UI)
+    // GET /api/exams/subject/{id} (Muy útil para filtrar en el UI)
     public List<Exam> getExamsBySubject(Integer subjectId) throws Exception {
         HttpRequest request = ApiClient.prepareRequest("/exams/subject/" + subjectId).GET().build();
         HttpResponse<String> response = ApiClient.sendRequest(request);

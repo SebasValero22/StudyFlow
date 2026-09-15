@@ -7,7 +7,7 @@ public class ConfigLoader {
     private static final Properties properties = new Properties();
 
     static {
-        // La barra "/" al principio le dice que busque en la raiz de 'resources'
+        // La barra "/" al principio le dice que busque en la raíz de 'resources'
         try (InputStream input = ConfigLoader.class.getResourceAsStream("/config.properties")) {
             if (input == null) {
                 // Si falla, usamos valores por defecto para que no explote

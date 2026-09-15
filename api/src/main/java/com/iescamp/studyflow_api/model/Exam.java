@@ -13,13 +13,13 @@ public class Exam {
     private Integer examId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subjectId", nullable = false)
-    private Subject subject;
+    @JoinColumn(name = "LifeAreaId", nullable = false)
+    private LifeArea LifeArea;
 
     @Column(name = "nameExam", nullable = false)
     private String name;
 
-    // Asegurate de que esto sea String
+    // ASEGÚRATE DE QUE ESTO SEA STRING
     @Column(name = "examType")
     private String examType;
 
@@ -28,7 +28,4 @@ public class Exam {
 
     @Column(name = "classroom")
     private String classroom;
-
-    @Column(name = "isCompleted")
-    private Boolean isCompleted = false;
 }

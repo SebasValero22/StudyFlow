@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -56,16 +55,10 @@ public class TaskOverviewController {
         });
         colTaskCompleted.setCellFactory(column -> new TableCell<Task, Boolean>() {
             private final CheckBox checkBox = new CheckBox();
-            private final Label label = new Label();
-            private final HBox container = new HBox(5, checkBox, label);
             {
-                container.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
                 checkBox.setOnAction(event -> {
                     Task task = getTableView().getItems().get(getIndex());
-                    boolean selected = checkBox.isSelected();
-                    task.setIsCompleted(selected);
-                    label.setText(selected ? "HECHA" : "SIN HACER");
-                    label.setStyle(selected ? "-fx-text-fill: #27ae60; -fx-font-weight: bold;" : "-fx-text-fill: #95a5a6;");
+                    task.setIsCompleted(checkBox.isSelected());
                     try {
                         taskService.updateTask(task.getTaskId(), task);
                     } catch (Exception e) {
@@ -80,9 +73,7 @@ public class TaskOverviewController {
                     setGraphic(null);
                 } else {
                     checkBox.setSelected(item);
-                    label.setText(item ? "HECHA" : "SIN HACER");
-                    label.setStyle(item ? "-fx-text-fill: #27ae60; -fx-font-weight: bold;" : "-fx-text-fill: #95a5a6;");
-                    setGraphic(container);
+                    setGraphic(checkBox);
                 }
             }
         });
@@ -132,7 +123,7 @@ public class TaskOverviewController {
             Stage stage = new Stage();
             stage.setTitle("New Task");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atras
+            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atrás
             stage.showAndWait(); // Espera a que se cierre
 
             // Al cerrar, refrescamos la tabla para ver la nueva tarea
@@ -150,7 +141,7 @@ public class TaskOverviewController {
             return;
         }
 
-        // Confirmacion (usabilidad)
+        // Confirmación (Usabilidad)
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Delete task " + selected.getTitle() + "?");
         Optional<ButtonType> result = confirm.showAndWait();
 

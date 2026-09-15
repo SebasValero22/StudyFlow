@@ -15,8 +15,8 @@ public class Grade {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer gradeId;
     @ManyToOne
-    @JoinColumn(name = "subjectId")
-    private Subject subject;
+    @JoinColumn(name = "LifeAreaId")
+    private LifeArea LifeArea;
     private String concept;
     private Double score;
     private Double weight;

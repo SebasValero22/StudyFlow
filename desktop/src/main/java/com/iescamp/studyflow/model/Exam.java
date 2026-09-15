@@ -13,7 +13,4 @@ public class Exam {
     private String classroom; // Coincide con colRoom -> "classroom"
     private String subjectName;
     private String subjectColor;
-    
-    @com.fasterxml.jackson.annotation.JsonProperty("isCompleted")
-    private boolean isCompleted;
 }

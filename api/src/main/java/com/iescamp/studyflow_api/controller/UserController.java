@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*") // Necesario para la PWA
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -27,8 +27,12 @@ public class UserController {
         }
 
         @GetMapping("/search")
-         public UserResponseDTO findByEmail(@RequestParam String email) {
-             return userService.findByEmail(email);
-         }
+        public UserResponseDTO findByEmail(@RequestParam String email) {
+            return userService.findByEmail(email);
+        }
 
+//        @GetMapping("/all")
+//        public List<UserResponseDTO> getAll() {
+//            return userService.findAll();
+//        }
 }

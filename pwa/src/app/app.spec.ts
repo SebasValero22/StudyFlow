@@ -1,9 +1,18 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpBackend } from '@angular/common/http';
+import { FakeBackend } from '../testing/fake-backend';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        { provide: HttpBackend, useClass: FakeBackend }
+      ],
       imports: [App],
     }).compileComponents();
   });
@@ -14,10 +23,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('renders the router outlet shell', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, studyflow-pwa');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

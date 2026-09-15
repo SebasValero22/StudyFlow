@@ -18,7 +18,7 @@ public class OperationHistory {
     private Integer historyId;
 
     private String description;
-    private String actionType; // Por ejemplo: "CREATE", "UPDATE", "DELETE"
+    private String actionType; // e.g., "CREATE", "UPDATE", "DELETE"
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date operationDate;

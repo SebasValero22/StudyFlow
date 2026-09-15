@@ -1,0 +1,64 @@
+.audio-player-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  padding: 10px 15px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 15px var(--card-shadow);
+  z-index: 1000;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.play-btn {
+  background: var(--accent-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.1s;
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stream-select {
+  background: transparent;
+  color: var(--sidebar-text);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 5px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+  
+  option {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+  }
+}
+
+.volume-slider {
+  width: 80px;
+  accent-color: var(--accent-primary);
+}

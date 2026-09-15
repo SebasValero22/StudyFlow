@@ -1,24 +1,53 @@
-# Node / Angular
-**/node_modules/
-**/dist/
-**/.angular/
+# === Java / Spring Boot ===
+api/target/
+api/*.iml
+api/.idea/
 
-# Java / Spring / Maven / Gradle
-**/target/
-**/.idea/
-**/*.iml
-**/bin/
-**/.settings/
-**/.classpath
-**/.project
-**/.gradle/
-**/build/
-**/local.properties
+# === Angular / PWA ===
+pwa/node_modules/
+pwa/dist/
+pwa/.angular/
+pwa/.vite/
 
-# OS / IDE
-**/.DS_Store
-**/Thumbs.db
-**/*.suo
-**/*.ntvs*
-**/*.njsproj
-**/*.sln
+# === JavaFX Desktop ===
+desktop/target/
+desktop/*.iml
+desktop/.idea/
+
+# === Android ===
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/keystore/
+
+# === General IDE ===
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+*.swp
+*.swo
+*~
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Environment / Secrets ===
+.env
+.env.local
+.env.production
+*.env
+
+# === Logs ===
+*.log
+logs/
+
+# === Gemini / Antigravity ===
+.gemini/

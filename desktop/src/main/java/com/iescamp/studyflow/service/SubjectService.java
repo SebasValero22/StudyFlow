@@ -11,18 +11,13 @@ import java.util.List;
 
 public class SubjectService {
 
-    // GET /api/subjects?userId=...
+    // GET /api/subjects
     public List<Subject> getAllSubjects() throws Exception {
-        com.iescamp.studyflow.model.User currentUser = com.iescamp.studyflow.utils.UserSession.getInstance().getUser();
-        String endpoint = "/subjects";
-        if (currentUser != null) {
-            endpoint += "?userId=" + currentUser.getUserId();
-        }
-        
-        HttpRequest request = ApiClient.prepareRequest(endpoint).GET().build();
+        HttpRequest request = ApiClient.prepareRequest("/subjects").GET().build();
         HttpResponse<String> response = ApiClient.sendRequest(request);
 
         if (response.statusCode() == 200) {
+            // Truco: Convertimos a Array primero para evitar problemas de tipos genéricos con Jackson
             Subject[] subjects = JsonMapper.get().readValue(response.body(), Subject[].class);
             return Arrays.asList(subjects);
         }
@@ -36,16 +31,16 @@ public class SubjectService {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
-        // Esperamos 200; si no, consideramos error
+        // CORRECCIÓN: Si es distinto de 200/201 es cuando hay error
         if (ApiClient.sendRequest(request).statusCode() != 200) {
             throw new Exception("Subject couldn't be saved");
         }
     }
 
-    // PUT /api/subjects/{id}
+    // UPDATE /api/subjects/{id}
     public void updateSubject(Integer id, Subject subject) throws Exception {
         String json = JsonMapper.get().writeValueAsString(subject);
-        HttpRequest request = ApiClient.prepareRequest("/subjects/" + id)
+        HttpRequest request = ApiClient.prepareRequest("/subjects/" + id) // Corregido endpoint
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 

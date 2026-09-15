@@ -21,7 +21,7 @@ public class GradeService {
         Grade grade = new Grade();
         grade.setConcept(dto.getConcept());
         grade.setScore(dto.getScore());
-        grade.setSubject(dto.getSubject());
+        grade.setLifeArea(dto.getLifeArea());
         grade.setWeight(dto.getWeight());
         grade.setGradeDate(dto.getGradeDate());
         return GradeDTO.convertToDTO(gradeRepository.save(grade));
@@ -37,19 +37,14 @@ public class GradeService {
                 .orElseThrow(() -> new RuntimeException("Grade not found"));
 
         grade.setConcept(dto.getConcept());
-        grade.setScore(dto.getScore()); // Debe estar entre 0 y 10
+        grade.setScore(dto.getScore()); // Must be 0-10
         grade.setWeight(dto.getWeight());
 
-        return GradeDTO.convertToDTO(gradeRepository.save(grade));
+        return GradeDTO.convertToDTO(gradeRepository.save(grade)); // Don't forget .save()!
     }
 
-    public List<GradeDTO> findAll(Integer userId){
-        List<Grade> grades;
-        if (userId != null) {
-            grades = gradeRepository.findBySubject_UserId(userId);
-        } else {
-            grades = gradeRepository.findAll();
-        }
+    public List<GradeDTO> findAll(){
+        List<Grade> grades = gradeRepository.findAll();
         return grades.stream().map(GradeDTO::convertToDTO).toList();
     }
 

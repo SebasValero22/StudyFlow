@@ -26,13 +26,20 @@
 
     <div class="settings-card">
       <h3>Visual Preferences</h3>
-      <div class="setting-item">
+      <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 10px;">
         <div class="label">
-          <strong>Dark Mode</strong>
-          <p>Switch between light and dark visual styles.</p>
+          <strong>Deep Theme Engine</strong>
+          <p>Switch between visual styles matching your cognitive state.</p>
         </div>
-        <div class="control">
-          <button class="btn-toggle">Enable</button>
+        <div class="control" style="width: 100%; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button *ngFor="let theme of themes" 
+                  (click)="setTheme(theme.id)"
+                  [style.border]="currentTheme === theme.id ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)'"
+                  [style.background]="currentTheme === theme.id ? 'var(--bg-surface-hover)' : 'var(--bg-surface)'"
+                  [style.color]="'var(--text-main)'"
+                  style="padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            {{ theme.name }}
+          </button>
         </div>
       </div>
       <div class="setting-item">

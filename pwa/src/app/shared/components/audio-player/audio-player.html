@@ -1,0 +1,15 @@
+<div class="audio-player-container">
+  <button class="play-btn" (click)="togglePlay()">
+    {{ isPlaying ? '⏸' : '▶️' }}
+  </button>
+  
+  <div class="controls">
+    <select class="stream-select" (change)="changeStream($event)" [value]="currentStream?.id || streams[0].id">
+      <option *ngFor="let stream of streams" [value]="stream.id">
+        {{ stream.name }}
+      </option>
+    </select>
+    
+    <input type="range" class="volume-slider" min="0" max="1" step="0.05" [value]="volume" (input)="changeVolume($event)">
+  </div>
+</div>

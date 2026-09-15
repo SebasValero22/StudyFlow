@@ -44,8 +44,6 @@ public class SubjectsController {
 
     @FXML private TableView<Subject> subjectsTable;
     @FXML private TableColumn<Subject, String> nameColumn;
-    @FXML private TableColumn<Subject, String> colorColumn;
-    @FXML private TableColumn<Subject, Void> actionsColumn;
     @FXML private Label statusLabel;
 
     @FXML private TableView<Task> tasksTable;
@@ -71,7 +69,7 @@ public class SubjectsController {
         setupDetailTables();
         loadSubjects();
 
-        // Listener de seleccion
+        // Add selection listener
         subjectsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 loadSubjectDetails(newSelection);
@@ -93,63 +91,11 @@ public class SubjectsController {
                     String color = subject.getColor();
                     if (color != null && !color.isEmpty()) {
                         if (!color.startsWith("#")) color = "#" + color;
-                        // Usamos el color como borde y un texto oscuro/negrita para maxima legibilidad
-                        setStyle("-fx-border-color: " + color + "; -fx-border-width: 0 0 0 5; -fx-padding: 0 0 0 10; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-                        setText(item);
+                        setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
                     } else {
                         setStyle("");
-                        setText(item);
                     }
                 }
-            }
-        });
-
-        colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
-        colorColumn.setCellFactory(column -> new javafx.scene.control.TableCell<Subject, String>() {
-            @Override
-            protected void updateItem(String color, boolean empty) {
-                super.updateItem(color, empty);
-                if (empty || color == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    String hexColor = color.startsWith("#") ? color : "#" + color;
-                    javafx.scene.shape.Circle circle = new javafx.scene.shape.Circle(8, javafx.scene.paint.Color.web(hexColor));
-                    Label hexLabel = new Label(hexColor);
-                    javafx.scene.layout.HBox hbox = new javafx.scene.layout.HBox(8, circle, hexLabel);
-                    hbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-                    setGraphic(hbox);
-                    setText(null);
-                }
-            }
-        });
-
-        actionsColumn.setCellFactory(column -> new javafx.scene.control.TableCell<Subject, Void>() {
-            private final Button btnEdit = new Button("Modify");
-            private final Button btnDelete = new Button("Delete");
-            private final javafx.scene.layout.HBox pane = new javafx.scene.layout.HBox(10, btnEdit, btnDelete);
-
-            {
-                btnEdit.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white;");
-                btnDelete.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
-                
-                btnEdit.setOnAction(event -> {
-                    Subject subject = getTableView().getItems().get(getIndex());
-                    subjectsTable.getSelectionModel().select(subject);
-                    handleEditSubject(null);
-                });
-
-                btnDelete.setOnAction(event -> {
-                    Subject subject = getTableView().getItems().get(getIndex());
-                    subjectsTable.getSelectionModel().select(subject);
-                    handleDeleteSubject(null);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : pane);
             }
         });
     }
@@ -169,21 +115,21 @@ public class SubjectsController {
         try {
             int sid = subject.getSubjectId();
 
-            // Filtrar tareas
+            // Filter Tasks
             List<Task> allTasks = taskService.getAllTasks();
             List<Task> filteredTasks = allTasks.stream()
                     .filter(t -> t.getSubjectId() != null && t.getSubjectId() == sid)
                     .collect(Collectors.toList());
             tasksTable.setItems(FXCollections.observableArrayList(filteredTasks));
 
-            // Filtrar examenes
+            // Filter Exams
             List<Exam> allExams = examService.getAllExams();
             List<Exam> filteredExams = allExams.stream()
                     .filter(e -> e.getSubjectId() == sid)
                     .collect(Collectors.toList());
             examsTable.setItems(FXCollections.observableArrayList(filteredExams));
 
-            // Filtrar notas
+            // Filter Grades
             List<Grade> allGrades = gradeService.getAllGrades();
             List<Grade> filteredGrades = allGrades.stream()
                     .filter(g -> g.getSubjectId() == sid)
@@ -208,7 +154,7 @@ public class SubjectsController {
     @FXML
     public void handleCreateSubject(ActionEvent event) {
         try {
-            // Cargar el formulario
+            // Cargar el formulario que YA tienes creado
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/iescamp/studyflow/fxml/subject_form.fxml"));
             Parent root = loader.load();
 

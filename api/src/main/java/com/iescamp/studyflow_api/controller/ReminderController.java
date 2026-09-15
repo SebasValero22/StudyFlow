@@ -6,36 +6,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/api/reminders")
 public class ReminderController {
 
-    // Inyeccion del servicio (obligatoria)
+    // ¡FALTABA ESTO! Sin Autowired, la app crashea.
     @Autowired
     private ReminderService reminderService;
 
-    // POST /api/reminders
+    // POST a /api/reminders
     @PostMapping
     public ReminderDTO add(@RequestBody ReminderDTO dto){
         return reminderService.add(dto);
     }
 
-    // DELETE /api/reminders/5
+    // DELETE a /api/reminders/5
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         reminderService.delete(id);
     }
 
-    // PUT /api/reminders/5
+    // PUT a /api/reminders/5
     @PutMapping("/{id}")
     public ReminderDTO update(@PathVariable Integer id, @RequestBody ReminderDTO dto){
         return reminderService.update(id, dto);
     }
 
-    // GET /api/reminders (devuelve una lista)
+    // GET a /api/reminders (Cambiado para devolver Lista)
     @GetMapping
     public List<ReminderDTO> findAll(){
-        return reminderService.findAll(); // Asegurate de que el servicio devuelve List
+        return reminderService.findAll(); // Asegúrate de que el servicio devuelve List
     }
 }

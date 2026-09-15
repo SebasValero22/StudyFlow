@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setTheme(R.style.Theme_StudyFlow);
         super.onCreate(savedInstanceState);
         
-        // Verificar sesion
+        // Verificar sesión
         if (!UserSession.getInstance().isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         binding.navView.setNavigationItemSelectedListener(this);
 
-        // Manejar boton atras moderno
+        // Manejar botón atrás moderno
         OnBackPressedCallback callback = new OnBackPressedCallback(false) {
             @Override
             public void handleOnBackPressed() {

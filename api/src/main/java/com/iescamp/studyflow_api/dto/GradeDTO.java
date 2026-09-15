@@ -1,7 +1,7 @@
 package com.iescamp.studyflow_api.dto;
 
 import com.iescamp.studyflow_api.model.Grade;
-import com.iescamp.studyflow_api.model.Subject;
+import com.iescamp.studyflow_api.model.LifeArea;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.Date;
 public class GradeDTO {
 
     private Integer gradeId;
-    private Subject subject;
+    private LifeArea lifeArea;
     private String concept;
     private Double score;
     private Double weight;
@@ -26,7 +26,7 @@ public class GradeDTO {
 
         dto.setGradeId(grade.getGradeId());
         dto.setConcept(grade.getConcept());
-        dto.setSubject(grade.getSubject());
+        dto.setLifeArea(grade.getLifeArea());
         dto.setWeight(grade.getWeight());
         dto.setScore(grade.getScore());
         dto.setGradeDate(grade.getGradeDate());

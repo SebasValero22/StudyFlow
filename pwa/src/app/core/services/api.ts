@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 
 export interface User {
   id?: number;
@@ -20,29 +20,37 @@ export interface UserRegisterDTO {
 }
 
 export interface UserResponseDTO {
-  id: number;
-  userName: string;
+  userId: number;
+  name: string;
   email: string;
 }
 
-export interface Subject {
-  subjectId?: number;
-  nameSubject: string;
-  color: string;
+export interface AuthResponseDTO {
+  token: string;
+  user: UserResponseDTO;
+}
+
+export interface LifeArea {
+  lifeAreaId?: number;
   userId: number;
+  name: string;
+  color: string;
   academicYear: string;
-  activeSubject: boolean;
+  active: boolean;
 }
 
 export interface Task {
   taskId?: number;
   title: string;
-  description: string;
-  start_date: string;
-  due_date: string;
+  description?: string | null;
+  priority?: string;
   isCompleted: boolean;
-  priority: string;
-  subjectId: number;
+  orderIndex?: number;
+  start_date?: string | null;
+  due_date?: string | null;
+  lifeAreaId?: number | null;
+  lifeAreaName?: string | null;
+  lifeAreaColor?: string | null;
 }
 
 export interface Exam {
@@ -50,17 +58,38 @@ export interface Exam {
   nameExam: string;
   examType: string;
   examDate: string;
-  classroom: string;
-  subjectId: number;
-  isCompleted: boolean;
+  classroom?: string;
+  lifeAreaId?: number | null;
+  lifeAreaName?: string | null;
+  lifeAreaColor?: string | null;
 }
 
 export interface Grade {
   gradeId?: number;
-  concept?: string;
+  concept?: string | null;
   score: number;
   weight: number;
-  subjectId: number;
+  gradeDate?: string | null;
+  lifeArea?: Partial<LifeArea> | null;
+}
+
+export interface VoiceJournal {
+  entryId?: number;
+  userId?: number;
+  taskId?: number | null;
+  title?: string;
+  moodTag?: 'GREAT' | 'GOOD' | 'NEUTRAL' | 'ROUGH' | 'TERRIBLE' | null;
+  rawTranscript?: string;
+  transcript?: string;
+  audioPath?: string | null;
+  durationSeconds?: number | null;
+  createdAt?: string;
+}
+
+export interface FocusReport {
+  totalFocusSeconds: number;
+  sessionCount: number;
+  byDay: { date: string; seconds: number }[];
 }
 
 @Injectable({
@@ -73,83 +102,56 @@ export class ApiService {
   constructor(private http: HttpClient) {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      try {
-        const userObj = JSON.parse(savedUser);
-        // Mapear campos de la respuesta del backend (userId, name) si existen
-        const mappedUser: UserResponseDTO = {
-          id: userObj.id !== undefined ? userObj.id : userObj.userId,
-          userName: userObj.userName !== undefined ? userObj.userName : userObj.name,
-          email: userObj.email
-        };
-        
-        // Si estaba en el formato del backend, actualizar localStorage al formato estándar del cliente
-        if (userObj.userId !== undefined || userObj.name !== undefined) {
-          localStorage.setItem('user', JSON.stringify(mappedUser));
-        }
-        
-        this.currentUser.set(mappedUser);
-      } catch (e) {
-        console.error('Error parsing saved user:', e);
-      }
+      this.currentUser.set(JSON.parse(savedUser));
     }
   }
 
   // Auth
   login(credentials: UserLoginDTO): Observable<UserResponseDTO> {
-    return this.http.post<any>(`${`${this.baseUrl}/users/login`}`, credentials).pipe(
-      map(res => {
-        const user: UserResponseDTO = {
-          id: res.userId,
-          userName: res.name,
-          email: res.email
-        };
-        this.currentUser.set(user);
-        localStorage.setItem('user', JSON.stringify(user));
-        return user;
-      })
+    return this.http.post<AuthResponseDTO>(`${this.baseUrl}/auth/login`, credentials).pipe(
+      tap(res => this.storeSession(res)),
+      map(res => res.user)
     );
   }
 
   register(userData: UserRegisterDTO): Observable<UserResponseDTO> {
-    return this.http.post<any>(`${`${this.baseUrl}/users/register`}`, userData).pipe(
-      map(res => {
-        const user: UserResponseDTO = {
-          id: res.userId,
-          userName: res.name,
-          email: res.email
-        };
-        this.currentUser.set(user);
-        localStorage.setItem('user', JSON.stringify(user));
-        return user;
-      })
+    return this.http.post<AuthResponseDTO>(`${this.baseUrl}/auth/register`, userData).pipe(
+      tap(res => this.storeSession(res)),
+      map(res => res.user)
     );
   }
 
   logout() {
     this.currentUser.set(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('studyflow-jwt');
   }
 
   isLoggedIn() {
-    return !!this.currentUser();
+    // Token is the source of truth: the 401 interceptor may have cleared it
+    // behind our back, so don't trust the in-memory signal alone.
+    return !!this.currentUser() && !!localStorage.getItem('studyflow-jwt');
   }
 
   getCurrentUser() {
     return this.currentUser();
   }
 
-  // Subjects
-  getSubjects(): Observable<Subject[]> {
-    const userId = this.currentUser()?.id || 1;
-    return this.http.get<Subject[]>(`${this.baseUrl}/subjects?userId=${userId}`);
+  private storeSession(res: AuthResponseDTO) {
+    localStorage.setItem('studyflow-jwt', res.token);
+    localStorage.setItem('user', JSON.stringify(res.user));
+    this.currentUser.set(res.user);
   }
-  addSubject(subject: Subject): Observable<Subject> {
-    const userId = this.currentUser()?.id || 1;
-    subject.userId = userId;
-    return this.http.post<Subject>(`${this.baseUrl}/subjects`, subject);
+
+  // Life Areas
+  getSubjects(): Observable<LifeArea[]> {
+    return this.http.get<LifeArea[]>(`${this.baseUrl}/subjects`);
   }
-  updateSubject(id: number, subject: Subject): Observable<Subject> {
-    return this.http.put<Subject>(`${this.baseUrl}/subjects/${id}`, subject);
+  addSubject(lifeArea: LifeArea): Observable<LifeArea> {
+    return this.http.post<LifeArea>(`${this.baseUrl}/subjects`, lifeArea);
+  }
+  updateSubject(id: number, lifeArea: LifeArea): Observable<LifeArea> {
+    return this.http.put<LifeArea>(`${this.baseUrl}/subjects/${id}`, lifeArea);
   }
   deleteSubject(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/subjects/${id}`);
@@ -157,14 +159,20 @@ export class ApiService {
 
   // Tasks
   getTasks(): Observable<Task[]> {
-    const userId = this.currentUser()?.id || 1;
-    return this.http.get<Task[]>(`${this.baseUrl}/tasks?userId=${userId}`);
+    return this.http.get<Task[]>(`${this.baseUrl}/tasks`);
+  }
+  getInboxTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.baseUrl}/tasks/inbox`);
   }
   addTask(task: Task): Observable<Task> {
+    // In Angular, we send the fields as defined in the interface
     return this.http.post<Task>(`${this.baseUrl}/tasks`, task);
   }
   updateTask(id: number, task: Task): Observable<Task> {
     return this.http.put<Task>(`${this.baseUrl}/tasks/${id}`, task);
+  }
+  reorderTasks(reorderRequests: {taskId: number, orderIndex: number}[]): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/tasks/reorder`, reorderRequests);
   }
   deleteTask(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/tasks/${id}`);
@@ -172,8 +180,7 @@ export class ApiService {
 
   // Exams
   getExams(): Observable<Exam[]> {
-    const userId = this.currentUser()?.id || 1;
-    return this.http.get<Exam[]>(`${this.baseUrl}/exams?userId=${userId}`);
+    return this.http.get<Exam[]>(`${this.baseUrl}/exams`);
   }
   addExam(exam: Exam): Observable<Exam> {
     return this.http.post<Exam>(`${this.baseUrl}/exams`, exam);
@@ -190,57 +197,64 @@ export class ApiService {
 
   // Grades
   getGrades(): Observable<Grade[]> {
-    const userId = this.currentUser()?.id || 1;
-    return this.http.get<any[]>(`${this.baseUrl}/grades?userId=${userId}`).pipe(
-      map(grades => grades.map(g => ({
-        gradeId: g.gradeId,
-        concept: g.concept || '',
-        score: g.score,
-        weight: g.weight,
-        subjectId: g.subject ? g.subject.subjectId : 0
-      })))
-    );
+    return this.http.get<Grade[]>(`${this.baseUrl}/grades`);
   }
   addGrade(grade: Grade): Observable<Grade> {
-    const payload = {
-      concept: grade.concept || '',
-      score: grade.score,
-      weight: grade.weight,
-      subject: {
-        subjectId: Number(grade.subjectId)
-      }
-    };
-    return this.http.post<any>(`${this.baseUrl}/grades`, payload).pipe(
-      map(g => ({
-        gradeId: g.gradeId,
-        concept: g.concept || '',
-        score: g.score,
-        weight: g.weight,
-        subjectId: g.subject ? g.subject.subjectId : 0
-      }))
-    );
+    return this.http.post<Grade>(`${this.baseUrl}/grades`, grade);
   }
   updateGrade(id: number, grade: Grade): Observable<Grade> {
-    const payload = {
-      gradeId: grade.gradeId,
-      concept: grade.concept || '',
-      score: grade.score,
-      weight: grade.weight,
-      subject: {
-        subjectId: Number(grade.subjectId)
-      }
-    };
-    return this.http.put<any>(`${this.baseUrl}/grades/${id}`, payload).pipe(
-      map(g => ({
-        gradeId: g.gradeId,
-        concept: g.concept || '',
-        score: g.score,
-        weight: g.weight,
-        subjectId: g.subject ? g.subject.subjectId : 0
-      }))
-    );
+    return this.http.put<Grade>(`${this.baseUrl}/grades/${id}`, grade);
   }
   deleteGrade(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/grades/${id}`);
+  }
+
+  // Nyra Integration
+  sendToNyra(input: string | Blob): Observable<Task> {
+    const formData = new FormData();
+    
+    if (typeof input === 'string') {
+      formData.append('text', input);
+    } else {
+      formData.append('audio', input, 'voice_capture.webm');
+    }
+
+    // Our backend expects /api/nyra/ingest
+    // Using this.baseUrl which is currently hardcoded or environment based
+    // Need to make sure this points to the Spring Boot instance
+    return this.http.post<Task>(`${this.baseUrl}/nyra/ingest`, formData);
+  }
+
+  autoScheduleNyra(): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/nyra/auto-schedule`, {});
+  }
+
+  // Voice Journal
+  ingestJournal(form: FormData): Observable<VoiceJournal> {
+    return this.http.post<VoiceJournal>(`${this.baseUrl}/journal/ingest`, form);
+  }
+  getJournal(): Observable<VoiceJournal[]> {
+    return this.http.get<VoiceJournal[]>(`${this.baseUrl}/journal`);
+  }
+  deleteJournalEntry(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/journal/${id}`);
+  }
+  promoteJournalAction(entryId: number, text: string): Observable<Task> {
+    return this.http.post<Task>(`${this.baseUrl}/journal/${entryId}/actions`, { text });
+  }
+
+  // Focus sessions (Animedoro -> timesheets)
+  recordFocusSession(payload: {
+    taskId?: number | null;
+    durationSeconds: number;
+    mode: 'FOCUS' | 'BREAK';
+    startedAt?: string;
+    completed?: boolean;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/focus/sessions`, payload);
+  }
+  getFocusReport(from?: string, to?: string): Observable<FocusReport> {
+    const params = from && to ? `?from=${from}&to=${to}` : '';
+    return this.http.get<FocusReport>(`${this.baseUrl}/focus/report${params}`);
   }
 }

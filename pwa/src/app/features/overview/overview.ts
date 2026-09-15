@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, NgIf, NgFor, NgStyle, DatePipe } from '@angular/common';
+import { CommonModule, NgIf, NgFor, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService, Task, Exam, Subject, Grade } from '../../core/services/api';
+import { ApiService, Task, Exam, LifeArea, Grade } from '../../core/services/api';
 
 interface CalendarItem {
   date: string;
@@ -18,12 +18,12 @@ interface GroupedItems {
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIf, NgFor, NgStyle, DatePipe],
+  imports: [CommonModule, FormsModule, NgIf, NgFor, DatePipe],
   templateUrl: './overview.html',
   styleUrls: ['./overview.scss']
 })
 export class OverviewComponent implements OnInit {
-  subjects: Subject[] = [];
+  subjects: LifeArea[] = [];
   tasks: Task[] = [];
   exams: Exam[] = [];
   grades: Grade[] = [];
@@ -86,35 +86,35 @@ export class OverviewComponent implements OnInit {
 
     const merged: CalendarItem[] = [];
 
-    // Filtrar y mapear tareas incompletas
+    // Filter and map incomplete Tasks
     this.tasks.filter(t => !t.isCompleted).forEach(t => {
-      const d = new Date(t.due_date);
-      if (d >= today && d <= limitDate) {
+      const d = t.due_date ? new Date(t.due_date) : null;
+      if (d && d >= today && d <= limitDate) {
         merged.push({
-          date: t.due_date,
+          date: t.due_date!,
           type: 'TASK',
           title: t.title,
-          subjectColor: this.getSubjectColor(t.subjectId),
+          subjectColor: t.lifeAreaColor || '#ccc',
           isCompleted: t.isCompleted
         });
       }
     });
 
-    // Filtrar y mapear examenes incompletos
-    this.exams.filter(e => !e.isCompleted).forEach(e => {
+    // Map all Exams (no completion flag on the wire contract)
+    this.exams.forEach(e => {
       const d = new Date(e.examDate);
       if (d >= today && d <= limitDate) {
         merged.push({
           date: e.examDate,
           type: 'EXAM',
           title: e.nameExam,
-          subjectColor: this.getSubjectColor(e.subjectId),
-          isCompleted: e.isCompleted
+          subjectColor: e.lifeAreaColor || '#ccc',
+          isCompleted: false
         });
       }
     });
 
-    // Agrupar por fecha
+    // Group by date
     const groups: GroupedItems = {};
     merged.sort((a, b) => a.date.localeCompare(b.date)).forEach(item => {
       if (!groups[item.date]) groups[item.date] = [];
@@ -124,8 +124,9 @@ export class OverviewComponent implements OnInit {
     this.groupedItems = groups;
   }
 
-  getSubjectColor(id: number) {
-    return this.subjects.find(s => s.subjectId === id)?.color || '#ccc';
+  getSubjectColor(id?: number | null) {
+    if (!id) return '#ccc';
+    return this.subjects.find(s => s.lifeAreaId === id)?.color || '#ccc';
   }
 
   getDates() {

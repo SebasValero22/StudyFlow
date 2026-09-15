@@ -18,6 +18,7 @@ import java.util.List;
 public class TaskController {
 
     @FXML private TableView<Task> taskTable;
+    // @FXML private TableColumn<Task, String> colTitle; // Asegúrate de tener las columnas en el FXML
     @FXML private Label statusLabel;
 
     private final TaskService taskService = new TaskService();
@@ -37,18 +38,18 @@ public class TaskController {
         }
     }
 
-    // Abrir el formulario para crear una tarea
+    // ESTE ES EL MÉTODO CORRECTO: Abrir el formulario para crear
     @FXML
     public void openCreateTaskDialog(ActionEvent event) {
         try {
-            // Cargar el FXML del formulario (asegurate de que la ruta sea correcta)
+            // Cargar el FXML del formulario (Asegúrate que la ruta sea correcta)
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/iescamp/studyflow/fxml/task_form.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("Nueva Tarea");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atras
+            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana de atrás
             stage.showAndWait(); // Espera a que se cierre
 
             // Al volver, refrescamos la tabla

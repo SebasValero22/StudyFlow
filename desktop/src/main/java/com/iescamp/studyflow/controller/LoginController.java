@@ -2,7 +2,7 @@ package com.iescamp.studyflow.controller;
 
 import com.iescamp.studyflow.model.User;
 import com.iescamp.studyflow.service.UserService;
-import com.iescamp.studyflow.utils.UserSession;
+import com.iescamp.studyflow.utils.UserSession; // Importante
 import com.iescamp.studyflow.utils.ViewSwitcher;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -25,19 +25,19 @@ public class LoginController {
         String email = txtUsername.getText();
         String password = txtPassword.getText();
 
-        // Validacion basica
+        // 1. Validación
         if (email.isEmpty() || password.isEmpty()) {
             lblStatus.setTextFill(Color.RED);
             lblStatus.setText("Please fill in all fields.");
             return;
         }
 
-        // Feedback visual
+        // 2. Feedback visual
         lblStatus.setTextFill(Color.BLUE);
         lblStatus.setText("Connecting to server...");
         btnLogin.setDisable(true);
 
-        // Tarea en segundo plano
+        // 3. Tarea en segundo plano
         Task<User> loginTask = new Task<>() {
             @Override
             protected User call() throws Exception {
@@ -45,19 +45,21 @@ public class LoginController {
             }
         };
 
-        // Exito
+        // 4. ÉXITO
         loginTask.setOnSucceeded(e -> {
             User user = loginTask.getValue();
 
-            // Guardamos el usuario en la sesion global
+            // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
+            // Guardamos el usuario en la sesión global
             UserSession.getInstance().setUser(user);
             System.out.println("Session started for ID: " + user.getUserId());
+            // ---------------------------------
 
             // Navegar al Dashboard
             ViewSwitcher.loadView("main_dashboard.fxml");
         });
 
-        // Error
+        // 5. ERROR
         loginTask.setOnFailed(e -> {
             Throwable error = loginTask.getException();
             btnLogin.setDisable(false);

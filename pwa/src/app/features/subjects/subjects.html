@@ -6,7 +6,7 @@
   <div class="subject-form">
     <h3>Add New Subject</h3>
     <div class="input-group">
-      <input type="text" [(ngModel)]="newSubject.nameSubject" placeholder="Subject Name" required>
+      <input type="text" [(ngModel)]="newSubject.name" placeholder="Subject Name" required>
       <input type="text" [(ngModel)]="newSubject.academicYear" placeholder="Academic Year (e.g. 2025/2026)">
     </div>
     
@@ -23,7 +23,7 @@
       </div>
     </div>
     
-    <button (click)="isEditing ? updateSubject() : addSubject()" [disabled]="!newSubject.nameSubject">
+    <button (click)="isEditing ? updateSubject() : addSubject()" [disabled]="!newSubject.name">
       {{ isEditing ? 'Update Subject' : 'Add Subject' }}
     </button>
     <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
@@ -42,7 +42,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let subject of subjects">
-          <td>{{ subject.nameSubject }}</td>
+          <td>{{ subject.name }}</td>
           <td>{{ subject.academicYear }}</td>
           <td>
             <div class="color-preview" [style.background-color]="subject.color"></div>
@@ -50,7 +50,7 @@
           </td>
           <td>
             <button class="edit-btn" (click)="editSubject(subject)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
-            <button class="delete-btn" (click)="deleteSubject(subject.subjectId)">Delete</button>
+            <button class="delete-btn" (click)="deleteSubject(subject.lifeAreaId)">Delete</button>
           </td>
         </tr>
       </tbody>

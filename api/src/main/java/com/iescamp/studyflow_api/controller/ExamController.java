@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/api/exams")
 public class ExamController {
@@ -38,13 +38,13 @@ public class ExamController {
     }
 
     // Ahora devuelve List<ExamDTO>
-    @GetMapping("/subject/{subject}")
-    public List<ExamDTO> findBySubject(@PathVariable String subject) {
-        return examService.findBySubject(subject);
+    @GetMapping("/LifeArea/{LifeArea}")
+    public List<ExamDTO> findByLifeArea(@PathVariable String LifeArea) {
+        return examService.findByLifeArea(LifeArea);
     }
 
     @GetMapping
-    public List<ExamDTO> findAll(@RequestParam(required = false) Integer userId){
-        return examService.findAll(userId);
+    public List<ExamDTO> getAll() {
+        return examService.findAll();
     }
 }

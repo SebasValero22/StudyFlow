@@ -22,7 +22,7 @@
 
 .sidebar {
   width: 260px;
-  background-color: #2c3e50; /* Azul oscuro original */
+  background-color: #2c3e50; /* Original Dark Blue */
   border-right: 1px solid #1a252f;
   display: flex;
   flex-direction: column;
@@ -35,7 +35,7 @@
     gap: 10px;
     font-size: 1.5rem;
     font-weight: 800;
-    color: #ffffff; /* Texto blanco sobre azul */
+    color: #ffffff; /* White text on blue */
     margin-bottom: 2.5rem;
 
     .logo-icon {
@@ -63,7 +63,7 @@
 
       a {
         text-decoration: none;
-        color: #bdc3c7; /* Texto gris claro */
+        color: #bdc3c7; /* Light gray text */
         display: flex;
         align-items: center;
         gap: 12px;

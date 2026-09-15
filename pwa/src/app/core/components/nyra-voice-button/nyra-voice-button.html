@@ -1,0 +1,21 @@
+<div class="nyra-wrap">
+  @if (feedback()) {
+    <div class="nyra-toast">{{ feedback() }}</div>
+  }
+  <button
+    class="nyra-fab"
+    [class.recording]="isRecording()"
+    [class.processing]="isProcessing()"
+    (click)="toggleRecording()"
+    [disabled]="isProcessing()"
+    title="Talk to Nyra"
+  >
+    @if (isRecording()) {
+      <span class="icon">⏹️</span>
+    } @else if (isProcessing()) {
+      <span class="icon">⏳</span>
+    } @else {
+      <span class="icon">🎙️</span>
+    }
+  </button>
+</div>
