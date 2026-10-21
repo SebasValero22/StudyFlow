@@ -33,6 +33,9 @@ public class ViewSwitcher {
                 primaryStage.getScene().setRoot(root);
             }
 
+            // Re-apply the persisted theme so every view follows Settings → Appearance
+            ThemeManager.apply(primaryStage.getScene());
+
             primaryStage.sizeToScene(); // Ajusta el tamaño de la ventana al nuevo contenido
             primaryStage.centerOnScreen();
             primaryStage.show();

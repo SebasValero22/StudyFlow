@@ -30,9 +30,9 @@ public class TaskResponseDTO {
         this.isCompleted = completed;
     }
     private Integer orderIndex;
-    private Integer LifeAreaId;
-    private String LifeAreaName;
-    private String LifeAreaColor;
+    private Integer lifeAreaId;
+    private String lifeAreaName;
+    private String lifeAreaColor;
     private Integer projectId;
 
     // Campos de fecha que aceptarán los milisegundos

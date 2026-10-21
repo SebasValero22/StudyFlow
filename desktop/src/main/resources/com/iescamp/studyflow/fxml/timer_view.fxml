@@ -8,32 +8,39 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #2b2b2b;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.TimerController">
+<VBox alignment="CENTER" spacing="20.0" styleClass="sf-timer-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.TimerController">
     <padding>
         <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
     </padding>
 
-    <Label fx:id="modeLabel" text="Focus Mode (40m)" textFill="WHITE">
+    <Label fx:id="modeLabel" styleClass="sf-timer-mode" text="Focus">
         <font>
             <Font name="System Bold" size="24.0" />
         </font>
     </Label>
 
-    <ComboBox fx:id="taskComboBox" prefWidth="300.0" promptText="Select a Task to focus on..." />
+    <ComboBox fx:id="taskComboBox" prefWidth="300.0" promptText="Select a Task to focus on..." styleClass="sf-input" />
 
-    <Label fx:id="timeLabel" text="40:00" textFill="#e74c3c">
+    <Label fx:id="timeLabel" styleClass="sf-timer-clock" text="40:00">
         <font>
             <Font name="Monospaced Bold" size="96.0" />
         </font>
     </Label>
 
+    <Label fx:id="cycleLabel" styleClass="sf-cycle-label" text="Session 1 / 4" />
+
     <HBox alignment="CENTER" spacing="20.0">
-        <Button fx:id="startButton" mnemonicParsing="false" onAction="#toggleTimer" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Start">
+        <Button fx:id="startButton" mnemonicParsing="false" onAction="#toggleTimer" prefHeight="50.0" prefWidth="120.0" styleClass="sf-btn-primary" text="Start">
             <font>
                 <Font size="18.0" />
             </font>
         </Button>
-        <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetTimer" prefHeight="50.0" prefWidth="120.0" style="-fx-background-color: #f44336; -fx-text-fill: white;" text="Reset">
+        <Button fx:id="skipButton" mnemonicParsing="false" onAction="#skipPhase" prefHeight="50.0" prefWidth="120.0" styleClass="sf-btn-neutral" text="Skip">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Button>
+        <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetTimer" prefHeight="50.0" prefWidth="120.0" styleClass="sf-btn-danger" text="Reset">
             <font>
                 <Font size="18.0" />
             </font>

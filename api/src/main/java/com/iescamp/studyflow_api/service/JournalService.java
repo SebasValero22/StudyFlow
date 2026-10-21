@@ -95,7 +95,11 @@ public class JournalService {
     }
 
     public void delete(Integer userId, Integer entryId) {
-        repository.delete(findOwned(userId, entryId));
+        VoiceJournal entry = findOwned(userId, entryId);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        entry.setDeletedAt(now);
+        entry.setUpdatedAt(now);
+        repository.save(entry);
     }
 
     /** Cross-account access is indistinguishable from "does not exist". */

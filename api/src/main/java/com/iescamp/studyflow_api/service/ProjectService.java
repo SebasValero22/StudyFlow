@@ -64,9 +64,17 @@ public class ProjectService {
         return projectRepository.findAllById(sharedIds);
     }
 
+    @Transactional
     public void delete(Integer userId, Integer projectId) {
         requireRole(userId, projectId, ProjectMember.Role.OWNER);
-        projectRepository.deleteById(projectId); // members cascade
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        project.setDeletedAt(now);
+        project.setUpdatedAt(now);
+        projectRepository.save(project);
+        // Members have no deletedAt; drop them so canRead/canWrite stop matching the tombstone.
+        memberRepository.findByProjectId(projectId).forEach(memberRepository::delete);
     }
 
     public record MemberView(Integer memberId, Integer userId, String email, String name, String role) {}

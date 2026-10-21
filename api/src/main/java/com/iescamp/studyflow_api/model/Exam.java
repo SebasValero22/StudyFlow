@@ -2,12 +2,26 @@ package com.iescamp.studyflow_api.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "exams")
+@Table(name = "Exams")
+@SQLRestriction("deletedAt IS NULL")
 public class Exam {
+    @PrePersist
+    void onCreate() {
+        if (updatedAt == null) updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer examId;
@@ -16,10 +30,12 @@ public class Exam {
     @JoinColumn(name = "LifeAreaId", nullable = false)
     private LifeArea LifeArea;
 
+    @Column(name = "userId")
+    private Integer userId;
+
     @Column(name = "nameExam", nullable = false)
     private String name;
 
-    // ASEGÚRATE DE QUE ESTO SEA STRING
     @Column(name = "examType")
     private String examType;
 
@@ -28,4 +44,13 @@ public class Exam {
 
     @Column(name = "classroom")
     private String classroom;
+
+    @Column(name = "clientUuid")
+    private String clientUuid;
+
+    @Column(name = "updatedAt")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deletedAt")
+    private LocalDateTime deletedAt;
 }

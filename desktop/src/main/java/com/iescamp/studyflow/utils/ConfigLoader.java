@@ -1,6 +1,8 @@
 package com.iescamp.studyflow.utils;
 
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class ConfigLoader {
@@ -20,8 +22,30 @@ public class ConfigLoader {
         }
     }
 
+    /**
+     * User override (Settings → Cloud) wins; bundled default is the fallback.
+     * This is what makes "bring your own cloud" work without rebuilding.
+     */
     public static String getApiUrl() {
+        String override = AppSettings.get().getApiUrlOverride();
+        if (!override.isEmpty()) {
+            return override.endsWith("/") ? override.substring(0, override.length() - 1) : override;
+        }
         // Valor por defecto si falla la carga
         return properties.getProperty("api.url", "https://studyflow-nuux.onrender.com/api");
+    }
+
+    /** Local Obsidian-style vault. Overrideable in Settings → Notes. */
+    public static Path getVaultDir() {
+        // Tests / CI inject a temp vault so they never touch the real user store.
+        String sys = System.getProperty("studyflow.vault");
+        if (sys != null && !sys.isBlank()) {
+            return Paths.get(sys);
+        }
+        String override = AppSettings.get().getVaultDirOverride();
+        if (!override.isEmpty()) {
+            return Paths.get(override);
+        }
+        return Paths.get(System.getProperty("user.home"), "StudyFlow", "vault");
     }
 }

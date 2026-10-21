@@ -26,9 +26,10 @@ public class ReminderService {
     }
 
     public void delete(Integer id){
-        if (!reminderRepository.existsById(id)) throw new RuntimeException("Reminder not found");
-        reminderRepository.deleteById(id);
-        // Remove the 'throw new RuntimeException' success message!
+        Reminder reminder = reminderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reminder not found"));
+        reminder.setDeletedAt(java.time.LocalDateTime.now());
+        reminderRepository.save(reminder);
     }
     public ReminderDTO update
 

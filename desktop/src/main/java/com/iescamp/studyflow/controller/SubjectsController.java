@@ -125,14 +125,14 @@ public class SubjectsController {
             // Filter Exams
             List<Exam> allExams = examService.getAllExams();
             List<Exam> filteredExams = allExams.stream()
-                    .filter(e -> e.getSubjectId() == sid)
+                    .filter(e -> e.getSubjectId() != null && e.getSubjectId() == sid)
                     .collect(Collectors.toList());
             examsTable.setItems(FXCollections.observableArrayList(filteredExams));
 
             // Filter Grades
             List<Grade> allGrades = gradeService.getAllGrades();
             List<Grade> filteredGrades = allGrades.stream()
-                    .filter(g -> g.getSubjectId() == sid)
+                    .filter(g -> g.getSubjectId() != null && g.getSubjectId() == sid)
                     .collect(Collectors.toList());
             gradesTable.setItems(FXCollections.observableArrayList(filteredGrades));
 

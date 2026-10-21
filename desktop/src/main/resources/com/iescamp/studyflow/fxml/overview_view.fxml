@@ -45,6 +45,17 @@
                         </Label>
                     </children>
                 </VBox>
+
+                <VBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0" style="-fx-background-color: #8e44ad; -fx-background-radius: 10;">
+                    <children>
+                        <Label fx:id="lblSweetSpot" text="Sweet Spot" textFill="WHITE" wrapText="true">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <ProgressBar fx:id="sweetSpotBar" prefWidth="200" prefHeight="12" />
+                    </children>
+                </VBox>
             </children>
         </HBox>
 

@@ -1,0 +1,189 @@
+/* StudyFlow dark theme */
+.root {
+    -sf-bg: #121212;
+    -sf-surface: #1E1E1E;
+    -sf-sidebar: #0D1117;
+    -sf-sidebar-text: #9aa0a6;
+    -sf-text: #E6E6E6;
+    -sf-muted: #9aa0a6;
+    -sf-accent: #7aa2f7;
+    -sf-border: #2a2a2a;
+    -sf-timer-bg: #000000;
+    -sf-timer-text: white;
+    -sf-timer-accent: #00aaff;
+    -sf-success: #43a047;
+    -sf-danger: #e53935;
+
+    -fx-background-color: -sf-bg;
+}
+
+.sf-topbar {
+    -fx-background-color: -sf-surface;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 2);
+}
+
+.sf-brand {
+    -fx-text-fill: -sf-accent;
+    -fx-cursor: hand;
+}
+
+.sf-sidebar {
+    -fx-background-color: -sf-sidebar;
+    -fx-padding: 15;
+}
+
+.sf-nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -sf-sidebar-text;
+    -fx-alignment: BASELINE_LEFT;
+}
+
+.sf-nav-button:hover {
+    -fx-text-fill: white;
+}
+
+.sf-content {
+    -fx-background-color: -sf-bg;
+}
+
+.sf-statusbar {
+    -fx-background-color: -sf-border;
+    -fx-padding: 5;
+}
+
+.sf-title {
+    -fx-text-fill: -sf-text;
+}
+
+.sf-subtitle {
+    -fx-text-fill: -sf-muted;
+}
+
+.sf-card {
+    -fx-background-color: -sf-surface;
+    -fx-background-radius: 8;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 6, 0, 0, 2);
+}
+
+.sf-input {
+    -fx-background-color: -sf-surface;
+    -fx-text-fill: -sf-text;
+    -fx-prompt-text-fill: -sf-muted;
+    -fx-background-radius: 8;
+    -fx-border-color: -sf-border;
+    -fx-border-radius: 8;
+}
+
+.sf-btn-primary {
+    -fx-background-color: -sf-success;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.sf-btn-danger {
+    -fx-background-color: -sf-danger;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.sf-btn-neutral {
+    -fx-background-color: #555555;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.sf-btn-accent {
+    -fx-background-color: -sf-accent;
+    -fx-text-fill: #0D1117;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+/* Focus timer */
+.sf-timer-root {
+    -fx-background-color: -sf-timer-bg;
+}
+
+.sf-timer-mode {
+    -fx-text-fill: -sf-timer-text;
+}
+
+.sf-timer-clock {
+    -fx-text-fill: -sf-timer-accent;
+}
+
+.sf-cycle-label {
+    -fx-text-fill: -sf-timer-text;
+    -fx-opacity: 0.8;
+}
+
+/* Notes vault */
+.sf-notes-list {
+    -fx-background-color: -sf-surface;
+}
+
+.sf-notes-editor {
+    -fx-control-inner-background: -sf-surface;
+    -fx-text-fill: -sf-text;
+    -fx-prompt-text-fill: -sf-muted;
+}
+
+/* Broad control theming so legacy views don't glare in dark mode */
+.list-view, .table-view, .tree-view {
+    -fx-background-color: -sf-surface;
+    -fx-control-inner-background: -sf-surface;
+}
+
+.list-view .list-cell, .table-view .table-cell, .tree-view .tree-cell {
+    -fx-background-color: -sf-surface;
+    -fx-text-fill: -sf-text;
+}
+
+.list-view .list-cell:selected, .tree-view .tree-cell:selected {
+    -fx-background-color: -sf-accent;
+    -fx-text-fill: #0D1117;
+}
+
+.text-area, .text-field, .password-field, .combo-box, .spinner {
+    -fx-control-inner-background: -sf-surface;
+    -fx-background-color: -sf-surface;
+    -fx-text-fill: -sf-text;
+    -fx-prompt-text-fill: -sf-muted;
+    -fx-border-color: -sf-border;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: -sf-surface;
+    -fx-text-fill: -sf-text;
+}
+
+.tab-pane, .scroll-pane, .split-pane {
+    -fx-background-color: -sf-bg;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: -sf-bg;
+}
+
+.check-box {
+    -fx-text-fill: -sf-text;
+}
+
+.separator .line {
+    -fx-border-color: -sf-border;
+}
+.sf-nav-button-active {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+

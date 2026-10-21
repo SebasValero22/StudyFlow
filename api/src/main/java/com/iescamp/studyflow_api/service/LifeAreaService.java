@@ -45,7 +45,11 @@ public class LifeAreaService {
     }
 
     public void delete(Integer userId, Integer id) {
-        LifeAreaRepository.delete(findOwned(userId, id));
+        LifeArea lifeArea = findOwned(userId, id);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        lifeArea.setDeletedAt(now);
+        lifeArea.setUpdatedAt(now);
+        LifeAreaRepository.save(lifeArea);
     }
 
     public LifeAreaResponseDTO findById(Integer userId, Integer id) {

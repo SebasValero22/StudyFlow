@@ -55,6 +55,10 @@ public class LoginController {
             System.out.println("Session started for ID: " + user.getUserId());
             // ---------------------------------
 
+            // Local-first: start cloud sync only after we have a JWT.
+            com.iescamp.studyflow.service.SyncService.getInstance().onUserLoggedIn(user);
+            com.iescamp.studyflow.service.SyncService.getInstance().startBackgroundSync();
+
             // Navegar al Dashboard
             ViewSwitcher.loadView("main_dashboard.fxml");
         });

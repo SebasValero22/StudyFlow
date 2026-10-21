@@ -51,3 +51,13 @@ logs/
 
 # === Gemini / Antigravity ===
 .gemini/
+
+# === Uploads / Test Data ===
+api/data/
+
+# === Session / Transcript dumps ===
+studyflow-project-analysis-version-review.json
+.FullName
+
+# === Linux (separate repo) ===
+linux/

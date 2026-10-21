@@ -98,7 +98,11 @@ public class TaskService {
     }
 
     public void delete(Integer userId, Integer id) {
-        taskRepository.delete(findVisibleForWrite(userId, id));
+        Task task = findVisibleForWrite(userId, id);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        task.setDeletedAt(now);
+        task.setUpdatedAt(now);
+        taskRepository.save(task);
     }
 
     public TaskResponseDTO findById(Integer userId, Integer id) {

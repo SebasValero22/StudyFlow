@@ -28,8 +28,10 @@ public class GradeService {
 
     }
     public void delete(Integer id){
-        gradeRepository.deleteById(id);
-        throw new RuntimeException("Grade deleted succesfully");
+        Grade grade = gradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+        grade.setDeletedAt(java.time.LocalDateTime.now());
+        gradeRepository.save(grade);
     }
 
     public GradeDTO modify(Integer id, GradeDTO dto){

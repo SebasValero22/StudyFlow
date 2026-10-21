@@ -36,7 +36,7 @@ public class ExamFormController {
         roomField.setText(exam.getClassroom());
         datePicker.setValue(exam.getExamDate());
         
-        if (exam.getSubjectId() != 0) {
+        if (exam.getSubjectId() != null && exam.getSubjectId() != 0) {
             for (Subject s : subjectCombo.getItems()) {
                 if (s.getSubjectId() == exam.getSubjectId()) {
                     subjectCombo.setValue(s);

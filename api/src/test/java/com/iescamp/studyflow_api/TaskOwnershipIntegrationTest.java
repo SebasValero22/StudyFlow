@@ -68,13 +68,14 @@ class TaskOwnershipIntegrationTest {
                 json.writeValueAsString(Map.of("name", "A-only Area", "color", "#FFB7B2",
                         "academicYear", "2025/2026", "active", true)));
         assertThat(area.status()).isEqualTo(200);
+        Integer areaId = json.readTree(area.body()).path("lifeAreaId").asInt();
 
         // A creates a Task - even with a spoofed userId, ownership must come from the JWT
         Integer spoofedUserId = 999999;
         Resp created = send(tokenA, "POST", "/api/tasks",
                 json.writeValueAsString(Map.of("title", "Secret Task", "description", "",
                         "start_date", "2026-09-01", "due_date", "2026-09-02",
-                        "isCompleted", false, "priority", "HIGH", "lifeAreaId", 0,
+                        "isCompleted", false, "priority", "HIGH", "lifeAreaId", areaId,
                         "userId", spoofedUserId)));
         assertThat(created.status()).isEqualTo(200);
         Map<?, ?> task = json.readValue(created.body(), Map.class);

@@ -44,7 +44,9 @@ public class GradesController {
         if (grades.isEmpty()) return;
         double weightedSum = 0;
         for (Grade g : grades) {
-            weightedSum += (g.getScore() * (g.getWeight() / 100));
+            double score = g.getScore() != null ? g.getScore() : 0;
+            double weight = g.getWeight() != null ? g.getWeight() : 0;
+            weightedSum += (score * (weight / 100));
         }
         lblAverage.setText(String.format("Weighted Average: %.2f", weightedSum));
     }

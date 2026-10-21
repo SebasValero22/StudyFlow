@@ -6,12 +6,12 @@ import retrofit2.Call;
 import retrofit2.http.*;
 
 public interface ApiService {
-    // Users
-    @POST("users/login")
-    Call<UserResponseDTO> login(@Body UserLoginDTO loginRequest);
+    // Auth (JWT)
+    @POST("auth/login")
+    Call<AuthResponseDTO> login(@Body UserLoginDTO loginRequest);
 
-    @POST("users/register")
-    Call<UserResponseDTO> register(@Body UserRegisterDTO registerRequest);
+    @POST("auth/register")
+    Call<AuthResponseDTO> register(@Body UserRegisterDTO registerRequest);
 
     // Tasks
     @GET("tasks")

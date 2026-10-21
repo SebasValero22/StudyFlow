@@ -8,16 +8,34 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "VoiceJournal")
+@SQLRestriction("deletedAt IS NULL")
 public class VoiceJournal {
+
+    @PrePersist
+    void onCreate() {
+        if (updatedAt == null) updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,4 +69,10 @@ public class VoiceJournal {
     @CreationTimestamp
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
+
+    @Column(name = "updatedAt")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deletedAt")
+    private LocalDateTime deletedAt;
 }

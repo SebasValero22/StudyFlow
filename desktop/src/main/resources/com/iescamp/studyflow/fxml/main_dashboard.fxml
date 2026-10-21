@@ -14,18 +14,16 @@
 
 <BorderPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iescamp.studyflow.controller.MainDashboardController">
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="sf-topbar" BorderPane.alignment="CENTER">
             <children>
-                <Label text="StudyFlow"
-                       textFill="#2196f3"
-                       onMouseClicked="#showOverview"
-                       style="-fx-cursor: hand;">
+                <Label styleClass="sf-brand" text="StudyFlow"
+                       onMouseClicked="#showOverview">
                     <font>
                         <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
                 <Region HBox.hgrow="ALWAYS" />
-                <TextField promptText="Search..." style="-fx-background-color: #F4F7FA; -fx-background-radius: 15;" />
+                <TextField promptText="Search..." styleClass="sf-input" />
 
                 <Button onAction="#showUserConfig" style="-fx-background-color: transparent; -fx-cursor: hand;" text="👤" textFill="#777777">
                     <font>
@@ -37,9 +35,9 @@
     </top>
 
     <left>
-        <VBox fx:id="sidebarMenu" spacing="5.0" style="-fx-background-color: #2C3E50; -fx-padding: 15;" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebarMenu" spacing="5.0" styleClass="sf-sidebar" BorderPane.alignment="CENTER">
             <children>
-                <Label text="MENU" textFill="#7f8c8d">
+                <Label styleClass="sf-subtitle" text="MENU">
                     <font>
                         <Font size="12.0" />
                     </font>
@@ -47,29 +45,33 @@
                         <Insets bottom="10.0" top="10.0" />
                     </VBox.margin>
                 </Label>
-                <Button fx:id="btnOverview" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOverview" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📊  Overview" />
-                <Button fx:id="btnTasks" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTasks" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="✅  Tasks" />
-                <Button fx:id="btnTimer" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTimer" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="⏱  Focus Timer" />
-                <Button fx:id="btnSubjects" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSubjects" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📚  Subjects" />
-                <Separator style="-fx-background-color: #34495e;" />
-                <Button fx:id="btnExams" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showExams" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="📅  Exams" />
-                <Button fx:id="btnGrades" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGrades" style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7;" text="🎓  Grades" />
+                <Button fx:id="btnOverview" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOverview" styleClass="sf-nav-button" text="📊  Overview" />
+                <Button fx:id="btnTasks" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTasks" styleClass="sf-nav-button" text="✅  Tasks" />
+                <Button fx:id="btnTimer" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showTimer" styleClass="sf-nav-button" text="⏱  Focus Timer" />
+                <Button fx:id="btnNotes" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showNotes" styleClass="sf-nav-button" text="📝  Notes" />
+                <Button fx:id="btnSubjects" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSubjects" styleClass="sf-nav-button" text="📚  Subjects" />
+                <Separator />
+                <Button fx:id="btnExams" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showExams" styleClass="sf-nav-button" text="📅  Exams" />
+                <Button fx:id="btnGrades" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showGrades" styleClass="sf-nav-button" text="🎓  Grades" />
+                <Button fx:id="btnVault" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showVault" styleClass="sf-nav-button" text="🔒  Vault" />
             </children>
         </VBox>
     </left>
 
     <center>
-        <StackPane fx:id="contentArea" style="-fx-background-color: #F4F7FA;">
+        <StackPane fx:id="contentArea" styleClass="sf-content">
             <children>
-                <Label text="Loading dashboard..." textFill="#999999" />
+                <Label styleClass="sf-subtitle" text="Loading dashboard..." />
             </children>
         </StackPane>
     </center>
 
     <bottom>
-        <HBox style="-fx-background-color: #ecf0f1; -fx-padding: 5;" BorderPane.alignment="CENTER">
+        <HBox spacing="10.0" styleClass="sf-statusbar" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="statusLabel" text="Status: Ready" textFill="#777777" />
+                <Label fx:id="statusLabel" styleClass="sf-subtitle" text="Status: Ready" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="conflictsButton" onAction="#showConflicts" styleClass="sf-nav-button" text="Sync conflicts" visible="false" managed="false" />
             </children>
         </HBox>
     </bottom>

@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  api-tests:
+    name: API tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Run API test suite
+        run: ./mvnw -B test
+
+  desktop-package:
+    name: Desktop tests + package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Run desktop unit tests and build fat jar
+        run: ./mvnw -B package
+
+  api-migrations:
+    name: Migrations V1-V10 on MySQL 8 + boot validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: studyflow
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -uroot -ptest"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Apply all migrations to clean MySQL 8
+        run: >-
+          ./mvnw -B org.flywaydb:flyway-maven-plugin:11.14.1:migrate
+          -Dflyway.url=jdbc:mysql://localhost:3306/studyflow
+          -Dflyway.user=root
+          -Dflyway.password=test
+      - name: Boot API against migrated schema (ddl-auto=validate)
+        run: |
+          DB_URL=jdbc:mysql://localhost:3306/studyflow \
+          DB_USERNAME=root \
+          DB_PASSWORD=test \
+          JWT_SECRET=ci-smoke-secret-0123456789abcdef0123456789abcdef \
+          timeout 180 ./mvnw -B spring-boot:run > boot.log 2>&1 || true
+          if grep -q "Started StudyFlowApiApplication" boot.log; then
+            echo "API booted against migrated schema"
+          else
+            echo "API failed to start:"; tail -80 boot.log; exit 1
+          fi

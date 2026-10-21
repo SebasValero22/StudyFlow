@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "users") // Asegura que coincide con tu tabla SQL
+@Table(name = "Users") // Asegura que coincide con tu tabla SQL
 public class User {
 
     @Id
@@ -23,6 +23,7 @@ public class User {
     private String password;
 
     @Column(name = "registrationDate")
+    @Temporal(TemporalType.DATE)
     private Date registrationDate;
 
     @Column(name = "activeUser")

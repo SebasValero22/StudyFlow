@@ -23,7 +23,7 @@ public class FileDTO {
         dto.setFileName(file.getFileName());
         dto.setFilePath(file.getFilePath());
         dto.setFileType(file.getFileType());
-        dto.setSizeBytes(file.getSizeBytes());
+        dto.setSizeBytes(file.getSizeBytes() == null ? null : String.valueOf(file.getSizeBytes()));
         dto.setLifeAreaId(file.getLifeAreaId());
         return dto;
     }

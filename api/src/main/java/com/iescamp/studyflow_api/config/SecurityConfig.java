@@ -37,6 +37,7 @@ public class SecurityConfig {
                         // thrown ResponseStatusExceptions (404 etc.) resurface as bogus 401s.
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/ws/**").permitAll() // socket auth happens in the handshake interceptor
                         .anyRequest().authenticated())

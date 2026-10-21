@@ -18,7 +18,7 @@ public class FileService {
 
     public FileDTO add(FileDTO dto){
         File file = new File();
-        file.setFileName(dto.getFileName());
+        applyDto(file, dto);
         return FileDTO.convertToDTO(fileRepository.save(file));
     }
 
@@ -37,8 +37,25 @@ public class FileService {
     }
     public FileDTO modify(Integer id, FileDTO dto){
         File file = fileRepository.findById(id).orElseThrow();
-        file.setFileName(dto.getFileName());
+        applyDto(file, dto);
         return FileDTO.convertToDTO(fileRepository.save(file));
+    }
+
+    private static void applyDto(File file, FileDTO dto) {
+        if (dto.getLifeAreaId() == null) {
+            throw new RuntimeException("lifeAreaId es obligatorio");
+        }
+        file.setFileName(dto.getFileName() != null ? dto.getFileName() : "unnamed");
+        file.setFilePath(dto.getFilePath() != null ? dto.getFilePath() : "");
+        if (dto.getSizeBytes() != null) {
+            try {
+                file.setSizeBytes(Long.parseLong(dto.getSizeBytes().trim()));
+            } catch (NumberFormatException e) {
+                file.setSizeBytes(null);
+            }
+        }
+        file.setFileType(dto.getFileType());
+        file.setLifeAreaId(dto.getLifeAreaId());
     }
 
     // 1. Recibe un String del Controlador (ej: "pdf")

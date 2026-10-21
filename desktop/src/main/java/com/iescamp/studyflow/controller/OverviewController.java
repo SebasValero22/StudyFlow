@@ -6,25 +6,28 @@ import com.iescamp.studyflow.model.Exam;
 import com.iescamp.studyflow.service.GradeService;
 import com.iescamp.studyflow.service.TaskService;
 import com.iescamp.studyflow.service.ExamService;
+import com.iescamp.studyflow.model.DashboardItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import java.util.List;
-
-import com.iescamp.studyflow.model.DashboardItem;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableCell;
 import javafx.collections.FXCollections;
-import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 public class OverviewController {
 
     @FXML private Label lblTasksCount;
     @FXML private Label lblNextExam;
     @FXML private Label lblGPA;
+    @FXML private Label lblSweetSpot;
+    @FXML private ProgressBar sweetSpotBar;
 
     @FXML private ComboBox<String> timeframeCombo;
     @FXML private TableView<DashboardItem> activityTable;
@@ -166,7 +169,9 @@ public class OverviewController {
 
             List<Grade> grades = gradeService.getAllGrades();
             if (!grades.isEmpty()) {
-                double avg = grades.stream().mapToDouble(Grade::getScore).average().orElse(0.0);
+                double avg = grades.stream()
+                        .mapToDouble(g -> g.getScore() != null ? g.getScore() : 0.0)
+                        .average().orElse(0.0);
                 lblGPA.setText(String.format("Overall GPA: %.2f", avg));
             } else {
                 lblGPA.setText("No grades yet");

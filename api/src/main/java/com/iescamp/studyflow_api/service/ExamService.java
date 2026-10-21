@@ -40,8 +40,10 @@ public class ExamService {
     }
 
     public void delete_(Integer id){
-        if (!examRepository.existsById(id)) throw new RuntimeException("exam not found");
-        examRepository.deleteById(id);
+        Exam exam = examRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("exam not found"));
+        exam.setDeletedAt(java.time.LocalDateTime.now());
+        examRepository.save(exam);
     }
 
     public ExamDTO modify(Integer id, ExamDTO dto){

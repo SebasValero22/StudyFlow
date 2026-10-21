@@ -1,36 +1,38 @@
 package com.iescamp.studyflow.service;
 
-import com.iescamp.studyflow.model.FocusSession;
-import com.iescamp.studyflow.utils.JsonMapper;
+import com.iescamp.studyflow.database.DatabaseHelper;
 
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
- * Persists completed Animedoro cycles so focus time becomes timesheet data.
+ * Local-first focus session store. Written offline; pushed by SyncService.
  */
 public class FocusService {
 
-    private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-
     public void recordSession(Integer taskId, int durationSeconds, boolean focus) throws Exception {
-        LocalDateTime now = LocalDateTime.now();
-        String payload = "{"
-                + "\"taskId\":" + (taskId != null ? taskId : "null") + ","
-                + "\"durationSeconds\":" + durationSeconds + ","
-                + "\"mode\":\"" + (focus ? "FOCUS" : "BREAK") + "\","
-                + "\"startedAt\":\"" + now.minusSeconds(durationSeconds).format(ISO) + "\","
-                + "\"completed\":true}";
+        LocalDateTime endedAt = LocalDateTime.now();
+        LocalDateTime startedAt = endedAt.minusSeconds(durationSeconds);
+        String mode = focus ? "FOCUS" : "BREAK";
 
-        HttpRequest request = ApiClient.prepareRequest("/focus/sessions")
-                .POST(HttpRequest.BodyPublishers.ofString(payload)).build();
-
-        HttpResponse<String> response = ApiClient.sendRequest(request);
-        if (response.statusCode() != 200) {
-            throw new Exception("Focus session rejected: HTTP " + response.statusCode());
+        try (Connection conn = DatabaseHelper.getConnection()) {
+            int id = DatabaseHelper.nextLocalId(conn, "FocusSessions", "sessionId");
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO FocusSessions (sessionId, taskId, startedAt, endedAt, durationSeconds, " +
+                            "mode, completed, updatedAt, deletedAt, syncStatus, clientUuid) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, 1, ?, NULL, 'PENDING_SYNC', ?)")) {
+                ps.setInt(1, id);
+                if (taskId == null) ps.setObject(2, null);
+                else ps.setInt(2, taskId);
+                ps.setString(3, startedAt.toString());
+                ps.setString(4, endedAt.toString());
+                ps.setInt(5, durationSeconds);
+                ps.setString(6, mode);
+                ps.setString(7, endedAt.toString());
+                ps.setString(8, java.util.UUID.randomUUID().toString());
+                ps.executeUpdate();
+            }
         }
-        JsonMapper.get().readValue(response.body(), FocusSession.class); // validates shape
     }
 }

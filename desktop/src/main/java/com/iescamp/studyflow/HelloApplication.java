@@ -19,12 +19,14 @@ public class HelloApplication extends Application implements NativeKeyListener {
     @Override
     public void start(Stage stage) throws IOException {
 
-        ViewSwitcher.setStage(stage); 
-        stage.setTitle("StudyFlow - Life OS"); 
-        ViewSwitcher.loadView("login_view.fxml"); 
+        ViewSwitcher.setStage(stage);
+        stage.setTitle("StudyFlow - Life OS");
+        com.iescamp.studyflow.database.DatabaseHelper.initializeSchema();
+        // Sync starts after login (LoginController) — no token yet at boot.
+        ViewSwitcher.loadView("login_view.fxml");
 
         stage.show();
-        
+
         // Setup Quick Capture
         quickCaptureView = new QuickCaptureView();
         setupGlobalShortcut();
@@ -50,6 +52,7 @@ public class HelloApplication extends Application implements NativeKeyListener {
 
     @Override
     public void stop() {
+        com.iescamp.studyflow.service.SyncService.getInstance().stopBackgroundSync();
         try {
             GlobalScreen.unregisterNativeHook();
         } catch (NativeHookException e) {

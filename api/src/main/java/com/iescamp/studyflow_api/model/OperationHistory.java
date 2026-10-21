@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "operationhistory")
+@Table(name = "OperationHistory")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,13 +17,15 @@ public class OperationHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer historyId;
 
+    @Column(name = "descriptionOH")
     private String description;
+
     private String actionType; // e.g., "CREATE", "UPDATE", "DELETE"
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date operationDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 }
