@@ -1,3 +1,11 @@
+pub mod db;
+pub mod conflicts;
+pub mod timer;
+pub mod sound;
+pub mod sync;
+pub mod commands;
+
+use std::sync::Mutex;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -30,6 +38,59 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
+            // Initialize local SQLite database
+            let conn = db::get_connection().expect("Failed to connect to SQLite database");
+            db::init_schema(&conn).expect("Failed to initialize database schema");
+
+            // Register state
+            let app_state = commands::AppState {
+                timer: Mutex::new(timer::Timer::new(timer::TimerConfig::default())),
+                sync_engine: sync::SyncEngine::new(None),
+            };
+            app.manage(app_state);
+
+            // Spawn background timer & delta sync loop
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                let mut interval = tokio::time::interval(std::time::Duration::from_secs(1));
+                let mut sync_tick = 0u32;
+                loop {
+                    interval.tick().await;
+                    let state = app_handle.state::<commands::AppState>();
+
+                    // Tick timer
+                    let event = {
+                        let mut timer = state.timer.lock().unwrap();
+                        timer.tick()
+                    };
+
+                    if let Some(ev) = event {
+                        match ev {
+                            timer::TimerEvent::SessionComplete { mode, .. } => {
+                                if mode == "FOCUS" {
+                                    sound::play_chime(sound::ChimeType::FocusComplete);
+                                } else {
+                                    sound::play_chime(sound::ChimeType::BreakComplete);
+                                }
+                            }
+                            timer::TimerEvent::PhaseChange { .. } => {
+                                sound::play_chime(sound::ChimeType::BreakComplete);
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    // Delta sync every 60s
+                    sync_tick += 1;
+                    if sync_tick >= 60 {
+                        sync_tick = 0;
+                        if let Ok(mut conn) = db::get_connection() {
+                            let _ = state.sync_engine.sync(&mut conn).await;
+                        }
+                    }
+                }
+            });
+
             // Build Tray Menu
             let open_i = MenuItem::with_id(app, "open", "Open StudyFlow", true, None::<&str>)?;
             let quick_i = MenuItem::with_id(app, "quick_capture", "Quick Capture (Ctrl + Space)", true, None::<&str>)?;
@@ -95,6 +156,19 @@ pub fn run() {
 
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![
+            commands::get_timer_status,
+            commands::timer_start,
+            commands::timer_pause,
+            commands::timer_resume,
+            commands::timer_stop,
+            commands::timer_skip,
+            commands::play_chime,
+            commands::get_sync_conflicts,
+            commands::dismiss_sync_conflicts,
+            commands::set_auth_session,
+            commands::trigger_sync,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running StudyFlow");
 }

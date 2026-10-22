@@ -1,3 +1,3 @@
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.CurrentDirectory = "D:\Personal projects\Full StudyFLow\desktop"
-WshShell.Run "javaw -jar ""D:\Personal projects\Full StudyFLow\desktop\target\studyflow-desktop-1.0-SNAPSHOT.jar""", 0, False
+WshShell.CurrentDirectory = "D:\Personal projects\Full StudyFLow\pwa\src-tauri"
+WshShell.Run """D:\Personal projects\Full StudyFLow\pwa\src-tauri\target\release\studyflow.exe""", 0, False
