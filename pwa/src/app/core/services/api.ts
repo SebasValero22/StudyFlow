@@ -92,6 +92,28 @@ export interface FocusReport {
   byDay: { date: string; seconds: number }[];
 }
 
+declare global {
+  interface Window {
+    __TAURI_INTERNALS__?: {
+      invoke: (cmd: string, args?: Record<string, any>) => Promise<any>;
+    };
+    __TAURI__?: {
+      core: {
+        invoke: (cmd: string, args?: Record<string, any>) => Promise<any>;
+      };
+    };
+  }
+}
+
+function invokeTauri(cmd: string, args: Record<string, any> = {}): Promise<any> | null {
+  if (typeof window !== 'undefined' && window.__TAURI_INTERNALS__?.invoke) {
+    return window.__TAURI_INTERNALS__.invoke(cmd, args);
+  }
+  if (typeof window !== 'undefined' && window.__TAURI__?.core?.invoke) {
+    return window.__TAURI__.core.invoke(cmd, args);
+  }
+  return null;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -101,11 +123,32 @@ export class ApiService {
 
   constructor(private http: HttpClient) {
     const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('studyflow-jwt');
     if (savedUser) {
-      this.currentUser.set(JSON.parse(savedUser));
+      const parsed = JSON.parse(savedUser);
+      this.currentUser.set(parsed);
+      invokeTauri('set_auth_session', { token: savedToken, userId: parsed.userId });
     }
   }
 
+  isTauri(): boolean {
+    return typeof window !== 'undefined' && (!!window.__TAURI_INTERNALS__ || !!window.__TAURI__);
+  }
+
+  triggerSync(): Promise<any> {
+    const p = invokeTauri('trigger_sync');
+    return p ? p : Promise.resolve();
+  }
+
+  getSyncConflicts(): Promise<any[]> {
+    const p = invokeTauri('get_sync_conflicts');
+    return p ? p : Promise.resolve([]);
+  }
+
+  dismissSyncConflicts(): Promise<void> {
+    const p = invokeTauri('dismiss_sync_conflicts');
+    return p ? p : Promise.resolve();
+  }
   // Auth
   login(credentials: UserLoginDTO): Observable<UserResponseDTO> {
     return this.http.post<AuthResponseDTO>(`${this.baseUrl}/auth/login`, credentials).pipe(
@@ -125,6 +168,7 @@ export class ApiService {
     this.currentUser.set(null);
     localStorage.removeItem('user');
     localStorage.removeItem('studyflow-jwt');
+    invokeTauri('set_auth_session', { token: null, userId: null });
   }
 
   isLoggedIn() {
@@ -141,6 +185,7 @@ export class ApiService {
     localStorage.setItem('studyflow-jwt', res.token);
     localStorage.setItem('user', JSON.stringify(res.user));
     this.currentUser.set(res.user);
+    invokeTauri('set_auth_session', { token: res.token, userId: res.user.userId });
   }
 
   // Life Areas
