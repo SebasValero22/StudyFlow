@@ -183,4 +183,11 @@ public class UserConfigController {
         AppSettings.get().setVaultDirOverride(txtVaultDir.getText());
         lblVaultStatus.setText("Saved. Takes effect the next time you open Notes.");
     }
+
+    @FXML
+    private void handleLogout() {
+        UserSession.getInstance().cleanUserSession();
+        com.iescamp.studyflow.service.SyncService.getInstance().stopBackgroundSync();
+        com.iescamp.studyflow.utils.ViewSwitcher.loadView("login_view.fxml");
+    }
 }

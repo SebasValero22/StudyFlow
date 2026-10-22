@@ -112,6 +112,15 @@ public class AppSettings {
     public int getIntPref(String key, int fallback) { return prefs.getInt(key, fallback); }
     public void putIntPref(String key, int value) { prefs.putInt(key, value); }
 
+    // ---- Auth / Session persistence ----
+    public String getAuthToken() { return prefs.get("auth.token", "").trim(); }
+    public void setAuthToken(String token) { prefs.put("auth.token", token == null ? "" : token.trim()); }
+    public void clearAuthToken() { prefs.remove("auth.token"); }
+
+    public String getSavedUserJson() { return prefs.get("auth.userJson", "").trim(); }
+    public void setSavedUserJson(String json) { prefs.put("auth.userJson", json == null ? "" : json.trim()); }
+    public void clearSavedUserJson() { prefs.remove("auth.userJson"); }
+
     /** JWT expiry (epoch ms) for the current session; 0 = unknown/no token. */
     public long getTokenExpiresAt() { return prefs.getLong("auth.expiresAt", 0L); }
     public void setTokenExpiresAt(long epochMs) { prefs.putLong("auth.expiresAt", epochMs); }

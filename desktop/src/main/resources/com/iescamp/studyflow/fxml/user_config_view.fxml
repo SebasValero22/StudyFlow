@@ -165,6 +165,21 @@
                     </children>
                 </HBox>
                 <Label fx:id="lblVaultStatus" styleClass="sf-subtitle" text="" />
+
+                <Separator prefWidth="200.0" />
+
+                <!-- Account / Session -->
+                <Label styleClass="sf-title" text="Account">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <Label styleClass="sf-subtitle" text="Log out of StudyFlow to switch users or clear saved credentials." wrapText="true" />
+                <HBox spacing="15.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#handleLogout" style="-fx-background-color: #e06c75; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="Log Out" />
+                    </children>
+                </HBox>
             </children>
         </VBox>
     </content>

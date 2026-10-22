@@ -1,8 +1,10 @@
 package com.iescamp.studyflow.controller;
 
 import com.iescamp.studyflow.model.User;
+import com.iescamp.studyflow.service.ApiClient;
+import com.iescamp.studyflow.service.SyncService;
 import com.iescamp.studyflow.service.UserService;
-import com.iescamp.studyflow.utils.UserSession; // Importante
+import com.iescamp.studyflow.utils.UserSession;
 import com.iescamp.studyflow.utils.ViewSwitcher;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -49,15 +51,13 @@ public class LoginController {
         loginTask.setOnSucceeded(e -> {
             User user = loginTask.getValue();
 
-            // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
-            // Guardamos el usuario en la sesión global
-            UserSession.getInstance().setUser(user);
-            System.out.println("Session started for ID: " + user.getUserId());
-            // ---------------------------------
+            // Guardamos el usuario en la sesión global y persistimos para auto-login
+            UserSession.getInstance().saveSession(user, ApiClient.getToken());
+            System.out.println("Session started and saved for ID: " + user.getUserId());
 
             // Local-first: start cloud sync only after we have a JWT.
-            com.iescamp.studyflow.service.SyncService.getInstance().onUserLoggedIn(user);
-            com.iescamp.studyflow.service.SyncService.getInstance().startBackgroundSync();
+            SyncService.getInstance().onUserLoggedIn(user);
+            SyncService.getInstance().startBackgroundSync();
 
             // Navegar al Dashboard
             ViewSwitcher.loadView("main_dashboard.fxml");
@@ -81,12 +81,11 @@ public class LoginController {
 
     @FXML
     public void handleRegister(ActionEvent actionEvent) {
-            try {
-                // Verifica que la ruta coincida con tu estructura de carpetas
-                ViewSwitcher.loadView("register_view.fxml");
-            } catch (Exception e) {
-                System.err.println("Error loading register view: " + e.getMessage());
-                e.printStackTrace();
-            }
+        try {
+            ViewSwitcher.loadView("register_view.fxml");
+        } catch (Exception e) {
+            System.err.println("Error loading register view: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
 }
