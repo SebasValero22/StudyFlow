@@ -1,64 +1,346 @@
 <div class="settings-container">
-  <h1>Application Settings</h1>
-
-  <div class="settings-grid">
-    <div class="settings-card">
-      <h3>Sync Options</h3>
-      <div class="setting-item">
-        <div class="label">
-          <strong>Auto-sync in background</strong>
-          <p>Sync data automatically even when the app is closed.</p>
-        </div>
-        <div class="control">
-          <input type="checkbox" checked disabled>
-        </div>
-      </div>
-      <div class="setting-item">
-        <div class="label">
-          <strong>Offline Access</strong>
-          <p>Allow access to data when no internet is available.</p>
-        </div>
-        <div class="control">
-          <input type="checkbox" checked disabled>
-        </div>
-      </div>
+  <div class="settings-header">
+    <div>
+      <h2>Settings & Preferences</h2>
+      <p class="subtitle">Personalize your StudyFlow workspace, themes, audio, and life modes</p>
     </div>
+    @if (saveNotification()) {
+      <div class="save-toast">
+        <span>✓</span> {{ saveNotification() }}
+      </div>
+    }
+  </div>
 
-    <div class="settings-card">
-      <h3>Visual Preferences</h3>
-      <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 10px;">
-        <div class="label">
-          <strong>Deep Theme Engine</strong>
-          <p>Switch between visual styles matching your cognitive state.</p>
+  <!-- Settings Tabs -->
+  <div class="settings-nav">
+    <button class="nav-tab" [class.active]="activeTab() === 'appearance'" (click)="setTab('appearance')">
+      <span class="tab-icon">🎨</span> Appearance & Theme
+    </button>
+    <button class="nav-tab" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
+      <span class="tab-icon">👤</span> Profile & Mode
+    </button>
+    <button class="nav-tab" [class.active]="activeTab() === 'voice'" (click)="setTab('voice')">
+      <span class="tab-icon">🎙️</span> Voice Journal
+    </button>
+    <button class="nav-tab" [class.active]="activeTab() === 'timer'" (click)="setTab('timer')">
+      <span class="tab-icon">⏱️</span> Focus Timer
+    </button>
+    <button class="nav-tab" [class.active]="activeTab() === 'sync'" (click)="setTab('sync')">
+      <span class="tab-icon">🔄</span> Data & Sync
+    </button>
+  </div>
+
+  <!-- Tab 1: Appearance & Theme -->
+  @if (activeTab() === 'appearance') {
+    <div class="tab-content">
+      <!-- Preset Themes -->
+      <div class="settings-card">
+        <h3>Theme Presets</h3>
+        <p class="card-desc">Choose from high-contrast themes optimized for study sessions and night shifts.</p>
+        
+        <div class="theme-grid">
+          @for (th of themes; track th.id) {
+            <div class="theme-card" [class.selected]="currentTheme() === th.id" (click)="setTheme(th.id)">
+              <span class="theme-icon">{{ th.icon }}</span>
+              <span class="theme-name">{{ th.name }}</span>
+              @if (currentTheme() === th.id) {
+                <span class="check-pill">Active</span>
+              }
+            </div>
+          }
         </div>
-        <div class="control" style="width: 100%; display: flex; gap: 10px; flex-wrap: wrap;">
-          <button *ngFor="let theme of themes" 
-                  (click)="setTheme(theme.id)"
-                  [style.border]="currentTheme === theme.id ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)'"
-                  [style.background]="currentTheme === theme.id ? 'var(--bg-surface-hover)' : 'var(--bg-surface)'"
-                  [style.color]="'var(--text-main)'"
-                  style="padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-            {{ theme.name }}
+      </div>
+
+      <!-- Custom Theme Builder -->
+      @if (currentTheme() === 'custom' || showCustomBuilder()) {
+        <div class="settings-card custom-builder-card">
+          <div class="builder-header">
+            <div>
+              <h3>Custom Theme Builder</h3>
+              <p class="card-desc">Craft your own unique palette. Changes are saved locally and applied live.</p>
+            </div>
+            <div class="builder-actions">
+              <button class="btn btn-secondary" (click)="resetCustomColors()">Reset Defaults</button>
+              <button class="btn btn-primary" (click)="saveCustomColors()">Apply Custom Colors</button>
+            </div>
+          </div>
+
+          <div class="colors-grid">
+            <div class="color-item">
+              <label>App Background</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.bgPrimary" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.bgPrimary }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Card / Surface Background</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.bgSurface" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.bgSurface }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Main Text Color</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.textMain" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.textMain }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Muted Text Color</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.textMuted" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.textMuted }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Sidebar Background</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.sidebarBg" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.sidebarBg }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Brand / Accent Color</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.accentPrimary" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.accentPrimary }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Focus Timer Color</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.timerFocus" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.timerFocus }}</span>
+              </div>
+            </div>
+
+            <div class="color-item">
+              <label>Reward / Break Color</label>
+              <div class="color-input-wrapper">
+                <input type="color" [(ngModel)]="customColors.timerReward" (change)="saveCustomColors()">
+                <span class="hex-label">{{ customColors.timerReward }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Layout Options -->
+      <div class="settings-card">
+        <h3>Sidebar & Layout Layout</h3>
+        <p class="card-desc">Configure where and how your navigation controls appear.</p>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-title">Sidebar Position</span>
+            <span class="setting-subtitle">Move the navigation dock to either side of your screen</span>
+          </div>
+          <div class="button-toggle-group">
+            <button class="toggle-btn" [class.active]="sidebarPosition() === 'left'" (click)="setSidebarPosition('left')">
+              Left
+            </button>
+            <button class="toggle-btn" [class.active]="sidebarPosition() === 'right'" (click)="setSidebarPosition('right')">
+              Right
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-title">Compact Density Mode</span>
+            <span class="setting-subtitle">Denser table padding and streamlined cards for high-resolution displays</span>
+          </div>
+          <button class="btn btn-secondary" (click)="toggleCompactDensity()">
+            {{ compactDensity() ? 'Enabled ✓' : 'Disabled' }}
           </button>
         </div>
       </div>
-      <div class="setting-item">
-        <div class="label">
-          <strong>Language</strong>
-          <p>Select your preferred application language.</p>
+    </div>
+  }
+
+  <!-- Tab 2: Profile & Mode -->
+  @if (activeTab() === 'profile') {
+    <div class="tab-content">
+      <div class="settings-card">
+        <h3>Avatar & Profile Picture</h3>
+        <p class="card-desc">Upload a custom profile photo for your desktop sidebar and profile page.</p>
+
+        <div class="pfp-manager">
+          <div class="pfp-preview">
+            @if (customPfp()) {
+              <img [src]="customPfp()!" alt="Custom PFP">
+            } @else {
+              <div class="default-avatar-placeholder">SF</div>
+            }
+          </div>
+
+          <div class="pfp-actions">
+            <label class="btn btn-primary upload-btn">
+              Upload New Image
+              <input type="file" accept="image/*" (change)="onPfpSelected($event)" style="display: none;">
+            </label>
+            @if (customPfp()) {
+              <button class="btn btn-secondary" (click)="removePfp()">Remove Custom Picture</button>
+            }
+            <span class="hint-text">PNG, JPG, or WebP up to 2MB</span>
+          </div>
         </div>
-        <div class="control">
-          <select disabled>
-            <option>English</option>
-          </select>
+      </div>
+
+      <div class="settings-card">
+        <h3>Application Life Mode</h3>
+        <p class="card-desc">Switch StudyFlow from an academic student manager into a professional work & project OS.</p>
+
+        <div class="mode-selector-grid">
+          <div class="mode-card" [class.active]="appMode() === 'study'" (click)="setAppMode('study')">
+            <span class="mode-icon">🎓</span>
+            <h4>Study Mode</h4>
+            <p>Tailored for students: Subjects, Exams, Grades, GPA tracking, and Animedoro study sessions.</p>
+          </div>
+
+          <div class="mode-card" [class.active]="appMode() === 'work'" (click)="setAppMode('work')">
+            <span class="mode-icon">💼</span>
+            <h4>Work & Project Mode</h4>
+            <p>Tailored for professionals: Projects, Deadlines, Performance KPIs, and Deep Work pomodoros.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Display Name</h3>
+        <div class="input-inline">
+          <input type="text" [(ngModel)]="displayName" placeholder="Enter your name" class="text-input">
+          <button class="btn btn-primary" (click)="saveDisplayName()">Save Name</button>
         </div>
       </div>
     </div>
+  }
 
-    <div class="settings-card full-width danger-zone">
-      <h3>Danger Zone</h3>
-      <p>Deleting your account will permanently remove all your subjects, tasks, and grades from the StudyFlow cloud.</p>
-      <button class="btn-danger">Delete All Data</button>
+  <!-- Tab 3: Voice Journal -->
+  @if (activeTab() === 'voice') {
+    <div class="tab-content">
+      <div class="settings-card">
+        <h3>Voice Journal Recording Mode</h3>
+        <p class="card-desc">Choose how StudyFlow handles your recorded audio and transcriptions.</p>
+
+        <div class="voice-options-grid">
+          <div class="option-card" [class.selected]="voiceRecordingMode() === 'both'" (click)="setVoiceMode('both')">
+            <span class="option-icon">🎙️ 📝</span>
+            <h4>Keep Audio & Transcribe (Recommended)</h4>
+            <p>Uploads your voice note, stores the audio for listening, and transcribes action items with Nyra AI.</p>
+          </div>
+
+          <div class="option-card" [class.selected]="voiceRecordingMode() === 'transcribe_only'" (click)="setVoiceMode('transcribe_only')">
+            <span class="option-icon">📝</span>
+            <h4>Transcribe Only (Low Storage)</h4>
+            <p>Transcribes speech to text and extracts tasks, then discards the raw audio file to save disk space.</p>
+          </div>
+
+          <div class="option-card" [class.selected]="voiceRecordingMode() === 'audio_only'" (click)="setVoiceMode('audio_only')">
+            <span class="option-icon">🎧</span>
+            <h4>Raw Audio Note Only</h4>
+            <p>Instantly stores your voice recording directly in the journal without running AI transcription.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Max Voice Note Duration</h3>
+        <p class="card-desc">Hard stop safety limit for voice recordings.</p>
+
+        <div class="button-toggle-group">
+          <button class="toggle-btn" [class.active]="maxRecordingDuration() === 30" (click)="setMaxDuration(30)">30s</button>
+          <button class="toggle-btn" [class.active]="maxRecordingDuration() === 60" (click)="setMaxDuration(60)">1 min</button>
+          <button class="toggle-btn" [class.active]="maxRecordingDuration() === 120" (click)="setMaxDuration(120)">2 min</button>
+          <button class="toggle-btn" [class.active]="maxRecordingDuration() === 300" (click)="setMaxDuration(300)">5 min</button>
+        </div>
+      </div>
     </div>
-  </div>
+  }
+
+  <!-- Tab 4: Focus Timer -->
+  @if (activeTab() === 'timer') {
+    <div class="tab-content">
+      <div class="settings-card">
+        <h3>Focus Session Presets</h3>
+        <p class="card-desc">Select an established rhythm or customize your focus intervals.</p>
+
+        <div class="timer-preset-grid">
+          <div class="preset-card" [class.active]="timerMode() === 'animedoro'" (click)="setTimerPreset('animedoro')">
+            <h4>🎌 Animedoro</h4>
+            <p class="preset-times">40m Focus / 20m Reward</p>
+            <p class="preset-desc">Watch an episode or rest between intense deep work sprints.</p>
+          </div>
+
+          <div class="preset-card" [class.active]="timerMode() === 'pomodoro'" (click)="setTimerPreset('pomodoro')">
+            <h4>🍅 Classic Pomodoro</h4>
+            <p class="preset-times">25m Focus / 5m Break</p>
+            <p class="preset-desc">Classic rhythm for quick, high-energy task execution.</p>
+          </div>
+
+          <div class="preset-card" [class.active]="timerMode() === 'custom'" (click)="setTimerPreset('custom')">
+            <h4>⚙️ Custom Intervals</h4>
+            <p class="preset-times">{{ focusMinutes() }}m Focus / {{ breakMinutes() }}m Break</p>
+            <p class="preset-desc">Set custom duration for your specific workflow.</p>
+          </div>
+        </div>
+
+        <div class="custom-timer-inputs">
+          <div class="input-col">
+            <label>Focus Duration (Minutes)</label>
+            <input type="number" [(ngModel)]="focusMinutes" (change)="onTimerDurationsChanged()" min="5" max="180" class="num-input">
+          </div>
+          <div class="input-col">
+            <label>Break Duration (Minutes)</label>
+            <input type="number" [(ngModel)]="breakMinutes" (change)="onTimerDurationsChanged()" min="1" max="60" class="num-input">
+          </div>
+        </div>
+
+        <div class="setting-row" style="margin-top: 20px;">
+          <div class="setting-info">
+            <span class="setting-title">Audio Chime on Completion</span>
+            <span class="setting-subtitle">Synthesizes a gentle acoustic bell when study or break periods finish</span>
+          </div>
+          <button class="btn btn-secondary" (click)="toggleChimeSound()">
+            {{ chimeSound() ? 'Sound ON 🔔' : 'Muted 🔕' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Tab 5: Data & Sync -->
+  @if (activeTab() === 'sync') {
+    <div class="tab-content">
+      <div class="settings-card">
+        <h3>Cloud Sync & Local Delta Engine</h3>
+        <p class="card-desc">StudyFlow desktop synchronizes local SQLite with the Aiven MySQL remote API.</p>
+
+        <div class="sync-action-box">
+          <div>
+            <div class="sync-indicator">
+              <span class="status-dot-active"></span>
+              <strong>{{ syncStatus() }}</strong>
+            </div>
+            <p class="hint-text">Automatic background delta sync triggers every 60 seconds.</p>
+          </div>
+          <button class="btn btn-primary" (click)="triggerSyncNow()">Sync Now</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Data Backup & Export</h3>
+        <p class="card-desc">Download a complete backup of your settings, tasks, and profile state.</p>
+        <button class="btn btn-secondary" (click)="exportDataJson()">Download JSON Backup</button>
+      </div>
+    </div>
+  }
 </div>

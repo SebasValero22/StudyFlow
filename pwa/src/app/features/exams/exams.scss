@@ -1,42 +1,74 @@
 .exams-container {
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
+  padding: 24px;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
 }
 
 .exam-form {
-  padding: 15px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  margin-bottom: 30px;
+  padding: 18px;
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 25px;
 
   .input-group {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
 
     input, select {
       flex: 1;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      min-width: 160px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--bg-surface);
+      color: var(--text-main);
+      font-family: inherit;
+      outline: none;
     }
 
     button {
-      padding: 10px 20px;
-      background-color: #27ae60;
+      padding: 10px 22px;
+      background: var(--accent-gradient);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
     }
   }
 }
 
 .exam-filters {
   margin-bottom: 20px;
-  label { margin-right: 10px; font-weight: bold; }
-  select { padding: 8px; border-radius: 4px; }
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  label {
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: var(--bg-surface-hover);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    outline: none;
+  }
 }
 
 .exam-list {
@@ -44,30 +76,43 @@
     width: 100%;
     border-collapse: collapse;
 
-    tr { border-bottom: 1px solid #eee; }
+    tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.15s;
 
-    th, td { padding: 12px; text-align: left; }
-
-    .completed { text-decoration: line-through; color: #7f8c8d; }
-
-    .delete-btn {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
+      &:hover {
+        background-color: var(--bg-surface-hover);
+      }
     }
 
-    .toggle-btn {
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      color: var(--text-main);
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .completed-exam {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    button {
+      background: none;
       border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: bold;
       cursor: pointer;
-      min-width: 50px;
+      font-size: 1rem;
+      color: var(--text-muted);
+      transition: color 0.15s;
+
+      &:hover {
+        color: var(--timer-focus, #ef4444);
+      }
     }
   }
 }

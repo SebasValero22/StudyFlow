@@ -1,90 +1,141 @@
-/* CSS Custom Properties for Deep Theme Engine */
+/* CSS Custom Properties for StudyFlow Theme Engine */
 
 :root {
-  /* Default Light Theme */
-  --bg-primary: #f8f9fa;
+  /* Default Light Theme - StudyFlow Signature */
+  --bg-primary: #f8fafc;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f2f6;
-  --text-main: #2f3542;
-  --text-muted: #747d8c;
+  --bg-surface-hover: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
   
-  --sidebar-bg: #2c3e50;
-  --sidebar-hover: #34495e;
-  --sidebar-text: #ffffff;
-  --sidebar-text-muted: #bdc3c7;
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --sidebar-text: #f8fafc;
+  --sidebar-text-muted: #94a3b8;
   
-  --accent-primary: #3498db;
-  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --border-color: #e9ecef;
+  --brand-blue: #1a7fd4;
+  --brand-blue-light: #38bdf8;
+  --brand-blue-dark: #0c4a6e;
   
-  --timer-focus: #e74c3c;
-  --timer-reward: #4ade80;
+  --accent-primary: #1a7fd4;
+  --accent-hover: #156ab3;
+  --accent-gradient: linear-gradient(135deg, #1a7fd4 0%, #38bdf8 100%);
+  --border-color: #e2e8f0;
   
-  --card-shadow: rgba(0,0,0,0.05);
+  --timer-focus: #ef4444;
+  --timer-reward: #22c55e;
+  
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
 }
 
 :root[data-theme="cyberpunk"] {
-  --bg-primary: #0a0b10;
-  --bg-surface: #12131a;
-  --bg-surface-hover: #1a1b26;
-  --text-main: #00ffcc;
-  --text-muted: #565f89;
+  /* Midnight Tokyo */
+  --bg-primary: #0d1117;
+  --bg-surface: #161b22;
+  --bg-surface-hover: #21262d;
+  --text-main: #f0f6fc;
+  --text-muted: #8b949e;
   
-  --sidebar-bg: #0d0f18;
-  --sidebar-hover: #1a1b26;
-  --sidebar-text: #00ffcc;
-  --sidebar-text-muted: #565f89;
+  --sidebar-bg: #010409;
+  --sidebar-hover: #161b22;
+  --sidebar-text: #f0f6fc;
+  --sidebar-text-muted: #8b949e;
   
-  --accent-primary: #ff007f;
-  --accent-gradient: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
-  --border-color: #24283b;
+  --brand-blue: #58a6ff;
+  --brand-blue-light: #79c0ff;
+  --brand-blue-dark: #388bfd;
   
-  --timer-focus: #ff3366;
-  --timer-reward: #00ffcc;
+  --accent-primary: #58a6ff;
+  --accent-hover: #79c0ff;
+  --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
+  --border-color: #30363d;
   
-  --card-shadow: rgba(255, 0, 127, 0.2);
+  --timer-focus: #ff7b72;
+  --timer-reward: #7ee787;
+  
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 :root[data-theme="lofi-cafe"] {
-  --bg-primary: #282421;
-  --bg-surface: #3c3836;
-  --bg-surface-hover: #504945;
-  --text-main: #ebdbb2;
-  --text-muted: #a89984;
+  /* Matcha Morning */
+  --bg-primary: #1d2021;
+  --bg-surface: #282828;
+  --bg-surface-hover: #3c3836;
+  --text-main: #fbf1c7;
+  --text-muted: #d5c4a1;
   
-  --sidebar-bg: #1d2021;
-  --sidebar-hover: #3c3836;
+  --sidebar-bg: #141617;
+  --sidebar-hover: #282828;
   --sidebar-text: #ebdbb2;
-  --sidebar-text-muted: #928374;
+  --sidebar-text-muted: #a89984;
   
-  --accent-primary: #d79921;
-  --accent-gradient: linear-gradient(135deg, #d79921 0%, #cc241d 100%);
-  --border-color: #504945;
+  --brand-blue: #83a598;
+  --brand-blue-light: #8ec07c;
+  --brand-blue-dark: #458588;
   
-  --timer-focus: #b8bb26;
-  --timer-reward: #83a598;
+  --accent-primary: #fabd2f;
+  --accent-hover: #fe8019;
+  --accent-gradient: linear-gradient(135deg, #fabd2f 0%, #fe8019 100%);
+  --border-color: #3c3836;
   
-  --card-shadow: rgba(0,0,0,0.5);
+  --timer-focus: #fb4934;
+  --timer-reward: #b8bb26;
+  
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 :root[data-theme="catppuccin"] {
-  --bg-primary: #24273a;
-  --bg-surface: #363a4f;
-  --bg-surface-hover: #494d64;
-  --text-main: #cad3f5;
-  --text-muted: #8087a2;
+  /* Catppuccin Mocha */
+  --bg-primary: #181825;
+  --bg-surface: #1e1e2e;
+  --bg-surface-hover: #313244;
+  --text-main: #cdd6f4;
+  --text-muted: #a6adc8;
   
-  --sidebar-bg: #1e2030;
-  --sidebar-hover: #363a4f;
-  --sidebar-text: #cad3f5;
-  --sidebar-text-muted: #8087a2;
+  --sidebar-bg: #11111b;
+  --sidebar-hover: #1e1e2e;
+  --sidebar-text: #cdd6f4;
+  --sidebar-text-muted: #9399b2;
   
-  --accent-primary: #8aadf4;
-  --accent-gradient: linear-gradient(135deg, #8aadf4 0%, #c6a0f6 100%);
-  --border-color: #494d64;
+  --brand-blue: #89b4fa;
+  --brand-blue-light: #b4befe;
+  --brand-blue-dark: #74c7ec;
   
-  --timer-focus: #ed8796;
-  --timer-reward: #a6da95;
+  --accent-primary: #89b4fa;
+  --accent-hover: #b4befe;
+  --accent-gradient: linear-gradient(135deg, #89b4fa 0%, #cba6f7 100%);
+  --border-color: #313244;
   
-  --card-shadow: rgba(0,0,0,0.3);
+  --timer-focus: #f38ba8;
+  --timer-reward: #a6e3a1;
+  
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="oled"] {
+  /* OLED Pure Dark */
+  --bg-primary: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-surface-hover: #171717;
+  --text-main: #ffffff;
+  --text-muted: #a3a3a3;
+  
+  --sidebar-bg: #000000;
+  --sidebar-hover: #121212;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: #737373;
+  
+  --brand-blue: #3b82f6;
+  --brand-blue-light: #60a5fa;
+  --brand-blue-dark: #2563eb;
+  
+  --accent-primary: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --border-color: #262626;
+  
+  --timer-focus: #ef4444;
+  --timer-reward: #22c55e;
+  
+  --card-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }

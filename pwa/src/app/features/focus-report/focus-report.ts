@@ -18,6 +18,7 @@ export class FocusReportComponent implements OnInit {
   
   report: FocusReport | null = null;
   loading: boolean = false;
+  errorMessage: string = '';
 
   // Heatmap properties
   heatmapWeeks: number[] = [];
@@ -39,6 +40,7 @@ export class FocusReportComponent implements OnInit {
 
   loadReport() {
     this.loading = true;
+    this.errorMessage = '';
     this.api.getFocusReport(this.fromDate, this.toDate).subscribe({
       next: (data) => {
         this.report = data;
@@ -47,6 +49,7 @@ export class FocusReportComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load focus report', err);
+        this.errorMessage = 'Could not load focus data. The cloud API may still be warming up.';
         this.loading = false;
       }
     });

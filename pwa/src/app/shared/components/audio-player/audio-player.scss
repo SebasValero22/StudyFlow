@@ -1,64 +1,98 @@
-.audio-player-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-text);
-  padding: 10px 15px;
-  border-radius: 50px;
+.audio-dock {
+  background-color: var(--sidebar-hover, #1e293b);
+  color: var(--sidebar-text, #fff);
+  padding: 12px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 15px;
-  box-shadow: 0 4px 15px var(--card-shadow);
-  z-index: 1000;
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+
+  &.compact {
+    padding: 8px;
+    justify-content: center;
+    background: transparent;
+    border: none;
+  }
 }
 
-.play-btn {
+.dock-play-btn {
   background: var(--accent-gradient);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: white;
-  font-size: 1.2rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: transform 0.1s;
-  
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: transform 0.15s ease, filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(1.15);
+    transform: scale(1.05);
+  }
+
   &:active {
     transform: scale(0.95);
   }
-}
 
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.stream-select {
-  background: transparent;
-  color: var(--sidebar-text);
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  padding: 5px;
-  font-family: inherit;
-  font-size: 0.9rem;
-  outline: none;
-  cursor: pointer;
-  
-  option {
-    background-color: var(--sidebar-bg);
-    color: var(--sidebar-text);
+  .btn-icon {
+    width: 16px;
+    height: 16px;
   }
 }
 
-.volume-slider {
-  width: 80px;
-  accent-color: var(--accent-primary);
+.dock-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dock-stream-row {
+  width: 100%;
+}
+
+.dock-stream-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--sidebar-text, #fff);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+
+  option {
+    background-color: var(--sidebar-bg, #0f172a);
+    color: var(--sidebar-text, #fff);
+  }
+}
+
+.dock-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .vol-icon {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+}
+
+.dock-volume-slider {
+  flex: 1;
+  height: 4px;
+  accent-color: var(--brand-blue, #1a7fd4);
+  cursor: pointer;
 }

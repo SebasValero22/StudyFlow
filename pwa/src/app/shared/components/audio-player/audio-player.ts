@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioService, AudioStream } from '../../../core/services/audio.service';
 
@@ -10,6 +10,8 @@ import { AudioService, AudioStream } from '../../../core/services/audio.service'
   styleUrls: ['./audio-player.scss']
 })
 export class AudioPlayerComponent implements OnInit {
+  @Input() isCompact = false;
+  
   streams: AudioStream[] = [];
   currentStream: AudioStream | null = null;
   isPlaying = false;

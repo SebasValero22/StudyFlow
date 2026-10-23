@@ -22,18 +22,36 @@ export class JournalComponent implements OnInit, OnDestroy {
   latestEntry = signal<VoiceJournal | null>(null);
   textDraft = signal('');
   promoted = signal<Set<string>>(new Set());
+  liveTranscript = signal<string>('');
 
-  readonly maxDuration = 120; // hard cap: 2 minutes per voice note
+  // Audio blob URLs for inline playback
+  audioUrlMap = new Map<number, string>();
+  latestAudioUrl = signal<string | null>(null);
+
+  maxDuration = 120; // default, loaded from settings
+  recordingMode: 'both' | 'transcribe_only' | 'audio_only' = 'both';
+
   private mediaRecorder: MediaRecorder | null = null;
   private stream: MediaStream | null = null;
   private audioChunks: Blob[] = [];
   private ticker: ReturnType<typeof setInterval> | null = null;
+  private speechRecognizer: any = null;
 
   readonly canSubmitText = computed(() =>
     this.textDraft().trim().length > 0 && this.recorderState() === 'idle'
   );
 
   constructor(private api: ApiService) {}
+
+  ngOnInit() {
+    this.loadSettings();
+    this.loadHistory();
+  }
+
+  loadSettings() {
+    this.maxDuration = parseInt(localStorage.getItem('studyflow-max-recording') || '120', 10);
+    this.recordingMode = (localStorage.getItem('studyflow-voice-mode') as any) || 'both';
+  }
 
   /** Extract Nyra's "- [ ]" action items from a cleaned transcript. */
   parseActions(transcript?: string): string[] {
@@ -54,11 +72,6 @@ export class JournalComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  ngOnInit() {
-    this.loadHistory();
-  }
-
   loadHistory() {
     this.loading.set(true);
     this.api.getJournal().subscribe({
@@ -73,9 +86,9 @@ export class JournalComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Release mic + timers even if the user navigates away mid-recording. */
   ngOnDestroy() {
     if (this.ticker) clearInterval(this.ticker);
+    this.stopSpeechRecognition();
     if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
       this.mediaRecorder.onstop = null;
       this.mediaRecorder.stop();
@@ -92,13 +105,22 @@ export class JournalComponent implements OnInit, OnDestroy {
 
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch {
-      this.error.set('Microphone access denied. Check browser permissions.');
+    } catch (err) {
+      console.warn('Microphone access issue:', err);
+      this.error.set('Microphone access was denied or not detected. Please verify microphone settings.');
       return;
     }
 
     this.audioChunks = [];
-    this.mediaRecorder = new MediaRecorder(this.stream);
+    this.liveTranscript.set('');
+
+    try {
+      this.mediaRecorder = new MediaRecorder(this.stream);
+    } catch (e) {
+      this.error.set('MediaRecorder format not supported on this device.');
+      return;
+    }
+
     this.mediaRecorder.ondataavailable = (e) => this.audioChunks.push(e.data);
     this.mediaRecorder.onstop = () => this.handleRecordingComplete();
 
@@ -106,6 +128,10 @@ export class JournalComponent implements OnInit, OnDestroy {
     this.recorderState.set('recording');
     this.error.set('');
     this.elapsedSeconds.set(0);
+
+    // Start native Web Speech recognition in parallel if supported
+    this.startSpeechRecognition();
+
     this.ticker = setInterval(() => {
       const next = this.elapsedSeconds() + 1;
       this.elapsedSeconds.set(next);
@@ -116,7 +142,39 @@ export class JournalComponent implements OnInit, OnDestroy {
   stopRecording() {
     if (this.ticker) clearInterval(this.ticker);
     this.ticker = null;
+    this.stopSpeechRecognition();
     this.mediaRecorder?.stop();
+  }
+
+  private startSpeechRecognition() {
+    try {
+      const SpeechClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechClass) {
+        this.speechRecognizer = new SpeechClass();
+        this.speechRecognizer.continuous = true;
+        this.speechRecognizer.interimResults = true;
+        this.speechRecognizer.onresult = (evt: any) => {
+          let str = '';
+          for (let i = 0; i < evt.results.length; i++) {
+            str += evt.results[i][0].transcript + ' ';
+          }
+          this.liveTranscript.set(str.trim());
+        };
+        this.speechRecognizer.onerror = () => {};
+        this.speechRecognizer.start();
+      }
+    } catch (e) {
+      // Speech recognition optional
+    }
+  }
+
+  private stopSpeechRecognition() {
+    if (this.speechRecognizer) {
+      try {
+        this.speechRecognizer.stop();
+      } catch (e) {}
+      this.speechRecognizer = null;
+    }
   }
 
   private handleRecordingComplete() {
@@ -130,22 +188,61 @@ export class JournalComponent implements OnInit, OnDestroy {
     }
 
     const blob = new Blob(this.audioChunks, { type: this.mediaRecorder?.mimeType || 'audio/webm' });
+    const localAudioUrl = URL.createObjectURL(blob);
+    this.latestAudioUrl.set(localAudioUrl);
+
     this.recorderState.set('processing');
 
     const form = new FormData();
     form.append('audio', blob, 'voice-note.webm');
     form.append('durationSeconds', String(this.elapsedSeconds()));
 
+    if (this.liveTranscript()) {
+      form.append('liveTranscript', this.liveTranscript());
+    }
+
+    // Handle recording mode
+    if (this.recordingMode === 'audio_only') {
+      // Create local voice note directly
+      const localEntry: VoiceJournal = {
+        entryId: Date.now(),
+        title: `Voice Note (${this.elapsedSeconds()}s)`,
+        transcript: this.liveTranscript() || `🎙️ Audio recording saved (${this.elapsedSeconds()} seconds).`,
+        createdAt: new Date().toISOString(),
+        durationSeconds: this.elapsedSeconds()
+      };
+      this.audioUrlMap.set(localEntry.entryId!, localAudioUrl);
+      this.latestEntry.set(localEntry);
+      this.entries.update((list) => [localEntry, ...list]);
+      this.recorderState.set('idle');
+      this.elapsedSeconds.set(0);
+      return;
+    }
+
     this.api.ingestJournal(form).subscribe({
       next: (entry) => {
+        if (entry.entryId) {
+          this.audioUrlMap.set(entry.entryId, localAudioUrl);
+        }
         this.latestEntry.set(entry);
         this.entries.update((list) => [entry, ...list]);
         this.recorderState.set('idle');
         this.elapsedSeconds.set(0);
       },
       error: () => {
-        this.error.set('Failed to process your voice note. Try again.');
+        // Fallback: If AI is unreachable, save the voice note locally with the live transcript!
+        const fallbackEntry: VoiceJournal = {
+          entryId: Date.now(),
+          title: `Voice Note (${this.elapsedSeconds()}s)`,
+          transcript: this.liveTranscript() || `🎙️ Audio note saved (${this.elapsedSeconds()}s). Cloud AI transcription was unavailable.`,
+          createdAt: new Date().toISOString(),
+          durationSeconds: this.elapsedSeconds()
+        };
+        this.audioUrlMap.set(fallbackEntry.entryId!, localAudioUrl);
+        this.latestEntry.set(fallbackEntry);
+        this.entries.update((list) => [fallbackEntry, ...list]);
         this.recorderState.set('idle');
+        this.elapsedSeconds.set(0);
       }
     });
   }
@@ -181,6 +278,11 @@ export class JournalComponent implements OnInit, OnDestroy {
       },
       error: () => this.error.set('Failed to delete entry')
     });
+  }
+
+  getAudioUrl(entryId?: number): string | null {
+    if (!entryId) return null;
+    return this.audioUrlMap.get(entryId) || null;
   }
 
   moodClass(mood?: string | null): string {
