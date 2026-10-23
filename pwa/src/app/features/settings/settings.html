@@ -41,11 +41,21 @@
         <div class="theme-grid">
           @for (th of themes; track th.id) {
             <div class="theme-card" [class.selected]="currentTheme() === th.id" (click)="setTheme(th.id)">
-              <span class="theme-icon">{{ th.icon }}</span>
-              <span class="theme-name">{{ th.name }}</span>
-              @if (currentTheme() === th.id) {
-                <span class="check-pill">Active</span>
-              }
+              <div class="theme-card-top">
+                <span class="theme-icon">{{ th.icon }}</span>
+                <div class="theme-info">
+                  <span class="theme-name">{{ th.name }}</span>
+                  <span class="theme-tag">{{ th.tag }}</span>
+                </div>
+                @if (currentTheme() === th.id) {
+                  <span class="check-pill">Active</span>
+                }
+              </div>
+              <div class="theme-swatches">
+                @for (c of th.preview; track c) {
+                  <span class="swatch-dot" [style.background-color]="c"></span>
+                }
+              </div>
             </div>
           }
         </div>

@@ -102,8 +102,10 @@ export class ThemeService {
     root.style.setProperty('--sidebar-text', colors.textMain);
     root.style.setProperty('--sidebar-text-muted', colors.textMuted);
     root.style.setProperty('--accent-primary', colors.accentPrimary);
+    root.style.setProperty('--accent-contrast', '#ffffff');
     root.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${colors.accentPrimary} 0%, #38bdf8 100%)`);
     root.style.setProperty('--border-color', this.lightenDarkenColor(colors.bgSurface, 25));
+    root.style.setProperty('--border-hover', this.lightenDarkenColor(colors.bgSurface, 40));
     root.style.setProperty('--timer-focus', colors.timerFocus);
     root.style.setProperty('--timer-reward', colors.timerReward);
   }
@@ -113,7 +115,8 @@ export class ThemeService {
     const props = [
       '--bg-primary', '--bg-surface', '--bg-surface-hover', '--text-main', '--text-muted',
       '--sidebar-bg', '--sidebar-hover', '--sidebar-text', '--sidebar-text-muted',
-      '--accent-primary', '--accent-gradient', '--border-color', '--timer-focus', '--timer-reward'
+      '--accent-primary', '--accent-contrast', '--accent-gradient', '--border-color', '--border-hover',
+      '--timer-focus', '--timer-reward'
     ];
     props.forEach(p => root.style.removeProperty(p));
   }
@@ -125,12 +128,12 @@ export class ThemeService {
       usePound = true;
     }
     const num = parseInt(col, 16);
-    let r = (num >> 16) + amt;
+    let r = ((num >> 16) & 0xFF) + amt;
     if (r > 255) r = 255; else if (r < 0) r = 0;
-    let b = ((num >> 8) & 0x00FF) + amt;
-    if (b > 255) b = 255; else if (b < 0) b = 0;
-    let g = (num & 0x0000FF) + amt;
+    let g = ((num >> 8) & 0xFF) + amt;
     if (g > 255) g = 255; else if (g < 0) g = 0;
-    return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+    let b = (num & 0xFF) + amt;
+    if (b > 255) b = 255; else if (b < 0) b = 0;
+    return (usePound ? '#' : '') + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
   }
 }

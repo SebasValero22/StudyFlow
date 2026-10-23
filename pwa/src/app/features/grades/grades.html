@@ -1,49 +1,110 @@
 <div class="grades-container">
-  <h2>Grades & GPA</h2>
-
-  <div class="gpa-display">
-    <h3>Overall GPA: <span class="gpa-score">{{ calculateGPA() }}</span></h3>
-  </div>
-
-  <div *ngIf="error" class="error-message">{{ error }}</div>
-
-  <div class="grade-form">
-    <h3>Add New Grade</h3>
-    <div class="input-group">
-      <input type="number" [(ngModel)]="newGrade.score" placeholder="Score (0-10)">
-      <input type="number" [(ngModel)]="newGrade.weight" placeholder="Weight %">
-      <select [(ngModel)]="selectedLifeAreaId">
-        <option [ngValue]="null" disabled>Select Subject</option>
-        <option *ngFor="let subject of subjects" [value]="subject.lifeAreaId">
-          {{ subject.name }}
-        </option>
-      </select>
-      <button (click)="isEditing ? updateGrade() : addGrade()">{{ isEditing ? 'Update Grade' : 'Add Grade' }}</button>
-      <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+  <div class="grades-header">
+    <div>
+      <h2>Grades & Academic Standing</h2>
+      <p class="subtitle">Track weighted averages, coursework milestones, and cumulative GPA</p>
     </div>
   </div>
 
-  <div class="grade-list">
-    <table>
-      <thead>
-        <tr>
-          <th>Subject</th>
-          <th>Score</th>
-          <th>Weight</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let grade of grades">
-          <td>{{ grade.lifeArea?.name || 'Unknown' }}</td>
-          <td>{{ grade.score }}</td>
-          <td>{{ grade.weight }}%</td>
-          <td>
-            <button (click)="editGrade(grade)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
-            <button (click)="deleteGrade(grade.gradeId!)" style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="gpa-card">
+    <div class="gpa-metric">
+      <span class="gpa-label">Cumulative GPA</span>
+      <div class="gpa-score">{{ calculateGPA() }}</div>
+      <span class="gpa-scale">Weighted scale (0.00 – 10.00)</span>
+    </div>
+    <div class="gpa-stats">
+      <div class="stat-pill">
+        <span class="stat-num">{{ grades.length }}</span>
+        <span class="stat-desc">Graded Assessments</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-banner">
+    <span>⚠️</span> {{ error }}
+  </div>
+
+  <div class="grade-form">
+    <h3>{{ isEditing ? 'Edit Assessment Grade' : 'Log New Assessment Grade' }}</h3>
+    <div class="input-group">
+      <div class="field">
+        <label>Subject</label>
+        <select [(ngModel)]="selectedLifeAreaId">
+          <option [ngValue]="null" disabled>Select Subject</option>
+          <option *ngFor="let subject of subjects" [value]="subject.lifeAreaId">
+            {{ subject.name }}
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Score (0–10)</label>
+        <input type="number" [(ngModel)]="newGrade.score" placeholder="e.g. 8.5" min="0" max="10" step="0.1">
+      </div>
+      <div class="field">
+        <label>Weight %</label>
+        <input type="number" [(ngModel)]="newGrade.weight" placeholder="e.g. 20" min="1" max="100">
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" (click)="isEditing ? updateGrade() : addGrade()">
+          {{ isEditing ? 'Update Grade' : 'Add Grade' }}
+        </button>
+        <button *ngIf="isEditing" class="btn-secondary" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grade-list-card">
+    <div class="card-title-bar">
+      <h3>Assessment Ledger</h3>
+      <span class="entry-count">{{ grades.length }} records</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Score</th>
+            <th>Weight</th>
+            <th>Status</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let grade of grades">
+            <td class="subject-cell">
+              <span class="subject-indicator" [style.background-color]="grade.lifeArea?.color || 'var(--accent-primary)'"></span>
+              <span class="subject-name">{{ grade.lifeArea?.name || 'General' }}</span>
+            </td>
+            <td class="score-cell">
+              <span class="score-badge" [class.high]="grade.score >= 7" [class.pass]="grade.score >= 5 && grade.score < 7" [class.low]="grade.score < 5">
+                {{ grade.score }}
+              </span>
+            </td>
+            <td class="weight-cell">{{ grade.weight }}%</td>
+            <td class="standing-cell">
+              <span class="status-badge" [class.status-pass]="grade.score >= 5" [class.status-fail]="grade.score < 5">
+                {{ grade.score >= 5 ? 'Passed' : 'Needs Review' }}
+              </span>
+            </td>
+            <td class="text-right actions-cell">
+              <button class="btn-icon" (click)="editGrade(grade)" title="Edit">
+                ✏️
+              </button>
+              <button class="btn-icon btn-icon-delete" (click)="deleteGrade(grade.gradeId!)" title="Delete">
+                🗑️
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="grades.length === 0">
+            <td colspan="5" class="empty-state">
+              No grades recorded yet. Log your first assessment above.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

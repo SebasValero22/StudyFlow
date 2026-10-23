@@ -1,7 +1,7 @@
-/* Omarchy-Grade Theme Engine for StudyFlow */
+/* Omarchy-Grade Theme Engine for StudyFlow - Refined Modern Aesthetics */
 
 :root {
-  /* Default Light Theme - StudyFlow Signature */
+  /* Default Light Theme - StudyFlow Signature Pro */
   --bg-primary: #f8fafc;
   --bg-surface: #ffffff;
   --bg-surface-hover: #f1f5f9;
@@ -12,6 +12,7 @@
   --sidebar-hover: #1e293b;
   --sidebar-text: #f8fafc;
   --sidebar-text-muted: #94a3b8;
+  --sidebar-active-bg: rgba(255, 255, 255, 0.12);
   
   --brand-blue: #1a7fd4;
   --brand-blue-light: #38bdf8;
@@ -19,75 +20,83 @@
   
   --accent-primary: #1a7fd4;
   --accent-hover: #156ab3;
-  --accent-gradient: linear-gradient(135deg, #1a7fd4 0%, #38bdf8 100%);
-  --accent-glow: 0 0 14px rgba(26, 127, 212, 0.35);
-  --neon-border: 1px solid rgba(26, 127, 212, 0.4);
+  --accent-contrast: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #1a7fd4 0%, #0284c7 100%);
+  --accent-glow: 0 4px 14px rgba(26, 127, 212, 0.15);
+  --neon-border: 1px solid rgba(26, 127, 212, 0.25);
   --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
   
   --timer-focus: #ef4444;
-  --timer-reward: #22c55e;
+  --timer-reward: #16a34a;
   
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 :root[data-theme="omarchy"] {
   /* 🌿 Omarchy Matrix Core - The Flagship DHH Aesthetic */
-  --bg-primary: #060907;
-  --bg-surface: #0c1410;
-  --bg-surface-hover: #14221a;
-  --text-main: #e6fcf0;
-  --text-muted: #6b9e82;
+  --bg-primary: #090d0b;
+  --bg-surface: #111a14;
+  --bg-surface-hover: #17241c;
+  --text-main: #e8fbf2;
+  --text-muted: #729c85;
   
-  --sidebar-bg: #040605;
-  --sidebar-hover: #0c1410;
-  --sidebar-text: #e6fcf0;
-  --sidebar-text-muted: #537d66;
+  --sidebar-bg: #060907;
+  --sidebar-hover: #0f1712;
+  --sidebar-text: #e8fbf2;
+  --sidebar-text-muted: #537562;
+  --sidebar-active-bg: rgba(16, 185, 129, 0.14);
   
-  --brand-blue: #00ff9d;
-  --brand-blue-light: #55ffb8;
-  --brand-blue-dark: #00b36e;
+  --brand-blue: #10b981;
+  --brand-blue-light: #34d399;
+  --brand-blue-dark: #047857;
   
-  --accent-primary: #00ff9d;
-  --accent-hover: #55ffb8;
-  --accent-gradient: linear-gradient(135deg, #00ff9d 0%, #00b4d8 100%);
-  --accent-glow: 0 0 18px rgba(0, 255, 157, 0.45);
-  --neon-border: 1px solid rgba(0, 255, 157, 0.45);
-  --border-color: #17261d;
+  --accent-primary: #10b981;
+  --accent-hover: #34d399;
+  --accent-contrast: #041c10;
+  --accent-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --accent-glow: 0 4px 18px rgba(16, 185, 129, 0.2);
+  --neon-border: 1px solid rgba(16, 185, 129, 0.25);
+  --border-color: #1a2a20;
+  --border-hover: #263d2f;
   
-  --timer-focus: #ff5555;
-  --timer-reward: #00ff9d;
+  --timer-focus: #f87171;
+  --timer-reward: #10b981;
   
-  --card-shadow: 0 4px 20px rgba(0, 255, 157, 0.08);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 :root[data-theme="cyberpunk"] {
-  /* 🌃 Omarchy Tokyo Night / Cyberpunk */
-  --bg-primary: #080912;
-  --bg-surface: #0f1123;
-  --bg-surface-hover: #181b35;
-  --text-main: #f0f6fc;
+  /* 🌃 Tokyo Night / Modern Cyberpunk */
+  --bg-primary: #1a1b26;
+  --bg-surface: #24283b;
+  --bg-surface-hover: #2f354f;
+  --text-main: #c0caf5;
   --text-muted: #7982a9;
   
-  --sidebar-bg: #04050a;
-  --sidebar-hover: #0f1123;
-  --sidebar-text: #f0f6fc;
-  --sidebar-text-muted: #7982a9;
+  --sidebar-bg: #16161e;
+  --sidebar-hover: #202330;
+  --sidebar-text: #c0caf5;
+  --sidebar-text-muted: #565f89;
+  --sidebar-active-bg: rgba(122, 162, 247, 0.14);
   
-  --brand-blue: #00f0ff;
-  --brand-blue-light: #70f7ff;
-  --brand-blue-dark: #0099cc;
+  --brand-blue: #7aa2f7;
+  --brand-blue-light: #89b4fa;
+  --brand-blue-dark: #3d59a1;
   
-  --accent-primary: #00f0ff;
-  --accent-hover: #ff007f;
-  --accent-gradient: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%);
-  --accent-glow: 0 0 18px rgba(0, 240, 255, 0.45);
-  --neon-border: 1px solid rgba(0, 240, 255, 0.45);
-  --border-color: #1e2242;
+  --accent-primary: #7aa2f7;
+  --accent-hover: #bb9af7;
+  --accent-contrast: #1a1b26;
+  --accent-gradient: linear-gradient(135deg, #7aa2f7 0%, #bb9af7 100%);
+  --accent-glow: 0 4px 18px rgba(122, 162, 247, 0.2);
+  --neon-border: 1px solid rgba(122, 162, 247, 0.25);
+  --border-color: #2c304d;
+  --border-hover: #3e446d;
   
-  --timer-focus: #ff007f;
-  --timer-reward: #00f0ff;
+  --timer-focus: #f7768e;
+  --timer-reward: #9ece6a;
   
-  --card-shadow: 0 4px 20px rgba(0, 240, 255, 0.1);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 :root[data-theme="catppuccin"] {
@@ -99,69 +108,76 @@
   --text-muted: #9399b2;
   
   --sidebar-bg: #11111b;
-  --sidebar-hover: #1e1e2e;
+  --sidebar-hover: #181825;
   --sidebar-text: #cdd6f4;
-  --sidebar-text-muted: #9399b2;
+  --sidebar-text-muted: #6c7086;
+  --sidebar-active-bg: rgba(203, 166, 247, 0.14);
   
   --brand-blue: #89b4fa;
   --brand-blue-light: #b4befe;
   --brand-blue-dark: #74c7ec;
   
   --accent-primary: #cba6f7;
-  --accent-hover: #89b4fa;
+  --accent-hover: #b4befe;
+  --accent-contrast: #11111b;
   --accent-gradient: linear-gradient(135deg, #cba6f7 0%, #89b4fa 100%);
-  --accent-glow: 0 0 14px rgba(203, 166, 247, 0.35);
-  --neon-border: 1px solid rgba(203, 166, 247, 0.35);
+  --accent-glow: 0 4px 16px rgba(203, 166, 247, 0.18);
+  --neon-border: 1px solid rgba(203, 166, 247, 0.25);
   --border-color: #313244;
+  --border-hover: #45475a;
   
   --timer-focus: #f38ba8;
   --timer-reward: #a6e3a1;
   
-  --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 :root[data-theme="lofi-cafe"] {
   /* 🍵 Matcha Morning / Gruvbox */
   --bg-primary: #1d2021;
   --bg-surface: #282828;
-  --bg-surface-hover: #3c3836;
-  --text-main: #fbf1c7;
+  --bg-surface-hover: #32302f;
+  --text-main: #ebdbb2;
   --text-muted: #a89984;
   
   --sidebar-bg: #141617;
   --sidebar-hover: #282828;
   --sidebar-text: #ebdbb2;
-  --sidebar-text-muted: #a89984;
+  --sidebar-text-muted: #928374;
+  --sidebar-active-bg: rgba(250, 189, 47, 0.14);
   
   --brand-blue: #fabd2f;
   --brand-blue-light: #fe8019;
   --brand-blue-dark: #d79921;
   
   --accent-primary: #fabd2f;
-  --accent-hover: #b8bb26;
-  --accent-gradient: linear-gradient(135deg, #fabd2f 0%, #b8bb26 100%);
-  --accent-glow: 0 0 14px rgba(250, 189, 47, 0.35);
-  --neon-border: 1px solid rgba(250, 189, 47, 0.35);
+  --accent-hover: #fe8019;
+  --accent-contrast: #1d2021;
+  --accent-gradient: linear-gradient(135deg, #fabd2f 0%, #d79921 100%);
+  --accent-glow: 0 4px 16px rgba(250, 189, 47, 0.15);
+  --neon-border: 1px solid rgba(250, 189, 47, 0.25);
   --border-color: #3c3836;
+  --border-hover: #504945;
   
   --timer-focus: #fb4934;
   --timer-reward: #b8bb26;
   
-  --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 
 :root[data-theme="oled"] {
-  /* 🌑 OLED Monolith */
+  /* 🌑 OLED Monolith (Pure Stealth Black) */
   --bg-primary: #000000;
-  --bg-surface: #09090b;
-  --bg-surface-hover: #18181b;
-  --text-main: #ffffff;
+  --bg-surface: #0a0a0c;
+  --bg-surface-hover: #141417;
+  --text-main: #f4f4f5;
   --text-muted: #71717a;
   
   --sidebar-bg: #000000;
-  --sidebar-hover: #09090b;
-  --sidebar-text: #ffffff;
-  --sidebar-text-muted: #71717a;
+  --sidebar-hover: #0a0a0c;
+  --sidebar-text: #f4f4f5;
+  --sidebar-text-muted: #52525b;
+  --sidebar-active-bg: rgba(56, 189, 248, 0.14);
   
   --brand-blue: #38bdf8;
   --brand-blue-light: #7dd3fc;
@@ -169,13 +185,15 @@
   
   --accent-primary: #38bdf8;
   --accent-hover: #7dd3fc;
-  --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-  --accent-glow: 0 0 14px rgba(56, 189, 248, 0.35);
-  --neon-border: 1px solid rgba(56, 189, 248, 0.35);
-  --border-color: #27272a;
+  --accent-contrast: #000000;
+  --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  --accent-glow: 0 4px 16px rgba(56, 189, 248, 0.15);
+  --neon-border: 1px solid rgba(56, 189, 248, 0.25);
+  --border-color: #1f1f23;
+  --border-hover: #2e2e33;
   
   --timer-focus: #ef4444;
   --timer-reward: #22c55e;
   
-  --card-shadow: 0 4px 14px rgba(255, 255, 255, 0.04);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }

@@ -102,50 +102,86 @@
 
 .theme-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 14px;
 
   .theme-card {
-    background: var(--bg-surface-hover);
-    border: 2px solid var(--border-color);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
     cursor: pointer;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
     position: relative;
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: var(--brand-blue, #1a7fd4);
+      border-color: var(--border-hover, var(--accent-primary));
       transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
 
     &.selected {
-      border-color: var(--brand-blue, #1a7fd4);
-      box-shadow: 0 0 0 3px rgba(26, 127, 212, 0.2);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px var(--accent-primary);
+      background: var(--bg-surface-hover);
+    }
+
+    .theme-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .theme-icon {
       font-size: 1.5rem;
+      line-height: 1;
     }
 
-    .theme-name {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 0.95rem;
+    .theme-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
       flex: 1;
+
+      .theme-name {
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.95rem;
+      }
+
+      .theme-tag {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
     }
 
     .check-pill {
-      background: var(--brand-blue, #1a7fd4);
-      color: white;
+      background: var(--accent-primary);
+      color: var(--accent-contrast, #ffffff);
       font-size: 0.7rem;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 12px;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .theme-swatches {
+      display: flex;
+      gap: 6px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+
+      .swatch-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 }

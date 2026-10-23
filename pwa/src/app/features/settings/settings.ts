@@ -19,13 +19,13 @@ export class SettingsComponent implements OnInit {
   // Appearance
   currentTheme = signal<string>('light');
   themes = [
-    { id: 'omarchy', name: 'Omarchy Emerald Core (DHH Flagship)', icon: '🌿' },
-    { id: 'cyberpunk', name: 'Omarchy Tokyo Night (Cyberpunk)', icon: '🌃' },
-    { id: 'catppuccin', name: 'Catppuccin (Mocha Dark)', icon: '☕' },
-    { id: 'lofi-cafe', name: 'Matcha Morning (Gruvbox)', icon: '🍵' },
-    { id: 'oled', name: 'OLED Monolith (Stealth Pure Black)', icon: '🌑' },
-    { id: 'light', name: 'StudyFlow Signature (Light)', icon: '☀️' },
-    { id: 'custom', name: 'Custom Theme Builder', icon: '🎨' }
+    { id: 'omarchy', name: 'Omarchy Emerald Core', tag: 'DHH Flagship', icon: '🌿', preview: ['#090d0b', '#111a14', '#10b981', '#e8fbf2'] },
+    { id: 'cyberpunk', name: 'Tokyo Night', tag: 'Modern Cyberpunk', icon: '🌃', preview: ['#1a1b26', '#24283b', '#7aa2f7', '#c0caf5'] },
+    { id: 'catppuccin', name: 'Catppuccin Mocha', tag: 'Pastel Dark', icon: '☕', preview: ['#181825', '#1e1e2e', '#cba6f7', '#cdd6f4'] },
+    { id: 'lofi-cafe', name: 'Matcha Morning', tag: 'Gruvbox Warm', icon: '🍵', preview: ['#1d2021', '#282828', '#fabd2f', '#ebdbb2'] },
+    { id: 'oled', name: 'OLED Monolith', tag: 'Stealth Black', icon: '🌑', preview: ['#000000', '#0a0a0c', '#38bdf8', '#f4f4f5'] },
+    { id: 'light', name: 'StudyFlow Pro', tag: 'Signature Light', icon: '☀️', preview: ['#f8fafc', '#ffffff', '#1a7fd4', '#0f172a'] },
+    { id: 'custom', name: 'Custom Palette', tag: 'Personalized', icon: '🎨', preview: ['#111827', '#1f2937', '#6366f1', '#f9fafb'] }
   ];
 
   customColors: CustomThemeColors = { ...DEFAULT_CUSTOM_THEME };

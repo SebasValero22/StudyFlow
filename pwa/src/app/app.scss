@@ -195,13 +195,13 @@
         }
 
         &.active {
-          background: var(--accent-gradient);
-          color: #ffffff;
+          background: var(--sidebar-active-bg, var(--sidebar-hover));
+          color: var(--sidebar-text);
           font-weight: 600;
-          box-shadow: 0 3px 10px rgba(26, 127, 212, 0.35);
+          box-shadow: inset 3px 0 0 var(--accent-primary);
 
           .nav-svg {
-            stroke: #ffffff;
+            stroke: var(--accent-primary);
           }
         }
       }
