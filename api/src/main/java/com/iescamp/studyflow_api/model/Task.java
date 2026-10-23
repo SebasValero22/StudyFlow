@@ -70,7 +70,7 @@ public class Task {
     private Priority priority;
 
     // Implementation Intention fields (RAWFOCUS)
-    @Column(name = "trigger")
+    @Column(name = "`trigger`", length = 500)
     private String trigger;
 
     @Column(name = "microStep")
