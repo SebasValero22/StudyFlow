@@ -1,34 +1,166 @@
-<div class="overview-container">
-  <h2>Overview</h2>
-
-  <div class="dashboard-grid">
-    <div class="card gpa-card">
-      <h3>Current GPA</h3>
-      <div class="gpa-value">{{ gpa }}</div>
+<div class="overview-bento-container">
+  
+  <!-- Bento Header Bar -->
+  <div class="bento-topbar">
+    <div>
+      <h2>{{ modeService.isWorkMode() ? 'Workspace Intelligence' : 'Academic Dashboard' }}</h2>
+      <p class="subtitle">
+        {{ modeService.isWorkMode() ? 'Real-time sprint velocity, upcoming client milestones, and focus tracking' : 'Coursework momentum, upcoming examinations, and cumulative standing' }}
+      </p>
     </div>
+    <div class="bento-actions">
+      <span class="mode-badge-pill" [class.work]="modeService.isWorkMode()">
+        {{ modeService.isWorkMode() ? '💼 StudyFlow Work Suite' : '🎓 Academic OS' }}
+      </span>
+    </div>
+  </div>
 
-    <div class="calendar-section">
-      <div class="calendar-header">
-        <h3>Upcoming for the next:</h3>
-        <select [(ngModel)]="selectedWeeks" (change)="updateCalendar()">
-          <option [ngValue]="1">1 Week</option>
-          <option [ngValue]="2">2 Weeks</option>
-          <option [ngValue]="3">3 Weeks</option>
-          <option [ngValue]="4">4 Weeks</option>
-        </select>
+  <!-- 4-Card Bento Grid -->
+  <div class="bento-grid">
+
+    <!-- Card 1 (Top-Left): Primary Standing Metric Gauge -->
+    <div class="bento-card hero-metric-card">
+      <div class="card-head">
+        <span class="kicker">{{ modeService.terms().gpaOrVelocity }}</span>
+        <span class="status-pill" [ngClass]="getStandingBadge().class">
+          {{ modeService.isWorkMode() ? (velocityPercent + '% On-Track') : getStandingBadge().label }}
+        </span>
       </div>
 
-      <div *ngIf="getDates().length === 0" class="no-items">
-        No upcoming items for the selected period.
+      <div class="metric-body">
+        @if (!modeService.isWorkMode()) {
+          <div class="score-row">
+            <span class="primary-score">{{ gpa }}</span>
+            <span class="max-score">/ 10.00</span>
+          </div>
+          <span class="scale-label">Weighted academic syllabi</span>
+        } @else {
+          <div class="score-row">
+            <span class="primary-score">{{ velocityPercent }}%</span>
+            <span class="max-score">Velocity</span>
+          </div>
+          <span class="scale-label">{{ completedTasksCount }} completed of {{ completedTasksCount + activeTasksCount }} sprint items</span>
+        }
       </div>
 
-      <div *ngFor="let date of getDates()" class="day-group">
-        <div class="day-header">{{ date | date:'fullDate' }}</div>
-        <div *ngFor="let item of groupedItems[date]" class="calendar-item" [style.border-left]="'4px solid ' + item.subjectColor">
-          <span class="item-type">{{ item.type }}</span>
-          <span class="item-title">{{ item.title }}</span>
+      <div class="metric-footer">
+        <div class="stat-pill">
+          <span class="num">{{ activeTasksCount }}</span>
+          <span class="lbl">Pending {{ modeService.isWorkMode() ? 'Issues' : 'Tasks' }}</span>
+        </div>
+        <div class="stat-pill">
+          <span class="num">{{ subjects.length }}</span>
+          <span class="lbl">Active {{ modeService.terms().subjects }}</span>
         </div>
       </div>
     </div>
+
+    <!-- Card 2 (Top-Right): Agenda Timeline ("Up Next") -->
+    <div class="bento-card agenda-card">
+      <div class="card-head">
+        <div class="title-with-icon">
+          <span class="head-icon">📅</span>
+          <h3>Upcoming Milestones</h3>
+        </div>
+        <select class="horizon-select" [(ngModel)]="selectedWeeks" (change)="updateCalendar()">
+          <option [ngValue]="1">Next 7 Days</option>
+          <option [ngValue]="2">Next 14 Days</option>
+          <option [ngValue]="4">Next 30 Days</option>
+        </select>
+      </div>
+
+      <div class="timeline-body">
+        @if (getDates().length === 0) {
+          <div class="empty-agenda">
+            <span class="empty-icon">🏖️</span>
+            <p>{{ modeService.terms().emptyStateAdvice }}</p>
+          </div>
+        }
+
+        @for (date of getDates(); track date) {
+          <div class="timeline-group">
+            <div class="timeline-date-marker">{{ date | date:'EEE, MMM d' }}</div>
+            <div class="timeline-items">
+              @for (item of groupedItems[date]; track item.title) {
+                <div class="timeline-item" [style.border-left-color]="item.subjectColor">
+                  <div class="item-left">
+                    <span class="item-badge" [class.exam-badge]="item.type === 'EXAM'">
+                      {{ item.type === 'EXAM' ? modeService.terms().exam : 'Task' }}
+                    </span>
+                    <span class="item-title">{{ item.title }}</span>
+                  </div>
+                  <span class="item-relative-pill">{{ item.relativeDays }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Card 3 (Bottom-Left): 12-Week Focus Heatmap -->
+    <div class="bento-card heatmap-card">
+      <div class="card-head">
+        <div class="title-with-icon">
+          <span class="head-icon">📈</span>
+          <h3>12-Week Focus Activity</h3>
+        </div>
+        <span class="focus-summary-pill">{{ totalFocusHours }} Hours Logged</span>
+      </div>
+
+      <div class="heatmap-body">
+        <div class="heatmap-grid-mini">
+          @for (cell of heatmapCells; track cell.date) {
+            <div 
+              class="heat-cell" 
+              [attr.data-level]="cell.level"
+              [title]="cell.date + ': ' + (cell.seconds / 60 | number:'1.0-0') + ' mins'"
+            ></div>
+          }
+        </div>
+        <div class="heatmap-legend">
+          <span>Less</span>
+          <div class="legend-scale">
+            <span class="heat-cell" data-level="0"></span>
+            <span class="heat-cell" data-level="1"></span>
+            <span class="heat-cell" data-level="2"></span>
+            <span class="heat-cell" data-level="3"></span>
+            <span class="heat-cell" data-level="4"></span>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 (Bottom-Right): Nyra Daily Brief & Quick Focus Trigger -->
+    <div class="bento-card nyra-brief-card">
+      <div class="card-head">
+        <div class="title-with-icon">
+          <span class="sparkle">✨</span>
+          <h3>Nyra Executive Brief</h3>
+        </div>
+        <span class="ai-pill">Copilot Ready</span>
+      </div>
+
+      <div class="brief-body">
+        <p class="brief-line">
+          @if (activeTasksCount > 0) {
+            You have <strong>{{ activeTasksCount }} active items</strong> queued. Priority is focused on upcoming deadlines.
+          } @else {
+            All current tasks completed. Ready for a new sprint or deep work block!
+          }
+        </p>
+        <p class="brief-line-sub">
+          {{ modeService.isWorkMode() ? 'Deep Work tracker logs session minutes directly to your activity timesheet.' : 'Animedoro engine is calibrated for a 40-minute deep study sprint followed by anime rewards.' }}
+        </p>
+      </div>
+
+      <div class="brief-footer">
+        <a routerLink="/timer" class="btn-primary start-focus-link">
+          <span>⏱️</span> Start {{ modeService.isWorkMode() ? 'Deep Work Session' : 'Focus Session' }}
+        </a>
+      </div>
+    </div>
+
   </div>
 </div>

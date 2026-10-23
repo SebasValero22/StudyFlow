@@ -330,9 +330,88 @@
   <!-- Tab 5: Data & Sync -->
   @if (activeTab() === 'sync') {
     <div class="tab-content">
+      <!-- Storage Provider Segmented Control -->
       <div class="settings-card">
-        <h3>Cloud Sync & Local Delta Engine</h3>
-        <p class="card-desc">StudyFlow desktop synchronizes local SQLite with the Aiven MySQL remote API.</p>
+        <h3>Cloud Storage Provider (Bring-Your-Own-Cloud)</h3>
+        <p class="card-desc">Choose where your synchronized notes, tasks, and database state are stored.</p>
+
+        <div class="provider-segmented-control">
+          <button 
+            class="provider-btn" 
+            [class.active]="storageProvider() === 'aiven'" 
+            (click)="setStorageProvider('aiven')"
+          >
+            <span class="provider-icon">☁️</span>
+            <div class="provider-info">
+              <span class="provider-title">StudyFlow Cloud</span>
+              <span class="provider-sub">Aiven Managed MySQL (Default)</span>
+            </div>
+          </button>
+
+          <button 
+            class="provider-btn" 
+            [class.active]="storageProvider() === 'gdrive'" 
+            (click)="setStorageProvider('gdrive')"
+          >
+            <span class="provider-icon">📁</span>
+            <div class="provider-info">
+              <span class="provider-title">Google Drive</span>
+              <span class="provider-sub">AppFolder OAuth2 Storage</span>
+            </div>
+          </button>
+
+          <button 
+            class="provider-btn" 
+            [class.active]="storageProvider() === 'local'" 
+            (click)="setStorageProvider('local')"
+          >
+            <span class="provider-icon">💾</span>
+            <div class="provider-info">
+              <span class="provider-title">Local Vault Only</span>
+              <span class="provider-sub">Zero-cloud local SQLite</span>
+            </div>
+          </button>
+        </div>
+
+        @if (storageProvider() === 'gdrive') {
+          <div class="gdrive-connection-box">
+            <div class="gdrive-header">
+              <div class="gdrive-title-row">
+                <span class="gdrive-logo">🔺</span>
+                <strong>Google Drive AppFolder Connection</strong>
+              </div>
+              <span class="status-badge" [class.connected]="gdriveConnected()">
+                {{ gdriveConnected() ? '● Connected' : '○ Disconnected' }}
+              </span>
+            </div>
+            
+            <p class="gdrive-desc">Your notes, tasks, and configurations are securely synced to your private Google Drive Application Data Folder with end-to-end user isolation.</p>
+            
+            <div class="quota-meter">
+              <div class="quota-labels">
+                <span>Storage Quota</span>
+                <span>{{ gdriveQuotaUsed() }} of {{ gdriveQuotaTotal() }} Used</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-bar" style="width: 2%;"></div>
+              </div>
+            </div>
+
+            <div class="gdrive-actions">
+              <button class="btn btn-secondary" (click)="toggleGoogleDriveAuth()">
+                {{ gdriveConnected() ? 'Disconnect Account' : 'Connect Account' }}
+              </button>
+              <button class="btn btn-primary" (click)="triggerSyncNow()" [disabled]="!gdriveConnected()">
+                Sync Now to Drive
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="settings-card">
+        <h3>Local Delta Engine Status</h3>
+        <p class="card-desc">Local-first sync engine coordinates offline edits with remote storage automatically.</p>
 
         <div class="sync-action-box">
           <div>
@@ -342,13 +421,13 @@
             </div>
             <p class="hint-text">Automatic background delta sync triggers every 60 seconds.</p>
           </div>
-          <button class="btn btn-primary" (click)="triggerSyncNow()">Sync Now</button>
+          <button class="btn btn-primary" (click)="triggerSyncNow()">Trigger Manual Sync</button>
         </div>
       </div>
 
       <div class="settings-card">
         <h3>Data Backup & Export</h3>
-        <p class="card-desc">Download a complete backup of your settings, tasks, and profile state.</p>
+        <p class="card-desc">Download a complete JSON export of your settings, tasks, and profile state.</p>
         <button class="btn btn-secondary" (click)="exportDataJson()">Download JSON Backup</button>
       </div>
     </div>

@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ApiService, Task, LifeArea } from '../../core/services/api';
+import { ModeService } from '../../core/services/mode.service';
 
 @Component({
   selector: 'app-tasks',
@@ -11,7 +12,7 @@ import { ApiService, Task, LifeArea } from '../../core/services/api';
   templateUrl: './tasks.html',
   styleUrls: ['./tasks.scss']
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   subjects: LifeArea[] = [];
   selectedSubjectId: number | null = null;
@@ -35,10 +36,28 @@ export class TasksComponent implements OnInit {
     lifeAreaId: 0
   };
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
+  private entityListener?: () => void;
+
+  constructor(
+    private api: ApiService, 
+    public modeService: ModeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadData();
+
+    const onEntity = () => this.loadData();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('studyflow-entity-created', onEntity);
+      this.entityListener = () => window.removeEventListener('studyflow-entity-created', onEntity);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.entityListener) {
+      this.entityListener();
+    }
   }
 
   loadData() {
@@ -52,7 +71,7 @@ export class TasksComponent implements OnInit {
         this.organizeTasks();
         this.cdr.detectChanges();
       },
-      error: (err) => this.error = 'Failed to load tasks'
+      error: () => this.error = 'Failed to load tasks'
     });
     this.api.getInboxTasks().subscribe({
       next: (inbox) => {
@@ -60,6 +79,15 @@ export class TasksComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  get filteredTasks(): Task[] {
+    if (!this.selectedSubjectId) return this.tasks;
+    return this.tasks.filter(t => t.lifeAreaId === this.selectedSubjectId);
+  }
+
+  onFilterChange() {
+    this.organizeTasks();
   }
 
   organizeTasks() {
@@ -77,7 +105,7 @@ export class TasksComponent implements OnInit {
         continue;
       }
       if (!t.due_date) {
-        // Skip backlog, it's loaded from getInboxTasks()
+        this.backlogTasks.push(t);
         continue;
       }
       const days = this.getDaysRemainingNumeric(t.due_date);
@@ -87,14 +115,30 @@ export class TasksComponent implements OnInit {
     }
   }
 
+  getDaysRemainingNumeric(dueDateStr: string): number {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const due = new Date(dueDateStr);
+    due.setHours(0,0,0,0);
+    const diff = due.getTime() - today.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+  openCreateModal(columnType: 'today' | 'tomorrow' | 'someday' = 'today') {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-studyflow-command-modal', { detail: { tab: 'task' } }));
+    }
+  }
+
   addTask() {
-    if (!this.newTask.title || !this.newTask.lifeAreaId) return;
+    if (!this.newTask.title) return;
     this.api.addTask(this.newTask).subscribe({
       next: () => {
         this.loadData();
         this.resetNewTask();
+        this.isEditing = false;
       },
-      error: (err) => this.error = 'Failed to add task'
+      error: () => this.error = 'Failed to add task'
     });
   }
 
@@ -116,19 +160,7 @@ export class TasksComponent implements OnInit {
         this.loadData();
         this.resetNewTask();
       },
-      error: (err) => this.error = 'Failed to update task'
-    });
-  }
-
-  toggleComplete(task: Task) {
-    if (!task.taskId) return;
-    task.isCompleted = !task.isCompleted;
-    this.api.updateTask(task.taskId, task).subscribe({
-      next: () => this.organizeTasks(),
-      error: (err) => {
-        task.isCompleted = !task.isCompleted;
-        this.error = 'Failed to update task';
-      }
+      error: () => this.error = 'Failed to update task'
     });
   }
 
@@ -136,39 +168,8 @@ export class TasksComponent implements OnInit {
     if (!id) return;
     this.api.deleteTask(id).subscribe({
       next: () => this.loadData(),
-      error: (err) => this.error = 'Failed to delete task'
+      error: () => this.error = 'Failed to delete task'
     });
-  }
-
-  get filteredTasks() {
-    if (!this.selectedSubjectId) return this.tasks;
-    return this.tasks.filter(t => t.lifeAreaId === +this.selectedSubjectId!);
-  }
-
-  onFilterChange() {
-    this.organizeTasks();
-  }
-
-  getSubjectColor(lifeAreaId?: number | null) {
-    if (!lifeAreaId) return '#ccc';
-    return this.subjects.find(s => s.lifeAreaId === lifeAreaId)?.color || '#ccc';
-  }
-
-  getDaysRemainingNumeric(dateStr: string): number {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const due = new Date(dateStr);
-    const diffTime = due.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  getDaysRemaining(dateStr: string): string {
-    if (!dateStr) return 'Someday';
-    const diffDays = this.getDaysRemainingNumeric(dateStr);
-    if (diffDays < 0) return 'Overdue';
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Tomorrow';
-    return `${diffDays} days left`;
   }
 
   resetNewTask() {
@@ -179,13 +180,30 @@ export class TasksComponent implements OnInit {
       due_date: new Date().toISOString().split('T')[0],
       isCompleted: false,
       priority: 'MEDIUM',
-      lifeAreaId: 0
+      lifeAreaId: this.subjects.length > 0 ? (this.subjects[0].lifeAreaId || 0) : 0
     };
   }
 
-  drop(event: CdkDragDrop<Task[]>, targetColumn: string) {
+  autoPlanWeek() {
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    const tomorrow = tomorrowDate.toISOString().split('T')[0];
+
+    this.backlogTasks.forEach(task => {
+      if (task.taskId) {
+        const newDue = task.priority === 'HIGH' ? today : tomorrow;
+        this.api.updateTask(task.taskId, { ...task, due_date: newDue }).subscribe({
+          next: () => this.loadData()
+        });
+      }
+    });
+  }
+
+  drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.persistOrder(event.container.data);
     } else {
       transferArrayItem(
         event.previousContainer.data,
@@ -193,61 +211,57 @@ export class TasksComponent implements OnInit {
         event.previousIndex,
         event.currentIndex,
       );
-      
-      const task = event.container.data[event.currentIndex];
-      
-      if (targetColumn === 'completed') {
-        task.isCompleted = true;
-      } else {
-        task.isCompleted = false;
-        if (targetColumn === 'backlog') {
-          task.due_date = '';
-        } else if (targetColumn === 'today') {
-          task.due_date = new Date().toISOString().split('T')[0];
-        } else if (targetColumn === 'tomorrow') {
-          const tmr = new Date();
-          tmr.setDate(tmr.getDate() + 1);
-          task.due_date = tmr.toISOString().split('T')[0];
-        }
-        if (targetColumn === 'later' && !task.due_date) {
-           const later = new Date();
-           later.setDate(later.getDate() + 2);
-           task.due_date = later.toISOString().split('T')[0];
-        }
+
+      const movedTask = event.container.data[event.currentIndex];
+      const targetListId = event.container.id;
+
+      let newDueDate: string | null = null;
+      let newIsCompleted = false;
+
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+      const later = new Date();
+      later.setDate(today.getDate() + 3);
+      const laterStr = later.toISOString().split('T')[0];
+
+      if (targetListId.includes('today')) {
+        newDueDate = todayStr;
+      } else if (targetListId.includes('tomorrow')) {
+        newDueDate = tomorrowStr;
+      } else if (targetListId.includes('later')) {
+        newDueDate = laterStr;
+      } else if (targetListId.includes('completed')) {
+        newIsCompleted = true;
+      } else if (targetListId.includes('backlog')) {
+        newDueDate = null;
       }
-      
-      if (task.taskId) {
-        this.api.updateTask(task.taskId, task).subscribe();
+
+      movedTask.due_date = newDueDate;
+      movedTask.isCompleted = newIsCompleted;
+
+      if (movedTask.taskId) {
+        this.api.updateTask(movedTask.taskId, movedTask).subscribe({
+          next: () => this.persistOrder(event.container.data)
+        });
       }
-    }
-    
-    // Reorder across columns sequentially
-    const allTasks = [...this.backlogTasks, ...this.todayTasks, ...this.tomorrowTasks, ...this.laterTasks, ...this.completedTasks];
-    const reorderRequests: {taskId: number, orderIndex: number}[] = [];
-    allTasks.forEach((t, i) => {
-        t.orderIndex = i;
-        if (t.taskId) {
-            reorderRequests.push({taskId: t.taskId, orderIndex: i});
-        }
-    });
-    
-    if (reorderRequests.length > 0) {
-        this.api.reorderTasks(reorderRequests).subscribe();
     }
   }
 
-  autoPlanWeek() {
-    this.loading = true;
-    this.api.autoScheduleNyra().subscribe({
-      next: (res) => {
-        alert(res.message + ' Tasks updated: ' + res.tasksUpdated);
-        this.loadData();
-        this.loading = false;
-      },
-      error: (err) => {
-        alert('Failed to auto-plan week.');
-        this.loading = false;
-      }
-    });
+  private persistOrder(tasks: Task[]) {
+    const reorders = tasks
+      .filter(t => t.taskId != null)
+      .map((t, idx) => ({
+        taskId: t.taskId!,
+        orderIndex: idx
+      }));
+
+    if (reorders.length > 0) {
+      this.api.reorderTasks(reorders).subscribe();
+    }
   }
 }

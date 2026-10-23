@@ -1,59 +1,112 @@
-<div class="subjects-container">
-  <h2>Subjects Management</h2>
+<div class="subjects-page-container">
 
-  <div *ngIf="error" class="error-message">{{ error }}</div>
-
-  <div class="subject-form">
-    <h3>Add New Subject</h3>
-    <div class="input-group">
-      <input type="text" [(ngModel)]="newSubject.name" placeholder="Subject Name" required>
-      <input type="text" [(ngModel)]="newSubject.academicYear" placeholder="Academic Year (e.g. 2025/2026)">
+  <!-- Header Section with Action Button -->
+  <div class="page-topbar">
+    <div>
+      <h2>{{ modeService.terms().subjects }}</h2>
+      <p class="subtitle">
+        {{ modeService.isWorkMode() 
+            ? 'Manage client projects, codebases, and deliverable workspaces' 
+            : 'Organize coursework, syllabi, and visual color assignments' 
+        }}
+      </p>
     </div>
-    
-    <div class="color-picker">
-      <label>Choose Pantone Color:</label>
-      <div class="colors">
-        <div 
-          *ngFor="let color of pantoneColors" 
-          [style.background-color]="color" 
-          [class.selected]="newSubject.color === color"
-          (click)="newSubject.color = color"
-          class="color-circle">
+    <div class="topbar-actions">
+      <button class="btn-primary" (click)="openCreateModal()">
+        <span>+</span> New {{ modeService.terms().subject }}
+      </button>
+    </div>
+  </div>
+
+  @if (error) {
+    <div class="error-banner">⚠️ {{ error }}</div>
+  }
+
+  <!-- Inline Edit Drawer (Only appears when user explicitly clicks Edit) -->
+  @if (isEditing) {
+    <div class="edit-drawer-card">
+      <div class="drawer-header">
+        <h3>Edit {{ modeService.terms().subject }}: {{ newSubject.name }}</h3>
+        <button class="btn-close" (click)="cancelEdit()">✕</button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="form-row">
+          <input type="text" [(ngModel)]="newSubject.name" placeholder="Name" required>
+          <input type="text" [(ngModel)]="newSubject.academicYear" [placeholder]="modeService.terms().yearOrCode">
+        </div>
+
+        <div class="color-picker-row">
+          <label>Theme Color:</label>
+          <div class="swatches-list">
+            <button
+              type="button"
+              *ngFor="let color of pantoneColors"
+              class="swatch-btn"
+              [style.background-color]="color"
+              [class.active]="newSubject.color === color"
+              (click)="newSubject.color = color"
+            >
+              @if (newSubject.color === color) { <span>✓</span> }
+            </button>
+          </div>
+        </div>
+
+        <div class="drawer-actions">
+          <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+          <button class="btn-primary" (click)="updateSubject()">Save Changes</button>
         </div>
       </div>
     </div>
-    
-    <button (click)="isEditing ? updateSubject() : addSubject()" [disabled]="!newSubject.name">
-      {{ isEditing ? 'Update Subject' : 'Add Subject' }}
-    </button>
-    <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+  }
+
+  <!-- 3-Column Modern Card Grid -->
+  <div class="subjects-cards-grid">
+    @for (subject of subjects; track subject.lifeAreaId) {
+      <div class="subject-card" [style.border-top-color]="subject.color">
+        <div class="card-header">
+          <div class="title-wrap">
+            <span class="color-indicator" [style.background-color]="subject.color"></span>
+            <h4>{{ subject.name }}</h4>
+          </div>
+          <span class="code-badge">{{ subject.academicYear || (modeService.isWorkMode() ? 'Active' : '2025/2026') }}</span>
+        </div>
+
+        <div class="card-meta">
+          <div class="meta-item">
+            <span class="icon">📋</span>
+            <span>{{ getTaskCount(subject.lifeAreaId) }} Active Tasks</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="color-label">
+            <span class="hex-dot" [style.background-color]="subject.color"></span>
+            <span class="hex-text">{{ subject.color }}</span>
+          </div>
+
+          <div class="card-actions">
+            <button class="action-btn" (click)="editSubject(subject)" title="Edit">
+              ✏️
+            </button>
+            <button class="action-btn btn-danger-action" (click)="deleteSubject(subject.lifeAreaId)" title="Delete">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (subjects.length === 0) {
+      <div class="empty-deck">
+        <span class="empty-icon">📁</span>
+        <h3>No {{ modeService.terms().subjects }} Yet</h3>
+        <p>Get started by organizing your first {{ modeService.terms().subject.toLowerCase() }}.</p>
+        <button class="btn-primary" (click)="openCreateModal()">
+          + Create {{ modeService.terms().subject }}
+        </button>
+      </div>
+    }
   </div>
 
-  <div class="subject-list">
-    <h3>Existing Subjects</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Year</th>
-          <th>Color</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let subject of subjects">
-          <td>{{ subject.name }}</td>
-          <td>{{ subject.academicYear }}</td>
-          <td>
-            <div class="color-preview" [style.background-color]="subject.color"></div>
-            {{ subject.color }}
-          </td>
-          <td>
-            <button class="edit-btn" (click)="editSubject(subject)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
-            <button class="delete-btn" (click)="deleteSubject(subject.lifeAreaId)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </div>

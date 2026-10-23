@@ -1,0 +1,201 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <!-- Modal Navigation Tabs -->
+      <div class="modal-tabs">
+        <button class="tab-btn" [class.active]="activeTab() === 'task'" (click)="setTab('task')">
+          <span class="icon">✅</span> Task
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'subject'" (click)="setTab('subject')">
+          <span class="icon">📁</span> {{ modeService.terms().subject }}
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'exam'" (click)="setTab('exam')">
+          <span class="icon">⏱️</span> {{ modeService.terms().exam }}
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'grade'" (click)="setTab('grade')">
+          <span class="icon">⭐</span> {{ modeService.terms().grade }}
+        </button>
+        <button class="close-btn" (click)="close()" title="Close (Esc)">✕</button>
+      </div>
+
+      <!-- Tab 1: Task / Issue -->
+      @if (activeTab() === 'task') {
+        <div class="modal-body">
+          <div class="title-field">
+            <input 
+              type="text" 
+              [ngModel]="taskTitle" 
+              (ngModelChange)="onTaskTitleChange($event)" 
+              placeholder="What needs to be done? (Tip: type !high or @today)"
+              autofocus
+              (keydown.enter)="submit()"
+            >
+          </div>
+
+          <textarea 
+            [(ngModel)]="taskDesc" 
+            placeholder="Add extra context, checklist, or instructions (optional)..."
+            rows="2"
+          ></textarea>
+
+          <!-- Interactive Attribute Pills -->
+          <div class="attribute-pills">
+            <div class="pill-group">
+              <label>📁 {{ modeService.terms().subject }}:</label>
+              <select [(ngModel)]="taskLifeAreaId">
+                <option *ngFor="let s of subjects()" [value]="s.lifeAreaId">
+                  {{ s.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="pill-group">
+              <label>📅 Due:</label>
+              <input type="date" [(ngModel)]="taskDueDate">
+            </div>
+
+            <div class="pill-group">
+              <label>🔥 Priority:</label>
+              <select [(ngModel)]="taskPriority">
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 2: Subject / Project -->
+      @if (activeTab() === 'subject') {
+        <div class="modal-body">
+          <div class="title-field">
+            <input 
+              type="text" 
+              [(ngModel)]="subjectName" 
+              [placeholder]="modeService.isWorkMode() ? 'Project or Client Name' : 'Subject Name (e.g. Distributed Systems)'"
+              autofocus
+              (keydown.enter)="submit()"
+            >
+          </div>
+
+          <div class="input-row">
+            <input 
+              type="text" 
+              [(ngModel)]="subjectCode" 
+              [placeholder]="modeService.terms().yearOrCode"
+            >
+          </div>
+
+          <div class="color-picker-section">
+            <span class="section-label">Accent Theme Palette:</span>
+            <div class="colors-row">
+              <button 
+                type="button"
+                *ngFor="let c of pantoneColors" 
+                class="swatch" 
+                [style.background-color]="c"
+                [class.selected]="subjectColor === c"
+                (click)="subjectColor = c"
+              >
+                @if (subjectColor === c) { <span>✓</span> }
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 3: Exam / Milestone -->
+      @if (activeTab() === 'exam') {
+        <div class="modal-body">
+          <div class="title-field">
+            <input 
+              type="text" 
+              [(ngModel)]="examName" 
+              [placeholder]="modeService.isWorkMode() ? 'Milestone or Release Title' : 'Exam Title (e.g. Midterm Lab Test)'"
+              autofocus
+              (keydown.enter)="submit()"
+            >
+          </div>
+
+          <div class="attribute-pills">
+            <div class="pill-group">
+              <label>📁 {{ modeService.terms().subject }}:</label>
+              <select [(ngModel)]="examLifeAreaId">
+                <option *ngFor="let s of subjects()" [value]="s.lifeAreaId">
+                  {{ s.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="pill-group">
+              <label>📅 Target Date:</label>
+              <input type="date" [(ngModel)]="examDate">
+            </div>
+
+            <div class="pill-group">
+              <label>🏷️ Type:</label>
+              <select [(ngModel)]="examType">
+                <option value="EXAM">Exam / Release</option>
+                <option value="QUIZ">Quiz / Sprint</option>
+                <option value="FINAL">Final Milestone</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <input 
+              type="text" 
+              [(ngModel)]="examClassroom" 
+              [placeholder]="modeService.terms().roomOrEnv"
+            >
+          </div>
+        </div>
+      }
+
+      <!-- Tab 4: Grade / Deliverable -->
+      @if (activeTab() === 'grade') {
+        <div class="modal-body">
+          <div class="attribute-pills">
+            <div class="pill-group">
+              <label>📁 {{ modeService.terms().subject }}:</label>
+              <select [(ngModel)]="gradeLifeAreaId">
+                <option *ngFor="let s of subjects()" [value]="s.lifeAreaId">
+                  {{ s.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="pill-group">
+              <label>⭐ Score (0–10):</label>
+              <input type="number" [(ngModel)]="gradeScore" min="0" max="10" step="0.1">
+            </div>
+
+            <div class="pill-group">
+              <label>⚖️ Weight %:</label>
+              <input type="number" [(ngModel)]="gradeWeight" min="1" max="100">
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <div class="footer-tips">
+          <span class="kbd">↵</span> to submit • <span class="kbd">Esc</span> to dismiss
+        </div>
+        @if (successToast()) {
+          <div class="success-indicator">✓ {{ successToast() }}</div>
+        }
+        <div class="action-buttons">
+          <button class="btn-secondary" (click)="close()">Cancel</button>
+          <button class="btn-primary" (click)="submit()" [disabled]="submitting()">
+            {{ submitting() ? 'Saving...' : 'Create ' + getActiveTabEntityName() }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

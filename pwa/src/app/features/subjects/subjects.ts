@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService, LifeArea } from '../../core/services/api';
+import { ApiService, LifeArea, Task } from '../../core/services/api';
+import { ModeService } from '../../core/services/mode.service';
 
 @Component({
   selector: 'app-subjects',
@@ -10,48 +11,78 @@ import { ApiService, LifeArea } from '../../core/services/api';
   templateUrl: './subjects.html',
   styleUrls: ['./subjects.scss']
 })
-export class SubjectsComponent implements OnInit {
+export class SubjectsComponent implements OnInit, OnDestroy {
   subjects: LifeArea[] = [];
+  tasks: Task[] = [];
+  
   newSubject: LifeArea = {
     name: '',
-    color: '#FFB7B2',
-    userId: 0, // real id assigned in ngOnInit
+    color: '#10b981',
+    userId: 0,
     academicYear: '2025/2026',
     active: true
   };
-  pantoneColors: string[] = ['#FFB7B2', '#B2E2F2', '#B2F2BB', '#F2F2B2', '#E2F0CB', '#FFDAC1'];
+  
+  pantoneColors: string[] = [
+    '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', 
+    '#f59e0b', '#06b6d4', '#6366f1', '#ef4444'
+  ];
+  
   loading = false;
   error = '';
   isEditing = false;
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
+  private entityListener?: () => void;
+
+  constructor(
+    private api: ApiService, 
+    public modeService: ModeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.newSubject.userId = this.api.getCurrentUser()?.userId ?? 1;
-    this.loadSubjects();
+    this.loadData();
+
+    const onEntity = () => this.loadData();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('studyflow-entity-created', onEntity);
+      this.entityListener = () => window.removeEventListener('studyflow-entity-created', onEntity);
+    }
   }
 
-  loadSubjects() {
+  ngOnDestroy() {
+    if (this.entityListener) {
+      this.entityListener();
+    }
+  }
+
+  loadData() {
     this.api.getSubjects().subscribe({
       next: (data) => {
         this.subjects = data;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        this.error = 'Failed to load subjects';
+      error: () => this.error = 'Failed to load data'
+    });
+
+    this.api.getTasks().subscribe({
+      next: (tasks) => {
+        this.tasks = tasks;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  addSubject() {
-    if (!this.newSubject.name) return;
-    this.api.addSubject(this.newSubject).subscribe({
-      next: () => {
-        this.loadSubjects();
-        this.resetNewSubject();
-      },
-      error: (err) => this.error = 'Failed to add subject'
-    });
+  getTaskCount(lifeAreaId?: number): number {
+    if (!lifeAreaId) return 0;
+    return this.tasks.filter(t => t.lifeAreaId === lifeAreaId && !t.isCompleted).length;
+  }
+
+  openCreateModal() {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-studyflow-command-modal', { detail: { tab: 'subject' } }));
+    }
   }
 
   editSubject(subject: LifeArea) {
@@ -69,27 +100,28 @@ export class SubjectsComponent implements OnInit {
     this.api.updateSubject(this.newSubject.lifeAreaId, this.newSubject).subscribe({
       next: () => {
         this.isEditing = false;
-        this.loadSubjects();
+        this.loadData();
         this.resetNewSubject();
       },
-      error: (err) => this.error = 'Failed to update subject'
+      error: () => this.error = 'Failed to update'
     });
   }
 
   deleteSubject(id: number | undefined) {
     if (!id) return;
+    if (!confirm(`Are you sure you want to delete this ${this.modeService.terms().subject.toLowerCase()}?`)) return;
     this.api.deleteSubject(id).subscribe({
-      next: () => this.loadSubjects(),
-      error: (err) => this.error = 'Failed to delete subject'
+      next: () => this.loadData(),
+      error: () => this.error = 'Failed to delete'
     });
   }
 
   resetNewSubject() {
     this.newSubject = { 
       name: '', 
-      color: '#FFB7B2', 
+      color: '#10b981', 
       userId: this.api.getCurrentUser()?.userId ?? 1,
-      academicYear: '2025/2026',
+      academicYear: this.modeService.isWorkMode() ? 'PRJ-2026' : '2025/2026',
       active: true
     };
   }

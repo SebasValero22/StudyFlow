@@ -1,41 +1,115 @@
 <div class="timer-container" [ngClass]="{'break-mode': !isFocusMode}">
-  <div class="timer-header">
-    <h2>Animedoro Focus Engine</h2>
-    <p>{{ isFocusMode ? '40 Minutes of Deep Work' : '20 Minutes of Reward' }}</p>
-  </div>
+  
+  <!-- Timer Header with Mode Badging -->
+  <div class="timer-topbar">
+    <div class="header-titles">
+      <h2>{{ modeService.isWorkMode() ? 'Deep Work Tracker' : 'Animedoro Focus Engine' }}</h2>
+      <p class="subtitle">
+        {{ isFocusMode 
+            ? (modeService.isWorkMode() ? 'High-leverage focus block • Synchronized to client timesheet' : 'Deep cognitive sprint • Zero distractions')
+            : (modeService.isWorkMode() ? 'Recovery interval • Recharge cognitive bandwidth' : 'Reward interval • AniList recommendations unlocked') 
+        }}
+      </p>
+    </div>
 
-  <div class="task-selector" *ngIf="isFocusMode">
-    <label>Link Active Task:</label>
-    <select [(ngModel)]="selectedTaskId" [disabled]="isRunning">
-      <option [ngValue]="null" disabled selected>Select a task from your board...</option>
-      <option *ngFor="let task of tasks" [ngValue]="task.taskId">
-        {{ task.title }}
-      </option>
-    </select>
-  </div>
-
-  <div class="clock-display">
-    <span class="time">{{ formattedTime }}</span>
-  </div>
-
-  <div class="controls">
-    <button class="primary-btn" (click)="toggleTimer()">
-      {{ isRunning ? 'Pause' : 'Start' }}
-    </button>
-    <button class="secondary-btn" (click)="resetTimer()">Reset</button>
-  </div>
-
-  <div class="anime-reward-section" *ngIf="!isFocusMode">
-    <h3>Up Next on Your AniList:</h3>
-    <div class="loading" *ngIf="loadingAnime">Fetching anime list...</div>
-    
-    <div class="anime-grid" *ngIf="!loadingAnime">
-      <div class="anime-card" *ngFor="let anime of animeList">
-        <img [src]="anime.coverImage.large" [alt]="anime.title.romaji">
-        <div class="anime-info">
-          <h4>{{ anime.title.english || anime.title.romaji }}</h4>
-        </div>
-      </div>
+    <!-- Presets Segmented Selector -->
+    <div class="preset-selector">
+      <button class="preset-pill" [class.active]="preset === '40/20'" (click)="setPreset('40/20')">40/20 Animedoro</button>
+      <button class="preset-pill" [class.active]="preset === '50/10'" (click)="setPreset('50/10')">50/10 Deep Work</button>
+      <button class="preset-pill" [class.active]="preset === '25/5'" (click)="setPreset('25/5')">25/5 Pomodoro</button>
     </div>
   </div>
+
+  <!-- Linked Task Pill (Glassmorphic) -->
+  <div class="task-binding-area">
+    @if (tasks.length > 0) {
+      <div class="task-glass-pill">
+        <span class="pill-dot" [style.background-color]="selectedTask?.lifeAreaColor || 'var(--accent-primary)'"></span>
+        <select [(ngModel)]="selectedTaskId" [disabled]="isRunning">
+          <option [ngValue]="null">Select target item to time...</option>
+          <option *ngFor="let t of tasks" [ngValue]="t.taskId">
+            {{ t.title }}
+          </option>
+        </select>
+        @if (modeService.isWorkMode()) {
+          <label class="billable-check" title="Log this block as billable client time">
+            <input type="checkbox" [(ngModel)]="isBillable">
+            <span>Billable</span>
+          </label>
+        }
+      </div>
+    } @else {
+      <div class="task-glass-pill empty-pill">
+        <span>No open tasks. Open <kbd>Ctrl+K</kbd> to queue an item.</span>
+      </div>
+    }
+  </div>
+
+  <!-- SVG Circular Progress Ring Display -->
+  <div class="ring-clock-wrapper">
+    <svg class="progress-ring" viewBox="0 0 280 280">
+      <!-- Background Track -->
+      <circle 
+        class="ring-bg" 
+        cx="140" 
+        cy="140" 
+        r="120"
+      />
+      <!-- Animated Active Track -->
+      <circle 
+        class="ring-progress" 
+        [class.break]="!isFocusMode"
+        cx="140" 
+        cy="140" 
+        r="120"
+        [style.stroke-dashoffset]="strokeDashoffset"
+      />
+    </svg>
+
+    <!-- Center Display -->
+    <div class="ring-center-content">
+      <span class="session-phase-label">
+        {{ isFocusMode ? (modeService.isWorkMode() ? 'DEEP WORK' : 'FOCUS BLOCK') : 'RECOVERY BREAK' }}
+      </span>
+      <span class="tabular-time">{{ formattedTime }}</span>
+      <span class="phase-indicator-dot" [class.pulse]="isRunning"></span>
+    </div>
+  </div>
+
+  <!-- Action Controls -->
+  <div class="timer-controls">
+    <button class="primary-btn btn-timer-main" [class.btn-pause]="isRunning" (click)="toggleTimer()">
+      <span>{{ isRunning ? '⏸' : '▶' }}</span>
+      <span>{{ isRunning ? 'Pause Session' : 'Start Focus' }}</span>
+    </button>
+    <button class="btn-secondary btn-timer-reset" (click)="resetTimer()">
+      Reset
+    </button>
+  </div>
+
+  <!-- Anime Rewards Section (Academic Mode Break Only) -->
+  @if (!isFocusMode && !modeService.isWorkMode()) {
+    <div class="anime-reward-section">
+      <div class="section-header">
+        <span class="sparkle">🎌</span>
+        <h3>Trending on AniList: 20-Minute Episode Break</h3>
+      </div>
+
+      @if (loadingAnime) {
+        <div class="loading-spinner">Loading recommendations...</div>
+      } @else {
+        <div class="anime-grid">
+          @for (anime of animeList; track anime.id) {
+            <div class="anime-card">
+              <img [src]="anime.coverImage.large" [alt]="anime.title.romaji">
+              <div class="anime-info">
+                <h4>{{ anime.title.english || anime.title.romaji }}</h4>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
 </div>

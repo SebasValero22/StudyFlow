@@ -1,21 +1,79 @@
 <div class="nyra-wrap">
   @if (feedback()) {
-    <div class="nyra-toast">{{ feedback() }}</div>
+    <div class="nyra-toast">
+      <span class="sparkle">✨</span> {{ feedback() }}
+    </div>
   }
+
+  <!-- Raycast-Style AI Skill Drawer -->
+  @if (isDrawerOpen()) {
+    <div class="nyra-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span class="sparkle">✨</span>
+          <span>Nyra AI Copilot</span>
+        </div>
+        <button class="drawer-close" (click)="closeDrawer()">✕</button>
+      </div>
+
+      <div class="skills-grid">
+        <button class="skill-chip" (click)="executeAutoPlan()">
+          <span class="chip-icon">⚡</span>
+          <div class="chip-info">
+            <span class="chip-title">Auto-Plan My Week</span>
+            <span class="chip-desc">Sort backlog into Today & Tomorrow</span>
+          </div>
+        </button>
+
+        <button class="skill-chip" (click)="executeBrainDump()">
+          <span class="chip-icon">🎙️</span>
+          <div class="chip-info">
+            <span class="chip-title">Voice Brain-Dump</span>
+            <span class="chip-desc">Transcribe ideas directly to tasks</span>
+          </div>
+        </button>
+
+        <button class="skill-chip" (click)="executeSummary()">
+          <span class="chip-icon">📊</span>
+          <div class="chip-info">
+            <span class="chip-title">Weekly Focus Timesheet</span>
+            <span class="chip-desc">Review velocity and focus heatmap</span>
+          </div>
+        </button>
+
+        <button class="skill-chip" (click)="executeFormatNote()">
+          <span class="chip-icon">📔</span>
+          <div class="chip-info">
+            <span class="chip-title">Journal Reflection</span>
+            <span class="chip-desc">AI-assisted daily reflection</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="drawer-footer">
+        <span class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Space</kbd> to toggle</span>
+        <button class="record-btn" (click)="toggleRecording()" [class.recording]="isRecording()">
+          {{ isRecording() ? '⏹️ Stop Recording' : '🎙️ Start Mic' }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Floating Action Button (Theme-Harmonized) -->
   <button
     class="nyra-fab"
     [class.recording]="isRecording()"
     [class.processing]="isProcessing()"
-    (click)="toggleRecording()"
+    (click)="toggleDrawer()"
     [disabled]="isProcessing()"
-    title="Talk to Nyra"
+    title="Nyra AI (Ctrl+Space)"
   >
     @if (isRecording()) {
       <span class="icon">⏹️</span>
     } @else if (isProcessing()) {
       <span class="icon">⏳</span>
     } @else {
-      <span class="icon">🎙️</span>
+      <span class="icon">✨</span>
     }
   </button>
 </div>

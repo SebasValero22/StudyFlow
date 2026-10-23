@@ -13,7 +13,7 @@
               <div class="brand-info">
                 <span class="brand-title">StudyFlow</span>
                 <span class="mode-pill" (click)="toggleAppMode($event)" title="Click to toggle Study/Work mode">
-                  {{ appMode() === 'study' ? '🎓 Study' : '💼 Work' }}
+                  {{ modeService.isWorkMode() ? '💼 Work Suite' : '🎓 Academic OS' }}
                 </span>
               </div>
             }
@@ -38,9 +38,9 @@
         </li>
 
         <li>
-          <a routerLink="/subjects" routerLinkActive="active" [title]="appMode() === 'study' ? 'Subjects' : 'Projects'">
+          <a routerLink="/subjects" routerLinkActive="active" [title]="modeService.terms().subjects">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            @if (!isSidebarCollapsed()) { <span>{{ appMode() === 'study' ? 'Subjects' : 'Projects' }}</span> }
+            @if (!isSidebarCollapsed()) { <span>{{ modeService.terms().subjects }}</span> }
           </a>
         </li>
 
@@ -52,35 +52,35 @@
         </li>
 
         <li>
-          <a routerLink="/exams" routerLinkActive="active" [title]="appMode() === 'study' ? 'Exams' : 'Deadlines'">
+          <a routerLink="/exams" routerLinkActive="active" [title]="modeService.terms().exams">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            @if (!isSidebarCollapsed()) { <span>{{ appMode() === 'study' ? 'Exams' : 'Deadlines' }}</span> }
+            @if (!isSidebarCollapsed()) { <span>{{ modeService.terms().exams }}</span> }
           </a>
         </li>
 
         <li>
-          <a routerLink="/grades" routerLinkActive="active" [title]="appMode() === 'study' ? 'Grades' : 'KPIs & Goals'">
+          <a routerLink="/grades" routerLinkActive="active" [title]="modeService.terms().grades">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            @if (!isSidebarCollapsed()) { <span>{{ appMode() === 'study' ? 'Grades' : 'Performance' }}</span> }
+            @if (!isSidebarCollapsed()) { <span>{{ modeService.terms().grades }}</span> }
           </a>
         </li>
 
         <li>
-          <a routerLink="/journal" routerLinkActive="active" title="Voice Journal">
+          <a routerLink="/journal" routerLinkActive="active" title="Notes Vault & Journal">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/><path d="M7 7h10"/><path d="M7 11h10"/><path d="M7 15h6"/></svg>
-            @if (!isSidebarCollapsed()) { <span>Journal</span> }
+            @if (!isSidebarCollapsed()) { <span>Notes Vault</span> }
           </a>
         </li>
 
         <li>
-          <a routerLink="/timer" routerLinkActive="active" title="Focus Timer">
+          <a routerLink="/timer" routerLinkActive="active" [title]="modeService.terms().timerBadge">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            @if (!isSidebarCollapsed()) { <span>Focus Timer</span> }
+            @if (!isSidebarCollapsed()) { <span>{{ modeService.isWorkMode() ? 'Deep Work' : 'Focus Timer' }}</span> }
           </a>
         </li>
 
         <li>
-          <a routerLink="/focus-report" routerLinkActive="active" title="Focus Analytics">
+          <a routerLink="/focus-report" routerLinkActive="active" title="Timesheet & Analytics">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             @if (!isSidebarCollapsed()) { <span>Analytics</span> }
           </a>
@@ -107,7 +107,9 @@
         <div class="sync-status">
           <span class="status-dot"></span>
           <span>Personal Cloud Sync: <strong>Active</strong></span>
-          <span class="mode-tag">{{ appMode() === 'study' ? '🎓 Study Mode' : '💼 Work Mode' }}</span>
+          <span class="mode-tag" (click)="toggleAppMode($event)" title="Click to switch between Academic OS and Work Suite">
+            {{ modeService.isWorkMode() ? '💼 Work Suite' : '🎓 Academic OS' }}
+          </span>
           <select class="topbar-theme-selector" (change)="changeTheme($event)" [value]="currentTheme$ | async">
             <option value="omarchy">🌿 Omarchy Emerald</option>
             <option value="cyberpunk">🌃 Tokyo Night</option>
@@ -118,21 +120,29 @@
           </select>
         </div>
 
-        <a routerLink="/profile" class="user-profile-link">
-          <div class="user-profile">
-            @if (customPfp()) {
-              <img [src]="customPfp()!" alt="User avatar" class="topbar-avatar">
-            } @else {
-              <div class="topbar-avatar-placeholder">
-                {{ (getCurrentUser()?.name || 'U').charAt(0).toUpperCase() }}
+        <div class="topbar-actions">
+          <button class="topbar-create-btn" (click)="openQuickCreate('task')" title="Quick Create (Ctrl+K)">
+            <span class="plus-sign">+</span>
+            <span>Create</span>
+            <kbd class="kbd-hint">Ctrl K</kbd>
+          </button>
+
+          <a routerLink="/profile" class="user-profile-link">
+            <div class="user-profile">
+              @if (customPfp()) {
+                <img [src]="customPfp()!" alt="User avatar" class="topbar-avatar">
+              } @else {
+                <div class="topbar-avatar-placeholder">
+                  {{ (getCurrentUser()?.name || 'U').charAt(0).toUpperCase() }}
+                </div>
+              }
+              <div class="user-info">
+                <span class="user-name">{{ getCurrentUser()?.name || 'User' }}</span>
+                <span class="user-role">{{ getCurrentUser()?.email || 'studyflow.user' }}</span>
               </div>
-            }
-            <div class="user-info">
-              <span class="user-name">{{ getCurrentUser()?.name || 'User' }}</span>
-              <span class="user-role">{{ getCurrentUser()?.email || 'studyflow.user' }}</span>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
       </header>
     }
 
@@ -143,5 +153,6 @@
 
   @if (isLoggedIn()) {
     <app-nyra-voice-button></app-nyra-voice-button>
+    <app-command-modal></app-command-modal>
   }
 </div>

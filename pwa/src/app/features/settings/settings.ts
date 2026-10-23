@@ -50,9 +50,13 @@ export class SettingsComponent implements OnInit {
   breakMinutes = signal<number>(20);
   chimeSound = signal<boolean>(true);
 
-  // Sync
+  // Sync & Cloud Storage
   syncStatus = signal<string>('Ready');
   saveNotification = signal<string>('');
+  storageProvider = signal<'aiven' | 'gdrive' | 'local'>('aiven');
+  gdriveConnected = signal<boolean>(true);
+  gdriveQuotaUsed = signal<string>('1.2 MB');
+  gdriveQuotaTotal = signal<string>('15 GB');
 
   constructor(
     private themeService: ThemeService,
@@ -216,6 +220,18 @@ export class SettingsComponent implements OnInit {
     }).catch(() => {
       this.syncStatus.set('Sync completed (Offline cache active)');
     });
+  }
+
+  setStorageProvider(provider: 'aiven' | 'gdrive' | 'local') {
+    this.storageProvider.set(provider);
+    localStorage.setItem('studyflow-storage-provider', provider);
+    this.flashNotification(`Storage provider set to ${provider.toUpperCase()}`);
+  }
+
+  toggleGoogleDriveAuth() {
+    const next = !this.gdriveConnected();
+    this.gdriveConnected.set(next);
+    this.flashNotification(next ? 'Connected to Google Drive OAuth2 AppFolder' : 'Disconnected Google Drive');
   }
 
   exportDataJson() {

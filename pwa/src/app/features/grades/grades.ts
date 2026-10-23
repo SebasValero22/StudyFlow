@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Grade, LifeArea } from '../../core/services/api';
+import { ModeService } from '../../core/services/mode.service';
 
 @Component({
   selector: 'app-grades',
@@ -10,7 +11,7 @@ import { ApiService, Grade, LifeArea } from '../../core/services/api';
   templateUrl: './grades.html',
   styleUrls: ['./grades.scss']
 })
-export class GradesComponent implements OnInit {
+export class GradesComponent implements OnInit, OnDestroy {
   grades: Grade[] = [];
   subjects: LifeArea[] = [];
   selectedLifeAreaId: number | null = null;
@@ -19,18 +20,35 @@ export class GradesComponent implements OnInit {
   isEditing = false;
 
   newGrade: Grade = {
-    score: 0,
-    weight: 100
+    score: 8.5,
+    weight: 20
   };
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
+  private entityListener?: () => void;
+
+  constructor(
+    private api: ApiService, 
+    public modeService: ModeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadData();
+
+    const onEntity = () => this.loadData();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('studyflow-entity-created', onEntity);
+      this.entityListener = () => window.removeEventListener('studyflow-entity-created', onEntity);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.entityListener) {
+      this.entityListener();
+    }
   }
 
   loadData() {
-    // Independent loading
     this.api.getSubjects().subscribe(subs => {
       this.subjects = subs;
       this.cdr.detectChanges();
@@ -41,10 +59,14 @@ export class GradesComponent implements OnInit {
         this.grades = grades;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        this.error = 'Failed to load grades';
-      }
+      error: () => this.error = 'Failed to load grades'
     });
+  }
+
+  openCreateModal() {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-studyflow-command-modal', { detail: { tab: 'grade' } }));
+    }
   }
 
   addGrade() {
@@ -55,7 +77,7 @@ export class GradesComponent implements OnInit {
         this.loadData();
         this.resetNewGrade();
       },
-      error: (err) => this.error = 'Failed to add grade'
+      error: () => this.error = 'Failed to add record'
     });
   }
 
@@ -82,23 +104,24 @@ export class GradesComponent implements OnInit {
         this.loadData();
         this.resetNewGrade();
       },
-      error: (err) => this.error = 'Failed to update grade'
+      error: () => this.error = 'Failed to update record'
     });
   }
 
   deleteGrade(id: number) {
+    if (!confirm('Delete this assessment record?')) return;
     this.api.deleteGrade(id).subscribe({
       next: () => this.loadData(),
-      error: (err) => this.error = 'Failed to delete grade'
+      error: () => this.error = 'Failed to delete record'
     });
   }
 
   resetNewGrade() {
-    this.newGrade = { score: 0, weight: 100 };
+    this.newGrade = { score: 8.5, weight: 20 };
     this.selectedLifeAreaId = null;
   }
 
-  calculateGPA() {
+  calculateGPA(): number {
     if (this.grades.length === 0) return 0;
     let totalScore = 0;
     let totalWeight = 0;
@@ -106,6 +129,6 @@ export class GradesComponent implements OnInit {
       totalScore += (g.score * (g.weight / 100));
       totalWeight += (g.weight / 100);
     });
-    return totalWeight > 0 ? (totalScore / totalWeight).toFixed(2) : 0;
+    return totalWeight > 0 ? +(totalScore / totalWeight).toFixed(2) : 0;
   }
 }

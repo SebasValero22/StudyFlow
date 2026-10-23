@@ -1,70 +1,128 @@
-<div class="exams-container">
-  <h2>Exams</h2>
+<div class="exams-page-container">
 
-  <div *ngIf="error" class="error-message">{{ error }}</div>
-
-  <div class="exam-form">
-    <h3>Add New Exam</h3>
-    <div class="input-group">
-      <input type="text" [(ngModel)]="newExam.nameExam" placeholder="Exam Name">
-      <input type="text" [(ngModel)]="newExam.classroom" placeholder="Classroom">
-      <select [(ngModel)]="newExam.lifeAreaId">
-        <option [ngValue]="0" disabled>Select Subject</option>
-        <option *ngFor="let subject of subjects" [value]="subject.lifeAreaId">
-          {{ subject.name }}
-        </option>
-      </select>
+  <!-- Top Action Bar -->
+  <div class="exams-topbar">
+    <div>
+      <h2>{{ modeService.terms().exams }}</h2>
+      <p class="subtitle">
+        {{ modeService.isWorkMode() 
+            ? 'Track sprint releases, deployment schedules, and client SLA deadlines' 
+            : 'Track examination dates, classroom test locations, and live countdown timers' 
+        }}
+      </p>
     </div>
-    <div class="input-group">
-      <input type="date" [(ngModel)]="newExam.examDate">
-      <select [(ngModel)]="newExam.examType">
-        <option value="EXAM">Exam</option>
-        <option value="QUIZ">Quiz</option>
-        <option value="FINAL">Final</option>
-      </select>
-      <button (click)="isEditing ? updateExam() : addExam()">{{ isEditing ? 'Update Exam' : 'Add Exam' }}</button>
-      <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+
+    <div class="topbar-controls">
+      <div class="filter-wrap">
+        <label>Filter:</label>
+        <select [(ngModel)]="selectedSubjectId">
+          <option [ngValue]="null">All {{ modeService.terms().subjects }}</option>
+          <option *ngFor="let s of subjects" [ngValue]="s.lifeAreaId">{{ s.name }}</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" (click)="openCreateModal()">
+        <span>+</span> Schedule {{ modeService.terms().exam }}
+      </button>
     </div>
   </div>
 
-  <div class="exam-filters">
-    <label>Filter by Subject:</label>
-    <select [(ngModel)]="selectedSubjectId">
-      <option [ngValue]="null">All Subjects</option>
-      <option *ngFor="let s of subjects" [ngValue]="s.lifeAreaId">
-        {{ s.name }}
-      </option>
-    </select>
+  @if (error) {
+    <div class="error-banner">⚠️ {{ error }}</div>
+  }
+
+  <!-- Inline Edit Modal -->
+  @if (isEditing) {
+    <div class="edit-modal-backdrop" (click)="cancelEdit()">
+      <div class="edit-modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h3>Edit {{ modeService.terms().exam }}: {{ newExam.nameExam }}</h3>
+          <button class="btn-close" (click)="cancelEdit()">✕</button>
+        </div>
+
+        <div class="modal-form">
+          <input type="text" [(ngModel)]="newExam.nameExam" placeholder="Title" required>
+          <input type="text" [(ngModel)]="newExam.classroom" [placeholder]="modeService.terms().roomOrEnv">
+          
+          <div class="form-row">
+            <select [(ngModel)]="newExam.lifeAreaId">
+              <option *ngFor="let s of subjects" [value]="s.lifeAreaId">{{ s.name }}</option>
+            </select>
+            <input type="date" [(ngModel)]="newExam.examDate">
+            <select [(ngModel)]="newExam.examType">
+              <option value="EXAM">Exam / Release</option>
+              <option value="QUIZ">Quiz / Sprint</option>
+              <option value="FINAL">Final Milestone</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button class="btn-primary" (click)="updateExam()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modern Milestone Ledger Card -->
+  <div class="milestones-card">
+    <div class="card-title-bar">
+      <h3>Active {{ modeService.terms().exams }}</h3>
+      <span class="count-pill">{{ filteredExams.length }} scheduled</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ modeService.terms().subject }}</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Scheduled Date</th>
+            <th>{{ modeService.terms().roomOrEnv }}</th>
+            <th>Countdown</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (exam of filteredExams; track exam.examId) {
+            <tr>
+              <td class="subject-cell">
+                <span class="subject-dot" [style.background-color]="getSubjectColor(exam.lifeAreaId)"></span>
+                <span class="subject-name">{{ exam.lifeAreaName || 'General' }}</span>
+              </td>
+              <td class="title-cell">
+                <strong>{{ exam.nameExam }}</strong>
+              </td>
+              <td>
+                <span class="type-pill" [class.type-final]="exam.examType === 'FINAL'">
+                  {{ exam.examType }}
+                </span>
+              </td>
+              <td class="date-cell">{{ exam.examDate | date:'mediumDate' }}</td>
+              <td class="room-cell">{{ exam.classroom || '—' }}</td>
+              <td>
+                <span class="countdown-badge" [class.urgent]="isUrgent(exam.examDate)">
+                  {{ getDaysRemaining(exam.examDate) }}
+                </span>
+              </td>
+              <td class="text-right actions-cell">
+                <button class="action-btn" (click)="editExam(exam)" title="Edit">✏️</button>
+                <button class="action-btn btn-del" (click)="deleteExam(exam.examId)" title="Delete">🗑️</button>
+              </td>
+            </tr>
+          }
+          @if (filteredExams.length === 0) {
+            <tr>
+              <td colspan="7" class="empty-state">
+                No {{ modeService.terms().exams.toLowerCase() }} currently scheduled.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="exam-list">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Date</th>
-          <th>Classroom</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let exam of filteredExams" [ngStyle]="{'background-color': getSubjectColor(exam.lifeAreaId) + '33', 'border-left': '5px solid ' + getSubjectColor(exam.lifeAreaId)}">
-          <td style="font-weight: 600;">{{ exam.nameExam }}</td>
-          <td>{{ exam.examType }}</td>
-          <td>
-            <div>{{ exam.examDate }}</div>
-            <small [style.color]="getDaysRemaining(exam.examDate) === 'Overdue' ? '#e74c3c' : '#7f8c8d'" style="font-weight: bold;">
-              {{ getDaysRemaining(exam.examDate) }}
-            </small>
-          </td>
-          <td>{{ exam.classroom }}</td>
-          <td>
-            <button (click)="editExam(exam)" style="background-color: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Modify</button>
-            <button class="delete-btn" (click)="deleteExam(exam.examId)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </div>

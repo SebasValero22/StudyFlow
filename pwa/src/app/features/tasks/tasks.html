@@ -1,149 +1,231 @@
-<div class="tasks-container">
-  <h2>Tasks</h2>
+<div class="tasks-page-container">
 
-  <div *ngIf="error" class="error-message">{{ error }}</div>
-
-  <div class="task-form">
-    <h3>Add New Task</h3>
-    <div class="input-group">
-      <input type="text" [(ngModel)]="newTask.title" placeholder="Task Title">
-      <input type="text" [(ngModel)]="newTask.description" placeholder="Description">
-      <select [(ngModel)]="newTask.lifeAreaId">
-        <option value="0" disabled selected>Select Life Area</option>
-        <option *ngFor="let subject of subjects" [value]="subject.lifeAreaId">
-          {{ subject.name }}
-        </option>
-      </select>
+  <!-- Top Action Bar -->
+  <div class="tasks-topbar">
+    <div>
+      <h2>{{ modeService.isWorkMode() ? 'Sprint Issues & Deliverables' : 'Kanban Planner' }}</h2>
+      <p class="subtitle">
+        {{ modeService.isWorkMode() 
+            ? 'Drag-and-drop issue lifecycle across Backlog, Active Sprint, and Done' 
+            : 'Prioritize daily coursework, homework assignments, and study tasks' 
+        }}
+      </p>
     </div>
-    <div class="input-group">
-      <input type="date" [(ngModel)]="newTask.start_date">
-      <input type="date" [(ngModel)]="newTask.due_date">
-      <select [(ngModel)]="newTask.priority">
-        <option value="LOW">Low</option>
-        <option value="MEDIUM">Medium</option>
-        <option value="HIGH">High</option>
-      </select>
-      <button (click)="isEditing ? updateTask() : addTask()">{{ isEditing ? 'Update Task' : 'Add Task' }}</button>
-      <button *ngIf="isEditing" (click)="cancelEdit()" style="background-color: #bdc3c7; margin-left: 10px;">Cancel</button>
+
+    <div class="topbar-controls">
+      <div class="filter-wrap">
+        <label>Filter:</label>
+        <select [(ngModel)]="selectedSubjectId" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="null">All {{ modeService.terms().subjects }}</option>
+          <option *ngFor="let s of subjects" [ngValue]="s.lifeAreaId">
+            {{ s.name }}
+          </option>
+        </select>
+      </div>
+
+      <button class="btn-primary" (click)="openCreateModal('today')">
+        <span>+</span> New Task
+      </button>
     </div>
   </div>
 
-  <div class="task-filters">
-    <label>Filter by Life Area:</label>
-    <select [(ngModel)]="selectedSubjectId" (ngModelChange)="onFilterChange()">
-      <option [ngValue]="null">All Life Areas</option>
-      <option *ngFor="let s of subjects" [ngValue]="s.lifeAreaId">
-        {{ s.name }}
-      </option>
-    </select>
-  </div>
+  @if (error) {
+    <div class="error-banner">⚠️ {{ error }}</div>
+  }
 
+  <!-- Quick Edit Modal (Appears only when pencil icon clicked) -->
+  @if (isEditing) {
+    <div class="edit-modal-backdrop" (click)="cancelEdit()">
+      <div class="edit-modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h3>Edit Task</h3>
+          <button class="btn-close" (click)="cancelEdit()">✕</button>
+        </div>
+
+        <div class="modal-form">
+          <input type="text" [(ngModel)]="newTask.title" placeholder="Title" required>
+          <textarea [(ngModel)]="newTask.description" placeholder="Description" rows="2"></textarea>
+          
+          <div class="form-row">
+            <select [(ngModel)]="newTask.lifeAreaId">
+              <option *ngFor="let s of subjects" [value]="s.lifeAreaId">{{ s.name }}</option>
+            </select>
+            <input type="date" [(ngModel)]="newTask.due_date">
+            <select [(ngModel)]="newTask.priority">
+              <option value="LOW">Low Priority</option>
+              <option value="MEDIUM">Medium Priority</option>
+              <option value="HIGH">High Priority</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button class="btn-primary" (click)="updateTask()">Save Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Full-Height Kanban Board -->
   <div class="kanban-board" cdkDropListGroup>
-    <!-- Backlog Column -->
+
+    <!-- Column 1: Someday / Backlog -->
     <div class="kanban-column">
-      <div class="kanban-header-row" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Someday</h3>
-        <button (click)="autoPlanWeek()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">✨ Auto-Plan</button>
+      <div class="column-header">
+        <div class="title-with-count">
+          <span class="col-dot dot-backlog"></span>
+          <h4>{{ modeService.isWorkMode() ? 'Backlog' : 'Someday' }}</h4>
+          <span class="count-badge">{{ backlogTasks.length }}</span>
+        </div>
+        <div class="col-actions">
+          <button class="btn-auto-plan" (click)="autoPlanWeek()" title="Auto-plan backlog with AI">
+            ✨
+          </button>
+          <button class="btn-quick-add" (click)="openCreateModal('someday')" title="Quick Add">+</button>
+        </div>
       </div>
-      <div class="task-list"
-           cdkDropList
-           #backlogList="cdkDropList"
-           [cdkDropListData]="backlogTasks"
-           (cdkDropListDropped)="drop($event, 'backlog')">
-        <div class="task-card" *ngFor="let task of backlogTasks" cdkDrag [ngStyle]="{'border-left': '5px solid ' + getSubjectColor(task.lifeAreaId)}">
-          <div class="task-header">
-            <span class="task-title">{{ task.title }}</span>
-            <div class="task-actions">
-              <button (click)="editTask(task)">✎</button>
-              <button (click)="deleteTask(task.taskId)">✕</button>
+
+      <div class="task-list" cdkDropList id="backlogList" [cdkDropListData]="backlogTasks" (cdkDropListDropped)="drop($event)">
+        @for (task of backlogTasks; track task.taskId) {
+          <div class="task-card" cdkDrag [style.border-left-color]="task.lifeAreaColor || 'var(--accent-primary)'">
+            <div class="card-top">
+              <span class="subject-tag" [style.color]="task.lifeAreaColor || 'var(--text-muted)'">{{ task.lifeAreaName || 'General' }}</span>
+              <span class="priority-pill" [class]="task.priority?.toLowerCase() || 'medium'">{{ task.priority }}</span>
+            </div>
+            <h5>{{ task.title }}</h5>
+            @if (task.description) { <p class="desc">{{ task.description }}</p> }
+            <div class="card-bottom">
+              <span class="date-chip">No Date</span>
+              <div class="actions">
+                <button class="btn-ghost" (click)="editTask(task)">✏️</button>
+                <button class="btn-ghost btn-del" (click)="deleteTask(task.taskId)">🗑️</button>
+              </div>
             </div>
           </div>
-          <div class="task-desc" *ngIf="task.description">{{ task.description }}</div>
-        </div>
+        }
       </div>
     </div>
 
-    <!-- Today Column -->
+    <!-- Column 2: Today -->
     <div class="kanban-column">
-      <h3>Today</h3>
-      <div class="task-list"
-           cdkDropList
-           #todayList="cdkDropList"
-           [cdkDropListData]="todayTasks"
-           (cdkDropListDropped)="drop($event, 'today')">
-        <div class="task-card" *ngFor="let task of todayTasks" cdkDrag [ngStyle]="{'border-left': '5px solid ' + getSubjectColor(task.lifeAreaId)}">
-          <div class="task-header">
-            <span class="task-title">{{ task.title }}</span>
-            <div class="task-actions">
-              <button (click)="editTask(task)">✎</button>
-              <button (click)="deleteTask(task.taskId)">✕</button>
+      <div class="column-header">
+        <div class="title-with-count">
+          <span class="col-dot dot-today"></span>
+          <h4>{{ modeService.isWorkMode() ? 'In Progress (Today)' : 'Today' }}</h4>
+          <span class="count-badge">{{ todayTasks.length }}</span>
+        </div>
+        <button class="btn-quick-add" (click)="openCreateModal('today')" title="Quick Add">+</button>
+      </div>
+
+      <div class="task-list" cdkDropList id="todayList" [cdkDropListData]="todayTasks" (cdkDropListDropped)="drop($event)">
+        @for (task of todayTasks; track task.taskId) {
+          <div class="task-card" cdkDrag [style.border-left-color]="task.lifeAreaColor || 'var(--accent-primary)'">
+            <div class="card-top">
+              <span class="subject-tag" [style.color]="task.lifeAreaColor || 'var(--text-muted)'">{{ task.lifeAreaName || 'General' }}</span>
+              <span class="priority-pill" [class]="task.priority?.toLowerCase() || 'medium'">{{ task.priority }}</span>
+            </div>
+            <h5>{{ task.title }}</h5>
+            @if (task.description) { <p class="desc">{{ task.description }}</p> }
+            <div class="card-bottom">
+              <span class="date-chip highlight">Today</span>
+              <div class="actions">
+                <button class="btn-ghost" (click)="editTask(task)">✏️</button>
+                <button class="btn-ghost btn-del" (click)="deleteTask(task.taskId)">🗑️</button>
+              </div>
             </div>
           </div>
-          <div class="task-desc" *ngIf="task.description">{{ task.description }}</div>
-        </div>
+        }
       </div>
     </div>
 
-    <!-- Tomorrow Column -->
+    <!-- Column 3: Tomorrow -->
     <div class="kanban-column">
-      <h3>Tomorrow</h3>
-      <div class="task-list"
-           cdkDropList
-           #tomorrowList="cdkDropList"
-           [cdkDropListData]="tomorrowTasks"
-           (cdkDropListDropped)="drop($event, 'tomorrow')">
-        <div class="task-card" *ngFor="let task of tomorrowTasks" cdkDrag [ngStyle]="{'border-left': '5px solid ' + getSubjectColor(task.lifeAreaId)}">
-          <div class="task-header">
-            <span class="task-title">{{ task.title }}</span>
-            <div class="task-actions">
-              <button (click)="editTask(task)">✎</button>
-              <button (click)="deleteTask(task.taskId)">✕</button>
+      <div class="column-header">
+        <div class="title-with-count">
+          <span class="col-dot dot-tomorrow"></span>
+          <h4>{{ modeService.isWorkMode() ? 'Next Up (Tomorrow)' : 'Tomorrow' }}</h4>
+          <span class="count-badge">{{ tomorrowTasks.length }}</span>
+        </div>
+        <button class="btn-quick-add" (click)="openCreateModal('tomorrow')" title="Quick Add">+</button>
+      </div>
+
+      <div class="task-list" cdkDropList id="tomorrowList" [cdkDropListData]="tomorrowTasks" (cdkDropListDropped)="drop($event)">
+        @for (task of tomorrowTasks; track task.taskId) {
+          <div class="task-card" cdkDrag [style.border-left-color]="task.lifeAreaColor || 'var(--accent-primary)'">
+            <div class="card-top">
+              <span class="subject-tag" [style.color]="task.lifeAreaColor || 'var(--text-muted)'">{{ task.lifeAreaName || 'General' }}</span>
+              <span class="priority-pill" [class]="task.priority?.toLowerCase() || 'medium'">{{ task.priority }}</span>
+            </div>
+            <h5>{{ task.title }}</h5>
+            @if (task.description) { <p class="desc">{{ task.description }}</p> }
+            <div class="card-bottom">
+              <span class="date-chip">Tomorrow</span>
+              <div class="actions">
+                <button class="btn-ghost" (click)="editTask(task)">✏️</button>
+                <button class="btn-ghost btn-del" (click)="deleteTask(task.taskId)">🗑️</button>
+              </div>
             </div>
           </div>
-          <div class="task-desc" *ngIf="task.description">{{ task.description }}</div>
-        </div>
+        }
       </div>
     </div>
 
-    <!-- Later Column -->
+    <!-- Column 4: Later / Upcoming -->
     <div class="kanban-column">
-      <h3>Later</h3>
-      <div class="task-list"
-           cdkDropList
-           #laterList="cdkDropList"
-           [cdkDropListData]="laterTasks"
-           (cdkDropListDropped)="drop($event, 'later')">
-        <div class="task-card" *ngFor="let task of laterTasks" cdkDrag [ngStyle]="{'border-left': '5px solid ' + getSubjectColor(task.lifeAreaId)}">
-          <div class="task-header">
-            <span class="task-title">{{ task.title }}</span>
-            <span class="task-due">{{ task.due_date }}</span>
-            <div class="task-actions">
-              <button (click)="editTask(task)">✎</button>
-              <button (click)="deleteTask(task.taskId)">✕</button>
+      <div class="column-header">
+        <div class="title-with-count">
+          <span class="col-dot dot-later"></span>
+          <h4>{{ modeService.isWorkMode() ? 'Sprint Pipeline' : 'Later' }}</h4>
+          <span class="count-badge">{{ laterTasks.length }}</span>
+        </div>
+        <button class="btn-quick-add" (click)="openCreateModal('today')" title="Quick Add">+</button>
+      </div>
+
+      <div class="task-list" cdkDropList id="laterList" [cdkDropListData]="laterTasks" (cdkDropListDropped)="drop($event)">
+        @for (task of laterTasks; track task.taskId) {
+          <div class="task-card" cdkDrag [style.border-left-color]="task.lifeAreaColor || 'var(--accent-primary)'">
+            <div class="card-top">
+              <span class="subject-tag" [style.color]="task.lifeAreaColor || 'var(--text-muted)'">{{ task.lifeAreaName || 'General' }}</span>
+              <span class="priority-pill" [class]="task.priority?.toLowerCase() || 'medium'">{{ task.priority }}</span>
+            </div>
+            <h5>{{ task.title }}</h5>
+            @if (task.description) { <p class="desc">{{ task.description }}</p> }
+            <div class="card-bottom">
+              <span class="date-chip">{{ task.due_date | date:'MMM d' }}</span>
+              <div class="actions">
+                <button class="btn-ghost" (click)="editTask(task)">✏️</button>
+                <button class="btn-ghost btn-del" (click)="deleteTask(task.taskId)">🗑️</button>
+              </div>
             </div>
           </div>
-          <div class="task-desc" *ngIf="task.description">{{ task.description }}</div>
-        </div>
+        }
       </div>
     </div>
 
-    <!-- Completed Column -->
-    <div class="kanban-column completed-column">
-      <h3>Completed</h3>
-      <div class="task-list"
-           cdkDropList
-           #completedList="cdkDropList"
-           [cdkDropListData]="completedTasks"
-           (cdkDropListDropped)="drop($event, 'completed')">
-        <div class="task-card" *ngFor="let task of completedTasks" cdkDrag [ngStyle]="{'border-left': '5px solid ' + getSubjectColor(task.lifeAreaId), 'opacity': '0.7'}">
-          <div class="task-header">
-            <span class="task-title" style="text-decoration: line-through;">{{ task.title }}</span>
-            <div class="task-actions">
-              <button (click)="deleteTask(task.taskId)">✕</button>
-            </div>
-          </div>
+    <!-- Column 5: Completed -->
+    <div class="kanban-column column-completed">
+      <div class="column-header">
+        <div class="title-with-count">
+          <span class="col-dot dot-done"></span>
+          <h4>{{ modeService.isWorkMode() ? 'Shipped & Done' : 'Completed' }}</h4>
+          <span class="count-badge">{{ completedTasks.length }}</span>
         </div>
       </div>
+
+      <div class="task-list" cdkDropList id="completedList" [cdkDropListData]="completedTasks" (cdkDropListDropped)="drop($event)">
+        @for (task of completedTasks; track task.taskId) {
+          <div class="task-card card-completed" cdkDrag>
+            <h5>{{ task.title }}</h5>
+            <div class="card-bottom">
+              <span class="done-pill">✓ Done</span>
+              <button class="btn-ghost btn-del" (click)="deleteTask(task.taskId)">🗑️</button>
+            </div>
+          </div>
+        }
+      </div>
     </div>
+
   </div>
+
 </div>

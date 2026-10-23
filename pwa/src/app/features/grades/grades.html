@@ -1,63 +1,77 @@
-<div class="grades-container">
-  <div class="grades-header">
+<div class="grades-page-container">
+
+  <!-- Top Action Bar -->
+  <div class="grades-topbar">
     <div>
-      <h2>Grades & Academic Standing</h2>
-      <p class="subtitle">Track weighted averages, coursework milestones, and cumulative GPA</p>
+      <h2>{{ modeService.terms().grades }}</h2>
+      <p class="subtitle">
+        {{ modeService.isWorkMode() 
+            ? 'Monitor deliverable completion %, KPI targets, and client SLA compliance' 
+            : 'Track weighted averages, coursework milestones, and cumulative GPA standing' 
+        }}
+      </p>
+    </div>
+
+    <div class="topbar-controls">
+      <button class="btn-primary" (click)="openCreateModal()">
+        <span>+</span> Log {{ modeService.terms().grade }}
+      </button>
     </div>
   </div>
 
+  @if (error) {
+    <div class="error-banner">⚠️ {{ error }}</div>
+  }
+
+  <!-- GPA / Velocity Standing Hero Card -->
   <div class="gpa-card">
     <div class="gpa-metric">
-      <span class="gpa-label">Cumulative GPA</span>
-      <div class="gpa-score">{{ calculateGPA() }}</div>
-      <span class="gpa-scale">Weighted scale (0.00 – 10.00)</span>
+      <span class="gpa-label">{{ modeService.terms().gpaOrVelocity }}</span>
+      <div class="gpa-score">
+        {{ modeService.isWorkMode() ? (calculateGPA() * 10 | number:'1.0-0') + '%' : calculateGPA() }}
+      </div>
+      <span class="gpa-scale">{{ modeService.terms().gpaScaleOrStatus }}</span>
     </div>
+
     <div class="gpa-stats">
       <div class="stat-pill">
         <span class="stat-num">{{ grades.length }}</span>
-        <span class="stat-desc">Graded Assessments</span>
+        <span class="stat-desc">Logged {{ modeService.terms().grades }}</span>
       </div>
     </div>
   </div>
 
-  <div *ngIf="error" class="error-banner">
-    <span>⚠️</span> {{ error }}
-  </div>
+  <!-- Inline Edit Modal -->
+  @if (isEditing) {
+    <div class="edit-modal-backdrop" (click)="cancelEdit()">
+      <div class="edit-modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h3>Edit {{ modeService.terms().grade }}</h3>
+          <button class="btn-close" (click)="cancelEdit()">✕</button>
+        </div>
 
-  <div class="grade-form">
-    <h3>{{ isEditing ? 'Edit Assessment Grade' : 'Log New Assessment Grade' }}</h3>
-    <div class="input-group">
-      <div class="field">
-        <label>Subject</label>
-        <select [(ngModel)]="selectedLifeAreaId">
-          <option [ngValue]="null" disabled>Select Subject</option>
-          <option *ngFor="let subject of subjects" [value]="subject.lifeAreaId">
-            {{ subject.name }}
-          </option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Score (0–10)</label>
-        <input type="number" [(ngModel)]="newGrade.score" placeholder="e.g. 8.5" min="0" max="10" step="0.1">
-      </div>
-      <div class="field">
-        <label>Weight %</label>
-        <input type="number" [(ngModel)]="newGrade.weight" placeholder="e.g. 20" min="1" max="100">
-      </div>
-      <div class="form-actions">
-        <button class="btn-primary" (click)="isEditing ? updateGrade() : addGrade()">
-          {{ isEditing ? 'Update Grade' : 'Add Grade' }}
-        </button>
-        <button *ngIf="isEditing" class="btn-secondary" (click)="cancelEdit()">
-          Cancel
-        </button>
+        <div class="modal-form">
+          <div class="form-row">
+            <select [(ngModel)]="selectedLifeAreaId">
+              <option *ngFor="let s of subjects" [value]="s.lifeAreaId">{{ s.name }}</option>
+            </select>
+            <input type="number" [(ngModel)]="newGrade.score" placeholder="Score (0-10)" min="0" max="10" step="0.1">
+            <input type="number" [(ngModel)]="newGrade.weight" placeholder="Weight %" min="1" max="100">
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button class="btn-primary" (click)="updateGrade()">Save Changes</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  }
 
+  <!-- Assessment Ledger Table -->
   <div class="grade-list-card">
     <div class="card-title-bar">
-      <h3>Assessment Ledger</h3>
+      <h3>{{ modeService.isWorkMode() ? 'Deliverable & SLA Ledger' : 'Assessment Ledger' }}</h3>
       <span class="entry-count">{{ grades.length }} records</span>
     </div>
 
@@ -65,46 +79,47 @@
       <table>
         <thead>
           <tr>
-            <th>Subject</th>
-            <th>Score</th>
-            <th>Weight</th>
+            <th>{{ modeService.terms().subject }}</th>
+            <th>{{ modeService.isWorkMode() ? 'KPI Score' : 'Score' }}</th>
+            <th>Weight %</th>
             <th>Status</th>
             <th class="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let grade of grades">
-            <td class="subject-cell">
-              <span class="subject-indicator" [style.background-color]="grade.lifeArea?.color || 'var(--accent-primary)'"></span>
-              <span class="subject-name">{{ grade.lifeArea?.name || 'General' }}</span>
-            </td>
-            <td class="score-cell">
-              <span class="score-badge" [class.high]="grade.score >= 7" [class.pass]="grade.score >= 5 && grade.score < 7" [class.low]="grade.score < 5">
-                {{ grade.score }}
-              </span>
-            </td>
-            <td class="weight-cell">{{ grade.weight }}%</td>
-            <td class="standing-cell">
-              <span class="status-badge" [class.status-pass]="grade.score >= 5" [class.status-fail]="grade.score < 5">
-                {{ grade.score >= 5 ? 'Passed' : 'Needs Review' }}
-              </span>
-            </td>
-            <td class="text-right actions-cell">
-              <button class="btn-icon" (click)="editGrade(grade)" title="Edit">
-                ✏️
-              </button>
-              <button class="btn-icon btn-icon-delete" (click)="deleteGrade(grade.gradeId!)" title="Delete">
-                🗑️
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="grades.length === 0">
-            <td colspan="5" class="empty-state">
-              No grades recorded yet. Log your first assessment above.
-            </td>
-          </tr>
+          @for (grade of grades; track grade.gradeId) {
+            <tr>
+              <td class="subject-cell">
+                <span class="subject-indicator" [style.background-color]="grade.lifeArea?.color || 'var(--accent-primary)'"></span>
+                <span class="subject-name">{{ grade.lifeArea?.name || 'General' }}</span>
+              </td>
+              <td class="score-cell">
+                <span class="score-badge" [class.high]="grade.score >= 7" [class.pass]="grade.score >= 5 && grade.score < 7" [class.low]="grade.score < 5">
+                  {{ modeService.isWorkMode() ? (grade.score * 10 | number:'1.0-0') + '%' : grade.score }}
+                </span>
+              </td>
+              <td class="weight-cell">{{ grade.weight }}%</td>
+              <td class="standing-cell">
+                <span class="status-badge" [class.status-pass]="grade.score >= 5" [class.status-fail]="grade.score < 5">
+                  {{ grade.score >= 5 ? (modeService.isWorkMode() ? 'Delivered' : 'Passed') : (modeService.isWorkMode() ? 'At Risk' : 'Needs Review') }}
+                </span>
+              </td>
+              <td class="text-right actions-cell">
+                <button class="btn-icon" (click)="editGrade(grade)" title="Edit">✏️</button>
+                <button class="btn-icon btn-icon-delete" (click)="deleteGrade(grade.gradeId!)" title="Delete">🗑️</button>
+              </td>
+            </tr>
+          }
+          @if (grades.length === 0) {
+            <tr>
+              <td colspan="5" class="empty-state">
+                No {{ modeService.terms().grades.toLowerCase() }} logged yet.
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
   </div>
+
 </div>

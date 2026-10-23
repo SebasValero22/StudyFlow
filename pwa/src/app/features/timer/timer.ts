@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Task } from '../../core/services/api';
+import { ModeService } from '../../core/services/mode.service';
 
 interface Anime {
   id: number;
@@ -24,21 +25,44 @@ export class TimerComponent implements OnInit, OnDestroy {
   // Timer State
   minutes: number = 40;
   seconds: number = 0;
+  totalDurationSeconds: number = 40 * 60;
   isRunning: boolean = false;
   isFocusMode: boolean = true;
   private timerInterval: any;
+
+  // Work Mode Options
+  isBillable: boolean = true;
+  preset: '40/20' | '50/10' | '25/5' = '40/20';
 
   // AniList State
   animeList: Anime[] = [];
   loadingAnime: boolean = false;
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService, 
+    public modeService: ModeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.api.getTasks().subscribe(t => {
       this.tasks = t.filter(task => !task.isCompleted);
+      if (this.tasks.length > 0 && !this.selectedTaskId) {
+        this.selectedTaskId = this.tasks[0].taskId || null;
+      }
+      this.cdr.detectChanges();
     });
-    this.fetchAnimeList();
+
+    if (this.modeService.isWorkMode()) {
+      this.setPreset('50/10');
+    } else {
+      this.setPreset('40/20');
+      this.fetchAnimeList();
+    }
+  }
+
+  get selectedTask(): Task | undefined {
+    return this.tasks.find(t => t.taskId === this.selectedTaskId);
   }
 
   get formattedTime(): string {
@@ -47,12 +71,33 @@ export class TimerComponent implements OnInit, OnDestroy {
     return `${m}:${s}`;
   }
 
-  toggleTimer() {
-    if (!this.selectedTaskId && this.isFocusMode) {
-      alert('Please select a task to focus on first!');
-      return;
-    }
+  get progressFraction(): number {
+    const remaining = this.minutes * 60 + this.seconds;
+    if (this.totalDurationSeconds <= 0) return 0;
+    return (this.totalDurationSeconds - remaining) / this.totalDurationSeconds;
+  }
 
+  get strokeDashoffset(): number {
+    const circumference = 753.98; // 2 * π * 120
+    return circumference * (1 - this.progressFraction);
+  }
+
+  setPreset(p: '40/20' | '50/10' | '25/5') {
+    if (this.isRunning) return;
+    this.preset = p;
+    if (p === '40/20') {
+      this.minutes = this.isFocusMode ? 40 : 20;
+    } else if (p === '50/10') {
+      this.minutes = this.isFocusMode ? 50 : 10;
+    } else {
+      this.minutes = this.isFocusMode ? 25 : 5;
+    }
+    this.seconds = 0;
+    this.totalDurationSeconds = this.minutes * 60;
+    this.cdr.detectChanges();
+  }
+
+  toggleTimer() {
     this.isRunning = !this.isRunning;
     if (this.isRunning) {
       this.timerInterval = setInterval(() => {
@@ -66,6 +111,7 @@ export class TimerComponent implements OnInit, OnDestroy {
         } else {
           this.seconds--;
         }
+        this.cdr.detectChanges();
       }, 1000);
     } else {
       clearInterval(this.timerInterval);
@@ -76,7 +122,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     clearInterval(this.timerInterval);
     this.isRunning = false;
 
-    // Synth chime: no binary asset to lose, works offline, zero latency
+    // Synth chime
     try {
       const ctx = new AudioContext();
       const notes = [660, 880];
@@ -97,60 +143,45 @@ export class TimerComponent implements OnInit, OnDestroy {
       console.log('Audio unavailable', e);
     }
 
-    // Persist the session -> timesheets & analytics (fire-and-forget)
-    const durationSeconds = this.isFocusMode ? 2400 : 1200;
-    this.api.recordFocusSession({
-      taskId: this.selectedTaskId,
-      durationSeconds,
-      mode: this.isFocusMode ? 'FOCUS' : 'BREAK',
-      startedAt: new Date(Date.now() - durationSeconds * 1000).toISOString().slice(0, 19),
-      completed: true
-    }).subscribe({ error: () => console.warn('Focus session could not be saved') });
-
     if (this.isFocusMode) {
-      this.isFocusMode = false;
-      this.minutes = 20; // Reward time
-      this.seconds = 0;
-      alert('Focus complete! Time for a 20-minute anime break!');
-    } else {
-      this.isFocusMode = true;
-      this.minutes = 40; // Focus time
-      this.seconds = 0;
-      alert('Break is over! Back to work.');
+      const durationSeconds = this.totalDurationSeconds;
+      this.api.recordFocusSession({
+        taskId: this.selectedTaskId,
+        durationSeconds,
+        mode: 'FOCUS',
+        startedAt: new Date(Date.now() - durationSeconds * 1000).toISOString(),
+        completed: true
+      }).subscribe();
     }
+
+    // Flip focus / break mode
+    this.isFocusMode = !this.isFocusMode;
+    this.setPreset(this.preset);
+    this.cdr.detectChanges();
   }
 
   resetTimer() {
     clearInterval(this.timerInterval);
     this.isRunning = false;
-    this.isFocusMode = true;
-    this.minutes = 40;
-    this.seconds = 0;
+    this.setPreset(this.preset);
   }
 
-  /** Never leave a ticking interval behind on navigation. */
   ngOnDestroy() {
-    clearInterval(this.timerInterval);
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 
   async fetchAnimeList() {
     this.loadingAnime = true;
-    // Replace "sebas" with actual username if needed, or parameterize
     const query = `
       query {
-        Page {
-          mediaList(userName: "sebas", status: CURRENT, type: ANIME) {
-            media {
-              id
-              title {
-                romaji
-                english
-              }
-              coverImage {
-                large
-              }
-              episodes
-            }
+        Page(page: 1, perPage: 6) {
+          media(sort: TRENDING_DESC, type: ANIME, isAdult: false) {
+            id
+            title { romaji english }
+            coverImage { large }
+            episodes
           }
         }
       }
@@ -159,20 +190,16 @@ export class TimerComponent implements OnInit, OnDestroy {
     try {
       const response = await fetch('https://graphql.anilist.co', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ query })
       });
-      const json = await response.json();
-      if (json.data && json.data.Page && json.data.Page.mediaList) {
-        this.animeList = json.data.Page.mediaList.map((item: any) => item.media);
-      }
+      const data = await response.json();
+      this.animeList = data.data.Page.media;
     } catch (e) {
       console.error('Failed to fetch from AniList', e);
     } finally {
       this.loadingAnime = false;
+      this.cdr.detectChanges();
     }
   }
 }
