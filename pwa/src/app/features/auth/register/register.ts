@@ -36,7 +36,7 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set('Error during registration. Please try again.');
+        const msg = typeof err.error === "string" ? err.error : (err.error?.message || err.message || "Error during registration. Please try again."); this.errorMessage.set(msg);
         console.error('Registration error:', err);
       }
     });
