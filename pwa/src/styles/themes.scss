@@ -1,4 +1,4 @@
-/* CSS Custom Properties for StudyFlow Theme Engine */
+/* Omarchy-Grade Theme Engine for StudyFlow */
 
 :root {
   /* Default Light Theme - StudyFlow Signature */
@@ -20,77 +20,83 @@
   --accent-primary: #1a7fd4;
   --accent-hover: #156ab3;
   --accent-gradient: linear-gradient(135deg, #1a7fd4 0%, #38bdf8 100%);
+  --accent-glow: 0 0 14px rgba(26, 127, 212, 0.35);
+  --neon-border: 1px solid rgba(26, 127, 212, 0.4);
   --border-color: #e2e8f0;
   
   --timer-focus: #ef4444;
   --timer-reward: #22c55e;
   
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="omarchy"] {
+  /* 🌿 Omarchy Matrix Core - The Flagship DHH Aesthetic */
+  --bg-primary: #060907;
+  --bg-surface: #0c1410;
+  --bg-surface-hover: #14221a;
+  --text-main: #e6fcf0;
+  --text-muted: #6b9e82;
+  
+  --sidebar-bg: #040605;
+  --sidebar-hover: #0c1410;
+  --sidebar-text: #e6fcf0;
+  --sidebar-text-muted: #537d66;
+  
+  --brand-blue: #00ff9d;
+  --brand-blue-light: #55ffb8;
+  --brand-blue-dark: #00b36e;
+  
+  --accent-primary: #00ff9d;
+  --accent-hover: #55ffb8;
+  --accent-gradient: linear-gradient(135deg, #00ff9d 0%, #00b4d8 100%);
+  --accent-glow: 0 0 18px rgba(0, 255, 157, 0.45);
+  --neon-border: 1px solid rgba(0, 255, 157, 0.45);
+  --border-color: #17261d;
+  
+  --timer-focus: #ff5555;
+  --timer-reward: #00ff9d;
+  
+  --card-shadow: 0 4px 20px rgba(0, 255, 157, 0.08);
 }
 
 :root[data-theme="cyberpunk"] {
-  /* Midnight Tokyo */
-  --bg-primary: #0d1117;
-  --bg-surface: #161b22;
-  --bg-surface-hover: #21262d;
+  /* 🌃 Omarchy Tokyo Night / Cyberpunk */
+  --bg-primary: #080912;
+  --bg-surface: #0f1123;
+  --bg-surface-hover: #181b35;
   --text-main: #f0f6fc;
-  --text-muted: #8b949e;
+  --text-muted: #7982a9;
   
-  --sidebar-bg: #010409;
-  --sidebar-hover: #161b22;
+  --sidebar-bg: #04050a;
+  --sidebar-hover: #0f1123;
   --sidebar-text: #f0f6fc;
-  --sidebar-text-muted: #8b949e;
+  --sidebar-text-muted: #7982a9;
   
-  --brand-blue: #58a6ff;
-  --brand-blue-light: #79c0ff;
-  --brand-blue-dark: #388bfd;
+  --brand-blue: #00f0ff;
+  --brand-blue-light: #70f7ff;
+  --brand-blue-dark: #0099cc;
   
-  --accent-primary: #58a6ff;
-  --accent-hover: #79c0ff;
-  --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
-  --border-color: #30363d;
+  --accent-primary: #00f0ff;
+  --accent-hover: #ff007f;
+  --accent-gradient: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%);
+  --accent-glow: 0 0 18px rgba(0, 240, 255, 0.45);
+  --neon-border: 1px solid rgba(0, 240, 255, 0.45);
+  --border-color: #1e2242;
   
-  --timer-focus: #ff7b72;
-  --timer-reward: #7ee787;
+  --timer-focus: #ff007f;
+  --timer-reward: #00f0ff;
   
-  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-}
-
-:root[data-theme="lofi-cafe"] {
-  /* Matcha Morning */
-  --bg-primary: #1d2021;
-  --bg-surface: #282828;
-  --bg-surface-hover: #3c3836;
-  --text-main: #fbf1c7;
-  --text-muted: #d5c4a1;
-  
-  --sidebar-bg: #141617;
-  --sidebar-hover: #282828;
-  --sidebar-text: #ebdbb2;
-  --sidebar-text-muted: #a89984;
-  
-  --brand-blue: #83a598;
-  --brand-blue-light: #8ec07c;
-  --brand-blue-dark: #458588;
-  
-  --accent-primary: #fabd2f;
-  --accent-hover: #fe8019;
-  --accent-gradient: linear-gradient(135deg, #fabd2f 0%, #fe8019 100%);
-  --border-color: #3c3836;
-  
-  --timer-focus: #fb4934;
-  --timer-reward: #b8bb26;
-  
-  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --card-shadow: 0 4px 20px rgba(0, 240, 255, 0.1);
 }
 
 :root[data-theme="catppuccin"] {
-  /* Catppuccin Mocha */
+  /* ☕ Catppuccin Mocha */
   --bg-primary: #181825;
   --bg-surface: #1e1e2e;
   --bg-surface-hover: #313244;
   --text-main: #cdd6f4;
-  --text-muted: #a6adc8;
+  --text-muted: #9399b2;
   
   --sidebar-bg: #11111b;
   --sidebar-hover: #1e1e2e;
@@ -101,41 +107,75 @@
   --brand-blue-light: #b4befe;
   --brand-blue-dark: #74c7ec;
   
-  --accent-primary: #89b4fa;
-  --accent-hover: #b4befe;
-  --accent-gradient: linear-gradient(135deg, #89b4fa 0%, #cba6f7 100%);
+  --accent-primary: #cba6f7;
+  --accent-hover: #89b4fa;
+  --accent-gradient: linear-gradient(135deg, #cba6f7 0%, #89b4fa 100%);
+  --accent-glow: 0 0 14px rgba(203, 166, 247, 0.35);
+  --neon-border: 1px solid rgba(203, 166, 247, 0.35);
   --border-color: #313244;
   
   --timer-focus: #f38ba8;
   --timer-reward: #a6e3a1;
   
-  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="lofi-cafe"] {
+  /* 🍵 Matcha Morning / Gruvbox */
+  --bg-primary: #1d2021;
+  --bg-surface: #282828;
+  --bg-surface-hover: #3c3836;
+  --text-main: #fbf1c7;
+  --text-muted: #a89984;
+  
+  --sidebar-bg: #141617;
+  --sidebar-hover: #282828;
+  --sidebar-text: #ebdbb2;
+  --sidebar-text-muted: #a89984;
+  
+  --brand-blue: #fabd2f;
+  --brand-blue-light: #fe8019;
+  --brand-blue-dark: #d79921;
+  
+  --accent-primary: #fabd2f;
+  --accent-hover: #b8bb26;
+  --accent-gradient: linear-gradient(135deg, #fabd2f 0%, #b8bb26 100%);
+  --accent-glow: 0 0 14px rgba(250, 189, 47, 0.35);
+  --neon-border: 1px solid rgba(250, 189, 47, 0.35);
+  --border-color: #3c3836;
+  
+  --timer-focus: #fb4934;
+  --timer-reward: #b8bb26;
+  
+  --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
 }
 
 :root[data-theme="oled"] {
-  /* OLED Pure Dark */
+  /* 🌑 OLED Monolith */
   --bg-primary: #000000;
-  --bg-surface: #0a0a0a;
-  --bg-surface-hover: #171717;
+  --bg-surface: #09090b;
+  --bg-surface-hover: #18181b;
   --text-main: #ffffff;
-  --text-muted: #a3a3a3;
+  --text-muted: #71717a;
   
   --sidebar-bg: #000000;
-  --sidebar-hover: #121212;
+  --sidebar-hover: #09090b;
   --sidebar-text: #ffffff;
-  --sidebar-text-muted: #737373;
+  --sidebar-text-muted: #71717a;
   
-  --brand-blue: #3b82f6;
-  --brand-blue-light: #60a5fa;
-  --brand-blue-dark: #2563eb;
+  --brand-blue: #38bdf8;
+  --brand-blue-light: #7dd3fc;
+  --brand-blue-dark: #0284c7;
   
-  --accent-primary: #3b82f6;
-  --accent-hover: #60a5fa;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  --border-color: #262626;
+  --accent-primary: #38bdf8;
+  --accent-hover: #7dd3fc;
+  --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  --accent-glow: 0 0 14px rgba(56, 189, 248, 0.35);
+  --neon-border: 1px solid rgba(56, 189, 248, 0.35);
+  --border-color: #27272a;
   
   --timer-focus: #ef4444;
   --timer-reward: #22c55e;
   
-  --card-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 4px 14px rgba(255, 255, 255, 0.04);
 }

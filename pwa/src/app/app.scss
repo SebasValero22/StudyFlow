@@ -257,6 +257,30 @@
       font-size: 0.75rem;
       margin-left: 6px;
     }
+
+    .topbar-theme-selector {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:hover, &:focus {
+        border-color: var(--accent-primary);
+        box-shadow: var(--accent-glow);
+      }
+
+      option {
+        background-color: var(--bg-surface);
+        color: var(--text-main);
+      }
+    }
   }
 
   .user-profile-link {

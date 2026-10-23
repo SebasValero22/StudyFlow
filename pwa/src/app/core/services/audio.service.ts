@@ -54,6 +54,22 @@ export class AudioService {
       const match = this.streams.find(s => s.id === savedStreamId);
       if (match) this.currentStreamSubject.next(match);
     }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('studyflow-theme-audio', (e: any) => {
+        const streamId = e.detail;
+        if (streamId) {
+          const stream = this.streams.find(s => s.id === streamId);
+          if (stream) {
+            this.currentStreamSubject.next(stream);
+            localStorage.setItem('studyflow-audio-stream', stream.id);
+            if (this.isPlayingSubject.value) {
+              this.playStream(streamId);
+            }
+          }
+        }
+      });
+    }
   }
 
   playStream(streamId: string) {

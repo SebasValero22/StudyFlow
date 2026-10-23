@@ -1,4 +1,4 @@
-/* Global Styles for StudyFlow */
+/* Global Styles for StudyFlow - Omarchy Edition */
 @use 'styles/themes.scss';
 
 * {
@@ -15,10 +15,25 @@ body {
   overflow: hidden;
 }
 
+/* Monospace stats & code accent */
+code, .gpa-score, .value, .duration, .hex-label, .preset-times {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+}
+
+/* Omarchy Card Styling: subtle neon border and reactive elevation */
+.card, .profile-card, .settings-card, .task-card, .subject-card, .entry-card, .capture-deck {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent-primary) !important;
+    box-shadow: var(--accent-glow) !important;
+  }
+}
+
 /* Scrollbar customization */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -30,14 +45,12 @@ body {
   border-radius: 4px;
 
   &:hover {
-    background: var(--text-muted);
+    background: var(--accent-primary);
   }
 }
 
 /* Compact density mode */
 html.compact-density {
-  --compact-padding: 8px;
-  
   .content-area {
     padding: 1rem 1.25rem !important;
   }

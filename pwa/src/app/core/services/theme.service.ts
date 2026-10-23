@@ -39,7 +39,7 @@ export class ThemeService {
     this.setTheme(savedTheme);
   }
 
-  setTheme(themeName: string) {
+  setTheme(themeName: string, autoAudio: boolean = true) {
     if (themeName === 'light') {
       document.documentElement.removeAttribute('data-theme');
       this.clearCustomStyles();
@@ -52,6 +52,19 @@ export class ThemeService {
     }
     localStorage.setItem('studyflow-theme', themeName);
     this.activeTheme.next(themeName);
+
+    if (autoAudio && typeof window !== 'undefined') {
+      const audioMap: Record<string, string> = {
+        omarchy: 'rain',
+        cyberpunk: 'lofi',
+        catppuccin: 'rain',
+        'lofi-cafe': 'cafe',
+        oled: 'brown'
+      };
+      if (audioMap[themeName]) {
+        window.dispatchEvent(new CustomEvent('studyflow-theme-audio', { detail: audioMap[themeName] }));
+      }
+    }
   }
 
   getCurrentTheme(): string {

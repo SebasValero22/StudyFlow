@@ -19,12 +19,13 @@ export class SettingsComponent implements OnInit {
   // Appearance
   currentTheme = signal<string>('light');
   themes = [
-    { id: 'light', name: 'StudyFlow Signature (Light)', icon: '☀️' },
+    { id: 'omarchy', name: 'Omarchy Emerald Core (DHH Flagship)', icon: '🌿' },
+    { id: 'cyberpunk', name: 'Omarchy Tokyo Night (Cyberpunk)', icon: '🌃' },
     { id: 'catppuccin', name: 'Catppuccin (Mocha Dark)', icon: '☕' },
-    { id: 'cyberpunk', name: 'Midnight Tokyo (Cyberpunk)', icon: '🌃' },
     { id: 'lofi-cafe', name: 'Matcha Morning (Gruvbox)', icon: '🍵' },
-    { id: 'oled', name: 'OLED Pure Dark', icon: '🌑' },
-    { id: 'custom', name: 'Custom Theme (Builder)', icon: '🎨' }
+    { id: 'oled', name: 'OLED Monolith (Stealth Pure Black)', icon: '🌑' },
+    { id: 'light', name: 'StudyFlow Signature (Light)', icon: '☀️' },
+    { id: 'custom', name: 'Custom Theme Builder', icon: '🎨' }
   ];
 
   customColors: CustomThemeColors = { ...DEFAULT_CUSTOM_THEME };

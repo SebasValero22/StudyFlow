@@ -143,15 +143,11 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            // Prevent window close from exiting the app -> hide to tray instead
+            // Window event handling: clean exit on close
             if let Some(window) = app.get_webview_window("main") {
-                let w = window.clone();
-                window.on_window_event(move |event| {
-                    if let WindowEvent::CloseRequested { api, .. } = event {
-                        api.prevent_close();
-                        let _ = w.hide();
-                    }
-                });
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.unminimize();
             }
 
             Ok(())

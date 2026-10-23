@@ -108,6 +108,14 @@
           <span class="status-dot"></span>
           <span>Personal Cloud Sync: <strong>Active</strong></span>
           <span class="mode-tag">{{ appMode() === 'study' ? '🎓 Study Mode' : '💼 Work Mode' }}</span>
+          <select class="topbar-theme-selector" (change)="changeTheme($event)" [value]="currentTheme$ | async">
+            <option value="omarchy">🌿 Omarchy Emerald</option>
+            <option value="cyberpunk">🌃 Tokyo Night</option>
+            <option value="catppuccin">☕ Catppuccin Mocha</option>
+            <option value="lofi-cafe">🍵 Matcha Gruvbox</option>
+            <option value="oled">🌑 OLED Monolith</option>
+            <option value="light">☀️ StudyFlow Light</option>
+          </select>
         </div>
 
         <a routerLink="/profile" class="user-profile-link">
