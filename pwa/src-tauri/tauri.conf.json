@@ -4,10 +4,7 @@
   "version": "1.0.0",
   "identifier": "com.studyflow.app",
   "build": {
-    "frontendDist": "../dist/studyflow-pwa/browser",
-    "devUrl": "http://localhost:4200",
-    "beforeDevCommand": "npm start",
-    "beforeBuildCommand": "npm run build"
+    "frontendDist": "../dist/studyflow-pwa/browser"
   },
   "app": {
     "withGlobalTauri": true,
