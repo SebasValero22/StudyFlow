@@ -22,8 +22,8 @@ export class SettingsComponent implements OnInit {
   // Appearance
   currentTheme = signal<string>('light');
   themes = [
+    { id: 'soft-paper', name: 'Soft Paper', tag: 'Nick Milo AnuPpuccin', icon: '📜', preview: ['#f8f5f1', '#f1eae4', '#eae2dc', '#363a4f'] },
     { id: 'porcelain-cyan', name: 'Porcelain Cyan', tag: 'Study Vault Light', icon: '🌊', preview: ['#f8fafc', '#ffffff', '#0284c7', '#0f172a'] },
-    { id: 'nordic-snow', name: 'Nordic Snow', tag: 'Minimal Ivory', icon: '❄️', preview: ['#fcfbf9', '#ffffff', '#2563eb', '#1c1917'] },
     { id: 'light', name: 'StudyFlow Signature', tag: 'Classic Light', icon: '☀️', preview: ['#f8fafc', '#ffffff', '#1a7fd4', '#0f172a'] },
     { id: 'omarchy', name: 'Omarchy Emerald Core', tag: 'DHH Flagship', icon: '🌿', preview: ['#090d0b', '#111a14', '#10b981', '#e8fbf2'] },
     { id: 'cyberpunk', name: 'Tokyo Night', tag: 'Modern Cyberpunk', icon: '🌃', preview: ['#1a1b26', '#24283b', '#7aa2f7', '#c0caf5'] },

@@ -123,8 +123,8 @@
             {{ modeService.isWorkMode() ? '💼 Work Suite' : '🎓 Academic OS' }}
           </span>
           <select class="topbar-theme-selector" (change)="changeTheme($event)" [value]="currentTheme$ | async">
+            <option value="soft-paper">📜 Soft Paper</option>
             <option value="porcelain-cyan">🌊 Porcelain Cyan</option>
-            <option value="nordic-snow">❄️ Nordic Snow</option>
             <option value="light">☀️ StudyFlow Signature</option>
             <option value="omarchy">🌿 Omarchy Emerald</option>
             <option value="cyberpunk">🌃 Tokyo Night</option>
