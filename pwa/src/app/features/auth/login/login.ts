@@ -35,7 +35,13 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set('Invalid email or password');
+        if (err.status === 0 || err.status === 504) {
+          this.errorMessage.set('Connecting to server (Render free tier waking up). Please try again in a few seconds.');
+        } else if (err.status === 401) {
+          this.errorMessage.set('Invalid email or password. Use admin@mail.com / 123 or register below.');
+        } else {
+          this.errorMessage.set(err.error?.message || err.error || 'Login failed. Please check credentials or register.');
+        }
         console.error('Login error:', err);
       }
     });
