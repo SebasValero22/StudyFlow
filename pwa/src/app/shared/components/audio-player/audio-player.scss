@@ -83,27 +83,6 @@
       color: var(--sidebar-text, #fff);
     }
   }
-
-  .btn-byom-upload {
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.78rem;
-    flex-shrink: 0;
-    transition: all 0.15s ease;
-
-    &:hover {
-      background: var(--accent-primary);
-      color: #ffffff;
-      border-color: var(--accent-primary);
-    }
-  }
 }
 
 .dock-volume-row {

@@ -33,6 +33,72 @@
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
+:root[data-theme="porcelain-cyan"] {
+  /* 🌊 Porcelain Cyan (Inspired by Clean Study Vaults) */
+  --bg-primary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f0fdfa;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  
+  --sidebar-bg: #f8fafc;
+  --sidebar-hover: #e2e8f0;
+  --sidebar-text: #0f172a;
+  --sidebar-text-muted: #64748b;
+  --sidebar-active-bg: rgba(2, 132, 199, 0.12);
+  
+  --brand-blue: #0284c7;
+  --brand-blue-light: #38bdf8;
+  --brand-blue-dark: #0369a1;
+  
+  --accent-primary: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-contrast: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+  --accent-glow: 0 4px 16px rgba(2, 132, 199, 0.18);
+  --neon-border: 1px solid rgba(2, 132, 199, 0.25);
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+  
+  --timer-focus: #f43f5e;
+  --timer-reward: #10b981;
+  
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(2, 132, 199, 0.05);
+}
+
+:root[data-theme="nordic-snow"] {
+  /* ❄️ Nordic Snow (Pure Minimal Ivory) */
+  --bg-primary: #fcfbf9;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f5f5f4;
+  --text-main: #1c1917;
+  --text-muted: #57534e;
+  
+  --sidebar-bg: #f5f5f4;
+  --sidebar-hover: #e7e5e4;
+  --sidebar-text: #1c1917;
+  --sidebar-text-muted: #78716c;
+  --sidebar-active-bg: rgba(37, 99, 235, 0.12);
+  
+  --brand-blue: #2563eb;
+  --brand-blue-light: #60a5fa;
+  --brand-blue-dark: #1d4ed8;
+  
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --accent-glow: 0 4px 14px rgba(37, 99, 235, 0.15);
+  --neon-border: 1px solid rgba(37, 99, 235, 0.2);
+  --border-color: #e7e5e4;
+  --border-hover: #d6d3d1;
+  
+  --timer-focus: #ea580c;
+  --timer-reward: #16a34a;
+  
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
 :root[data-theme="omarchy"] {
   /* 🌿 Omarchy Matrix Core - The Flagship DHH Aesthetic */
   --bg-primary: #090d0b;

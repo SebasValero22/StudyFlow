@@ -5,6 +5,7 @@ import { forkJoin, firstValueFrom, of, catchError } from 'rxjs';
 import { ThemeService, CustomThemeColors, DEFAULT_CUSTOM_THEME } from '../../core/services/theme.service';
 import { ApiService } from '../../core/services/api';
 import { GDriveService } from '../../core/services/gdrive.service';
+import { AudioService } from '../../core/services/audio.service';
 
 export type SettingsTab = 'appearance' | 'profile' | 'ai' | 'voice' | 'timer' | 'sync';
 
@@ -21,22 +22,25 @@ export class SettingsComponent implements OnInit {
   // Appearance
   currentTheme = signal<string>('light');
   themes = [
+    { id: 'porcelain-cyan', name: 'Porcelain Cyan', tag: 'Study Vault Light', icon: '🌊', preview: ['#f8fafc', '#ffffff', '#0284c7', '#0f172a'] },
+    { id: 'nordic-snow', name: 'Nordic Snow', tag: 'Minimal Ivory', icon: '❄️', preview: ['#fcfbf9', '#ffffff', '#2563eb', '#1c1917'] },
+    { id: 'light', name: 'StudyFlow Signature', tag: 'Classic Light', icon: '☀️', preview: ['#f8fafc', '#ffffff', '#1a7fd4', '#0f172a'] },
     { id: 'omarchy', name: 'Omarchy Emerald Core', tag: 'DHH Flagship', icon: '🌿', preview: ['#090d0b', '#111a14', '#10b981', '#e8fbf2'] },
     { id: 'cyberpunk', name: 'Tokyo Night', tag: 'Modern Cyberpunk', icon: '🌃', preview: ['#1a1b26', '#24283b', '#7aa2f7', '#c0caf5'] },
     { id: 'catppuccin', name: 'Catppuccin Mocha', tag: 'Pastel Dark', icon: '☕', preview: ['#181825', '#1e1e2e', '#cba6f7', '#cdd6f4'] },
     { id: 'lofi-cafe', name: 'Matcha Morning', tag: 'Gruvbox Warm', icon: '🍵', preview: ['#1d2021', '#282828', '#fabd2f', '#ebdbb2'] },
     { id: 'oled', name: 'OLED Monolith', tag: 'Stealth Black', icon: '🌑', preview: ['#000000', '#0a0a0c', '#38bdf8', '#f4f4f5'] },
-    { id: 'light', name: 'StudyFlow Pro', tag: 'Signature Light', icon: '☀️', preview: ['#f8fafc', '#ffffff', '#1a7fd4', '#0f172a'] },
     { id: 'custom', name: 'Custom Palette', tag: 'Personalized', icon: '🎨', preview: ['#111827', '#1f2937', '#6366f1', '#f9fafb'] }
   ];
 
   customColors: CustomThemeColors = { ...DEFAULT_CUSTOM_THEME };
   showCustomBuilder = signal(false);
 
-  // Layout
+  // Layout & Audio
   sidebarPosition = signal<'left' | 'right'>('left');
   compactDensity = signal<boolean>(false);
   showAudioDock = signal<boolean>(true);
+  customAudioName = signal<string>('');
 
   // AI Brain & Copilot
   aiProvider = signal<'groq' | 'gemini' | 'local'>('groq');
@@ -62,6 +66,8 @@ export class SettingsComponent implements OnInit {
   timerMode = signal<'pomodoro' | 'animedoro' | 'custom'>('animedoro');
   focusMinutes = signal<number>(40);
   breakMinutes = signal<number>(20);
+  customFocusMinutes = signal<number>(50);
+  customBreakMinutes = signal<number>(10);
   chimeSound = signal<boolean>(true);
 
   // Sync & Cloud Storage
@@ -72,13 +78,18 @@ export class SettingsComponent implements OnInit {
   constructor(
     private themeService: ThemeService,
     private apiService: ApiService,
-    public gdrive: GDriveService
+    public gdrive: GDriveService,
+    public audioService: AudioService
   ) {}
 
   ngOnInit() {
     this.themeService.activeTheme$.subscribe(t => {
       this.currentTheme.set(t);
       this.showCustomBuilder.set(t === 'custom');
+    });
+
+    this.audioService.customAudioName$.subscribe(name => {
+      this.customAudioName.set(name);
     });
 
     this.customColors = this.themeService.getCustomThemeColors();
@@ -110,11 +121,22 @@ export class SettingsComponent implements OnInit {
       parseInt(localStorage.getItem('studyflow-max-recording') || '120', 10)
     );
 
-    this.timerMode.set(
-      (localStorage.getItem('studyflow-timer-mode') as 'pomodoro' | 'animedoro' | 'custom') || 'animedoro'
-    );
-    this.focusMinutes.set(parseInt(localStorage.getItem('studyflow-focus-mins') || '40', 10));
-    this.breakMinutes.set(parseInt(localStorage.getItem('studyflow-break-mins') || '20', 10));
+    this.customFocusMinutes.set(parseInt(localStorage.getItem('studyflow-custom-focus-mins') || '50', 10));
+    this.customBreakMinutes.set(parseInt(localStorage.getItem('studyflow-custom-break-mins') || '10', 10));
+
+    const savedTimerMode = (localStorage.getItem('studyflow-timer-mode') as 'pomodoro' | 'animedoro' | 'custom') || 'animedoro';
+    this.timerMode.set(savedTimerMode);
+
+    if (savedTimerMode === 'pomodoro') {
+      this.focusMinutes.set(25);
+      this.breakMinutes.set(5);
+    } else if (savedTimerMode === 'animedoro') {
+      this.focusMinutes.set(40);
+      this.breakMinutes.set(20);
+    } else {
+      this.focusMinutes.set(this.customFocusMinutes());
+      this.breakMinutes.set(this.customBreakMinutes());
+    }
     this.chimeSound.set(localStorage.getItem('studyflow-chime-sound') !== 'false');
   }
 
@@ -183,6 +205,9 @@ export class SettingsComponent implements OnInit {
     } else if (preset === 'animedoro') {
       this.focusMinutes.set(40);
       this.breakMinutes.set(20);
+    } else if (preset === 'custom') {
+      this.focusMinutes.set(this.customFocusMinutes());
+      this.breakMinutes.set(this.customBreakMinutes());
     }
     localStorage.setItem('studyflow-timer-mode', preset);
     localStorage.setItem('studyflow-focus-mins', String(this.focusMinutes()));
@@ -190,11 +215,33 @@ export class SettingsComponent implements OnInit {
     this.flashNotification(`Timer preset set to ${preset}`);
   }
 
-  onTimerDurationsChanged() {
-    localStorage.setItem('studyflow-timer-mode', 'custom');
-    this.timerMode.set('custom');
-    localStorage.setItem('studyflow-focus-mins', String(this.focusMinutes()));
-    localStorage.setItem('studyflow-break-mins', String(this.breakMinutes()));
+  onCustomDurationsChanged() {
+    localStorage.setItem('studyflow-custom-focus-mins', String(this.customFocusMinutes()));
+    localStorage.setItem('studyflow-custom-break-mins', String(this.customBreakMinutes()));
+    if (this.timerMode() === 'custom') {
+      this.focusMinutes.set(this.customFocusMinutes());
+      this.breakMinutes.set(this.customBreakMinutes());
+      localStorage.setItem('studyflow-focus-mins', String(this.customFocusMinutes()));
+      localStorage.setItem('studyflow-break-mins', String(this.customBreakMinutes()));
+    }
+  }
+
+  onLocalMusicSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.audioService.setCustomAudioFile(input.files[0]);
+      this.flashNotification(`Loaded "${input.files[0].name}" into Focus Audio`);
+    }
+  }
+
+  clearCustomMusic() {
+    this.audioService.clearCustomAudioFile();
+    this.flashNotification('Removed custom audio track');
+  }
+
+  replayStartupIntro() {
+    window.dispatchEvent(new CustomEvent('studyflow-replay-splash'));
+    this.flashNotification('Playing startup intro...');
   }
 
   toggleChimeSound() {

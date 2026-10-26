@@ -55,6 +55,8 @@ export class ThemeService {
 
     if (autoAudio && typeof window !== 'undefined') {
       const audioMap: Record<string, string> = {
+        'porcelain-cyan': 'lofi',
+        'nordic-snow': 'classical',
         omarchy: 'rain',
         cyberpunk: 'lofi',
         catppuccin: 'rain',

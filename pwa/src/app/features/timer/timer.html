@@ -17,6 +17,7 @@
       <button class="preset-pill" [class.active]="preset === '40/20'" (click)="setPreset('40/20')">40/20 Animedoro</button>
       <button class="preset-pill" [class.active]="preset === '50/10'" (click)="setPreset('50/10')">50/10 Deep Work</button>
       <button class="preset-pill" [class.active]="preset === '25/5'" (click)="setPreset('25/5')">25/5 Pomodoro</button>
+      <button class="preset-pill" [class.active]="preset === 'custom'" (click)="setPreset('custom')">{{ customFocus }}/{{ customBreak }} Custom</button>
     </div>
   </div>
 

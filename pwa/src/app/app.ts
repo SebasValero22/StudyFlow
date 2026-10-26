@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -27,6 +27,8 @@ import { CommandModalComponent } from './shared/components/command-modal/command
 })
 export class App implements OnInit, OnDestroy {
   @ViewChild(CommandModalComponent) commandModal?: CommandModalComponent;
+  @ViewChild('hoverVideo') hoverVideoRef?: ElementRef<HTMLVideoElement>;
+  @ViewChild('splashVideo') splashVideoRef?: ElementRef<HTMLVideoElement>;
 
   protected readonly title = signal('studyflow-pwa');
   currentTheme$: Observable<string>;
@@ -35,6 +37,11 @@ export class App implements OnInit, OnDestroy {
   isSidebarCollapsed = signal<boolean>(false);
   showAudioDock = signal<boolean>(true);
   customPfp = signal<string | null>(null);
+
+  // Intro splash and hover animations
+  showStartupSplash = signal<boolean>(false);
+  isSplashFading = signal<boolean>(false);
+  isBrandHovered = signal<boolean>(false);
 
   private eventListeners: (() => void)[] = [];
 
@@ -68,20 +75,58 @@ export class App implements OnInit, OnDestroy {
       }
     }
 
+    // Check if startup splash should play (once per session)
+    if (typeof window !== 'undefined' && !sessionStorage.getItem('studyflow-splash-played')) {
+      this.showStartupSplash.set(true);
+      sessionStorage.setItem('studyflow-splash-played', 'true');
+    }
+
     // Event listeners for real-time reactivity from Settings
     const onPos = (e: any) => this.sidebarPosition.set(e.detail);
     const onPfp = (e: any) => this.customPfp.set(e.detail);
     const onAudio = (e: any) => this.showAudioDock.set(e.detail);
+    const onReplay = () => this.replaySplash();
 
     window.addEventListener('studyflow-sidebar-pos-changed', onPos);
     window.addEventListener('studyflow-pfp-changed', onPfp);
     window.addEventListener('studyflow-audio-dock-toggle', onAudio);
+    window.addEventListener('studyflow-replay-splash', onReplay);
 
     this.eventListeners.push(
       () => window.removeEventListener('studyflow-sidebar-pos-changed', onPos),
       () => window.removeEventListener('studyflow-pfp-changed', onPfp),
-      () => window.removeEventListener('studyflow-audio-dock-toggle', onAudio)
+      () => window.removeEventListener('studyflow-audio-dock-toggle', onAudio),
+      () => window.removeEventListener('studyflow-replay-splash', onReplay)
     );
+  }
+
+  dismissSplash() {
+    this.isSplashFading.set(true);
+    setTimeout(() => {
+      this.showStartupSplash.set(false);
+      this.isSplashFading.set(false);
+    }, 380);
+  }
+
+  replaySplash() {
+    this.isSplashFading.set(false);
+    this.showStartupSplash.set(true);
+    setTimeout(() => {
+      if (this.splashVideoRef?.nativeElement) {
+        this.splashVideoRef.nativeElement.currentTime = 0;
+        this.splashVideoRef.nativeElement.play().catch(() => {});
+      }
+    }, 50);
+  }
+
+  onBrandHover(hovered: boolean) {
+    this.isBrandHovered.set(hovered);
+    if (hovered && this.hoverVideoRef?.nativeElement) {
+      this.hoverVideoRef.nativeElement.currentTime = 0;
+      this.hoverVideoRef.nativeElement.play().catch(() => {});
+    } else if (this.hoverVideoRef?.nativeElement) {
+      this.hoverVideoRef.nativeElement.pause();
+    }
   }
 
   ngOnDestroy() {

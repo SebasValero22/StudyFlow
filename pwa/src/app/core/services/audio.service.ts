@@ -41,6 +41,10 @@ export class AudioService {
   );
   public volume$ = this.volumeSubject.asObservable();
 
+  public customAudioName$ = new BehaviorSubject<string>(
+    localStorage.getItem('studyflow-byom-name') || ''
+  );
+
   constructor() {
     this.audio = new Audio();
     this.audio.loop = true;
@@ -114,7 +118,22 @@ export class AudioService {
     if (idx !== -1) {
       this.streams[idx] = customStream;
     }
+    this.customAudioName$.next(file.name);
+    localStorage.setItem('studyflow-byom-name', file.name);
     this.playStream('custom');
+  }
+
+  clearCustomAudioFile() {
+    this.customAudioName$.next('');
+    localStorage.removeItem('studyflow-byom-name');
+    const idx = this.streams.findIndex(s => s.id === 'custom');
+    if (idx !== -1) {
+      this.streams[idx] = { id: 'custom', name: 'Bring Your Own Music', type: 'stream', url: '', icon: '🎵' };
+    }
+    if (this.currentStreamSubject.value.id === 'custom') {
+      this.pause();
+      this.playStream(this.streams[0].id);
+    }
   }
 
   setCustomStreamUrl(url: string, name = 'Custom Radio') {

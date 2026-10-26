@@ -32,7 +32,9 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   // Work Mode Options
   isBillable: boolean = true;
-  preset: '40/20' | '50/10' | '25/5' = '40/20';
+  preset: '40/20' | '50/10' | '25/5' | 'custom' = '40/20';
+  customFocus: number = 50;
+  customBreak: number = 10;
 
   // AniList State
   animeList: Anime[] = [];
@@ -53,7 +55,15 @@ export class TimerComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
-    if (this.modeService.isWorkMode()) {
+    this.customFocus = parseInt(localStorage.getItem('studyflow-custom-focus-mins') || '50', 10);
+    this.customBreak = parseInt(localStorage.getItem('studyflow-custom-break-mins') || '10', 10);
+    const savedMode = localStorage.getItem('studyflow-timer-mode');
+
+    if (savedMode === 'custom') {
+      this.setPreset('custom');
+    } else if (savedMode === 'pomodoro') {
+      this.setPreset('25/5');
+    } else if (this.modeService.isWorkMode()) {
       this.setPreset('50/10');
     } else {
       this.setPreset('40/20');
@@ -82,13 +92,15 @@ export class TimerComponent implements OnInit, OnDestroy {
     return circumference * (1 - this.progressFraction);
   }
 
-  setPreset(p: '40/20' | '50/10' | '25/5') {
+  setPreset(p: '40/20' | '50/10' | '25/5' | 'custom') {
     if (this.isRunning) return;
     this.preset = p;
     if (p === '40/20') {
       this.minutes = this.isFocusMode ? 40 : 20;
     } else if (p === '50/10') {
       this.minutes = this.isFocusMode ? 50 : 10;
+    } else if (p === 'custom') {
+      this.minutes = this.isFocusMode ? this.customFocus : this.customBreak;
     } else {
       this.minutes = this.isFocusMode ? 25 : 5;
     }

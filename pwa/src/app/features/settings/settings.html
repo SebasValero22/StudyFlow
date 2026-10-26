@@ -182,7 +182,39 @@
             <span class="setting-subtitle">Display persistent ambient streams, web radios, and custom music in the sidebar</span>
           </div>
           <button class="btn btn-secondary" (click)="toggleAudioDock()">
-            {{ showAudioDock() ? 'Dock Enabled 📻' : 'Dock Hidden ✕' }}
+            {{ showAudioDock() ? 'Dock Enabled 📻' : 'Dock Disabled ✕' }}
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-title">Bring Your Own Music (Local Audio)</span>
+            <span class="setting-subtitle">
+              @if (customAudioName()) {
+                Active custom track: <strong>🎵 {{ customAudioName() }}</strong>
+              } @else {
+                Load local audio files (.mp3, .wav, .m4a, .ogg) to play seamlessly during study sessions
+              }
+            </span>
+          </div>
+          <div class="setting-actions-inline" style="display: flex; gap: 8px; align-items: center;">
+            <label class="btn btn-primary" style="cursor: pointer; margin: 0; padding: 7px 14px; font-size: 0.85rem;">
+              📁 Select Local Audio
+              <input type="file" accept="audio/*" (change)="onLocalMusicSelected($event)" style="display: none;">
+            </label>
+            @if (customAudioName()) {
+              <button class="btn btn-secondary" (click)="clearCustomMusic()" title="Remove custom track" style="padding: 7px 12px; font-size: 0.85rem;">✕ Clear</button>
+            }
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-title">Startup Animation</span>
+            <span class="setting-subtitle">StudyFlow intro cinematic animation played on application launch</span>
+          </div>
+          <button class="btn btn-secondary" (click)="replayStartupIntro()">
+            🎬 Replay Intro
           </button>
         </div>
       </div>
@@ -420,21 +452,23 @@
 
           <div class="preset-card" [class.active]="timerMode() === 'custom'" (click)="setTimerPreset('custom')">
             <h4>⚙️ Custom Intervals</h4>
-            <p class="preset-times">{{ focusMinutes() }}m Focus / {{ breakMinutes() }}m Break</p>
+            <p class="preset-times">{{ customFocusMinutes() }}m Focus / {{ customBreakMinutes() }}m Break</p>
             <p class="preset-desc">Set custom duration for your specific workflow.</p>
           </div>
         </div>
 
-        <div class="custom-timer-inputs">
-          <div class="input-col">
-            <label>Focus Duration (Minutes)</label>
-            <input type="number" [(ngModel)]="focusMinutes" (change)="onTimerDurationsChanged()" min="5" max="180" class="num-input">
+        @if (timerMode() === 'custom') {
+          <div class="custom-timer-inputs">
+            <div class="input-col">
+              <label>Custom Focus Duration (Minutes)</label>
+              <input type="number" [(ngModel)]="customFocusMinutes" (change)="onCustomDurationsChanged()" min="5" max="180" class="num-input">
+            </div>
+            <div class="input-col">
+              <label>Custom Break Duration (Minutes)</label>
+              <input type="number" [(ngModel)]="customBreakMinutes" (change)="onCustomDurationsChanged()" min="1" max="60" class="num-input">
+            </div>
           </div>
-          <div class="input-col">
-            <label>Break Duration (Minutes)</label>
-            <input type="number" [(ngModel)]="breakMinutes" (change)="onTimerDurationsChanged()" min="1" max="60" class="num-input">
-          </div>
-        </div>
+        }
 
         <div class="setting-row" style="margin-top: 20px;">
           <div class="setting-info">

@@ -7,7 +7,10 @@
             @if (customPfp()) {
               <img [src]="customPfp()!" alt="Avatar" class="brand-pfp">
             } @else {
-              <img src="StudyFlowIcon.png" alt="StudyFlow Logo" class="brand-logo">
+              <div class="brand-logo-wrapper" (mouseenter)="onBrandHover(true)" (mouseleave)="onBrandHover(false)" title="StudyFlow">
+                <img src="StudyFlow_New_Logo.png" alt="StudyFlow Logo" class="brand-logo" [class.hover-hidden]="isBrandHovered()">
+                <video #hoverVideo src="StudyFlow_Hover_animation.mp4" class="brand-hover-video" [class.hover-visible]="isBrandHovered()" muted playsinline loop></video>
+              </div>
             }
             @if (!isSidebarCollapsed()) {
               <div class="brand-info">
@@ -120,12 +123,14 @@
             {{ modeService.isWorkMode() ? '💼 Work Suite' : '🎓 Academic OS' }}
           </span>
           <select class="topbar-theme-selector" (change)="changeTheme($event)" [value]="currentTheme$ | async">
+            <option value="porcelain-cyan">🌊 Porcelain Cyan</option>
+            <option value="nordic-snow">❄️ Nordic Snow</option>
+            <option value="light">☀️ StudyFlow Signature</option>
             <option value="omarchy">🌿 Omarchy Emerald</option>
             <option value="cyberpunk">🌃 Tokyo Night</option>
             <option value="catppuccin">☕ Catppuccin Mocha</option>
             <option value="lofi-cafe">🍵 Matcha Gruvbox</option>
             <option value="oled">🌑 OLED Monolith</option>
-            <option value="light">☀️ StudyFlow Light</option>
           </select>
         </div>
 
@@ -163,5 +168,14 @@
   @if (isLoggedIn()) {
     <app-nyra-voice-button></app-nyra-voice-button>
     <app-command-modal></app-command-modal>
+  }
+
+  @if (showStartupSplash()) {
+    <div class="startup-splash-overlay" [class.fading-out]="isSplashFading()" (click)="dismissSplash()">
+      <div class="startup-splash-modal" (click)="$event.stopPropagation()">
+        <video #splashVideo src="StudyFlow_StartUp_Animation.mp4" autoplay muted playsinline (ended)="dismissSplash()" class="startup-splash-video"></video>
+        <button class="skip-splash-btn" (click)="dismissSplash()" title="Skip intro">Skip ✕</button>
+      </div>
+    </div>
   }
 </div>
