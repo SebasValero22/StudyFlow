@@ -129,6 +129,15 @@ export class ApiService {
       this.currentUser.set(parsed);
       invokeTauri('set_auth_session', { token: savedToken, userId: parsed.userId });
     }
+
+    // Pre-warm Render cloud server in background on app start
+    this.prewarmServer();
+  }
+
+  prewarmServer() {
+    if (typeof window !== 'undefined') {
+      fetch(`${this.baseUrl}/auth/login`, { method: 'OPTIONS' }).catch(() => {});
+    }
   }
 
   isTauri(): boolean {

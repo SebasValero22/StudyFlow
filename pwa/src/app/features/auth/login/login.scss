@@ -25,7 +25,9 @@
     img {
       width: 64px;
       height: 64px;
+      border-radius: 12px;
       margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
@@ -74,6 +76,31 @@
         border-color: #4a90e2;
       }
     }
+  }
+
+  .server-warming-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    color: #166534;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    text-align: left;
+    margin-bottom: 16px;
+    animation: pulseWarm 1.8s infinite ease-in-out;
+
+    .warming-icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  @keyframes pulseWarm {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
   }
 
   .error-banner {
