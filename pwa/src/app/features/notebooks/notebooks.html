@@ -142,10 +142,40 @@
         <div class="chat-header">
           <div class="copilot-title">
             <span class="sparkle">✨</span>
-            <h4>Ask Nyra About Documents</h4>
+            <h4>Nyra AI Copilot</h4>
+          </div>
+
+          <div class="ai-provider-switcher">
+            <button 
+              class="provider-pill" 
+              [class.active]="aiProvider() === 'groq'" 
+              (click)="setAiProvider('groq')"
+              title="Groq Llama 3.3 70B (Nyra Bot Engine)"
+            >⚡ Groq</button>
+            <button 
+              class="provider-pill" 
+              [class.active]="aiProvider() === 'gemini'" 
+              (click)="setAiProvider('gemini')"
+              title="Google Gemini 1.5/2.0 Flash"
+            >✨ Gemini</button>
+            <button 
+              class="provider-pill" 
+              [class.active]="aiProvider() === 'local'" 
+              (click)="setAiProvider('local')"
+              title="Local Ollama (:11434)"
+            >💻 Local</button>
           </div>
           
-          @if (aiProvider() === 'gemini') {
+          @if (aiProvider() === 'groq') {
+            <input 
+              type="password" 
+              [ngModel]="groqApiKey()" 
+              (ngModelChange)="saveGroqKey($event)"
+              placeholder="Groq key (gsk_...)" 
+              class="api-key-input"
+              title="Enter your Groq API key"
+            >
+          } @else if (aiProvider() === 'gemini') {
             <input 
               type="password" 
               [ngModel]="geminiApiKey()" 
@@ -154,6 +184,8 @@
               class="api-key-input"
               title="Enter your Google AI Studio Gemini API Key"
             >
+          } @else {
+            <span class="ollama-tag" title="Ollama running locally on port 11434">localhost:11434</span>
           }
         </div>
 

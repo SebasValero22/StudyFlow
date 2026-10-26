@@ -380,30 +380,42 @@
                 <span class="gdrive-logo">🔺</span>
                 <strong>Google Drive AppFolder Connection</strong>
               </div>
-              <span class="status-badge" [class.connected]="gdriveConnected()">
-                {{ gdriveConnected() ? '● Connected' : '○ Disconnected' }}
+              <span class="status-badge" [class.connected]="gdrive.isConnected()">
+                {{ gdrive.isConnected() ? '● Connected' : '○ Disconnected' }}
               </span>
             </div>
             
             <p class="gdrive-desc">Your notes, tasks, and configurations are securely synced to your private Google Drive Application Data Folder with end-to-end user isolation.</p>
             
+            @if (gdrive.currentUser(); as user) {
+              <div class="gdrive-user-info" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>👤 Connected as: <strong style="color: var(--text-main);">{{ user.displayName }}</strong> ({{ user.emailAddress }})</span>
+              </div>
+            }
+
             <div class="quota-meter">
               <div class="quota-labels">
                 <span>Storage Quota</span>
-                <span>{{ gdriveQuotaUsed() }} of {{ gdriveQuotaTotal() }} Used</span>
+                <span>{{ gdrive.quota().usedFormatted }} of {{ gdrive.quota().totalFormatted }} Used</span>
               </div>
               <div class="meter-track">
-                <div class="meter-bar" style="width: 2%;"></div>
+                <div class="meter-bar" [style.width.%]="gdrive.quota().percent"></div>
               </div>
             </div>
 
             <div class="gdrive-actions">
-              <button class="btn btn-secondary" (click)="toggleGoogleDriveAuth()">
-                {{ gdriveConnected() ? 'Disconnect Account' : 'Connect Account' }}
-              </button>
-              <button class="btn btn-primary" (click)="triggerSyncNow()" [disabled]="!gdriveConnected()">
-                Sync Now to Drive
-              </button>
+              @if (gdrive.isConnected()) {
+                <button class="btn btn-secondary" (click)="disconnectGoogleDrive()">
+                  Disconnect Account
+                </button>
+                <button class="btn btn-primary" (click)="syncToGoogleDrive()" [disabled]="gdrive.isSyncing()">
+                  {{ gdrive.isSyncing() ? 'Syncing...' : 'Sync Now to Drive' }}
+                </button>
+              } @else {
+                <button class="btn btn-primary" (click)="connectGoogleDrive()">
+                  Connect Google Account
+                </button>
+              }
             </div>
           </div>
         }

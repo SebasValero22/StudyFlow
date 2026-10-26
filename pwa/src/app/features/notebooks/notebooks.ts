@@ -56,7 +56,8 @@ export class NotebooksComponent implements OnInit {
   ]);
   aiPrompt = '';
   isThinking = signal<boolean>(false);
-  aiProvider = signal<'gemini' | 'local'>('gemini'); // Gemini cloud or Local Ollama
+  aiProvider = signal<'groq' | 'gemini' | 'local'>('groq'); // Groq (Nyra default), Gemini, or Local Ollama
+  groqApiKey = signal<string>('');
   geminiApiKey = signal<string>('');
 
   constructor(
@@ -66,7 +67,12 @@ export class NotebooksComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.groqApiKey.set(localStorage.getItem('studyflow-groq-key') || '');
     this.geminiApiKey.set(localStorage.getItem('studyflow-gemini-key') || '');
+    const savedProvider = localStorage.getItem('studyflow-ai-provider') as 'groq' | 'gemini' | 'local' | null;
+    if (savedProvider) {
+      this.aiProvider.set(savedProvider);
+    }
     this.loadSubjects();
     this.loadSavedNotes();
     this.loadSavedDocuments();
@@ -222,6 +228,16 @@ export class NotebooksComponent implements OnInit {
     localStorage.setItem('studyflow-gemini-key', key);
   }
 
+  saveGroqKey(key: string) {
+    this.groqApiKey.set(key);
+    localStorage.setItem('studyflow-groq-key', key);
+  }
+
+  setAiProvider(provider: 'groq' | 'gemini' | 'local') {
+    this.aiProvider.set(provider);
+    localStorage.setItem('studyflow-ai-provider', provider);
+  }
+
   // Chat with Documents & Notes
   async sendAiMessage() {
     if (!this.aiPrompt.trim() || this.isThinking()) return;
@@ -251,12 +267,21 @@ export class NotebooksComponent implements OnInit {
 
     try {
       let reply = '';
-      if (this.aiProvider() === 'gemini' && this.geminiApiKey()) {
-        reply = await this.callGeminiAPI(query, contextStr);
+      if (this.aiProvider() === 'groq') {
+        if (this.groqApiKey()) {
+          reply = await this.callGroqAPI(query, contextStr);
+        } else {
+          reply = `🔑 **Groq API Key Required**\nPlease enter your Groq API key in the top right box to run Nyra on ultra-fast Llama 3.3 70B.\n\n*Temporary Document Extraction:*\n${this.generateSmartFallbackReply(query, selectedDocs)}`;
+        }
+      } else if (this.aiProvider() === 'gemini') {
+        if (this.geminiApiKey()) {
+          reply = await this.callGeminiAPI(query, contextStr);
+        } else {
+          reply = `🔑 **Gemini API Key Required**\nPlease enter your Google Gemini API key above.\n\n*Temporary Document Extraction:*\n${this.generateSmartFallbackReply(query, selectedDocs)}`;
+        }
       } else if (this.aiProvider() === 'local') {
         reply = await this.callLocalOllama(query, contextStr);
       } else {
-        // High-quality local smart response fallback if key not configured yet
         reply = this.generateSmartFallbackReply(query, selectedDocs);
       }
 
@@ -274,7 +299,7 @@ export class NotebooksComponent implements OnInit {
         ...this.chatMessages(),
         {
           sender: 'nyra',
-          text: `Error connecting to ${this.aiProvider() === 'gemini' ? 'Gemini API' : 'Local Ollama'}. Using local document extraction instead:\n\n${this.generateSmartFallbackReply(query, selectedDocs)}`,
+          text: `⚠️ **API Error (${this.aiProvider().toUpperCase()}):** ${e?.message || 'Connection failed'}\n\nFalling back to document search:\n\n${this.generateSmartFallbackReply(query, selectedDocs)}`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -282,6 +307,36 @@ export class NotebooksComponent implements OnInit {
       this.isThinking.set(false);
       this.cdr.detectChanges();
     }
+  }
+
+  private async callGroqAPI(query: string, context: string): Promise<string> {
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
+    const systemPrompt = `You are Nyra, the AI Study & Document Copilot for StudyFlow. Answer the user's question accurately using ONLY the provided notebook notes and attached PDF documents. If the user asks for a summary, practice quiz, flashcards, or formula explanation, format your response cleanly with markdown.\n\nContext:\n${context}`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.groqApiKey().trim()}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: query }
+        ],
+        temperature: 0.5,
+        max_tokens: 1024
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData?.error?.message || `Groq returned status ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data.choices[0].message.content;
   }
 
   private async callGeminiAPI(query: string, context: string): Promise<string> {

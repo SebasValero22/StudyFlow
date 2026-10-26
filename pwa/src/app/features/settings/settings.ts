@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin, firstValueFrom, of, catchError } from 'rxjs';
 import { ThemeService, CustomThemeColors, DEFAULT_CUSTOM_THEME } from '../../core/services/theme.service';
 import { ApiService } from '../../core/services/api';
+import { GDriveService } from '../../core/services/gdrive.service';
 
 export type SettingsTab = 'appearance' | 'profile' | 'voice' | 'timer' | 'sync';
 
@@ -55,13 +56,11 @@ export class SettingsComponent implements OnInit {
   syncStatus = signal<string>('Ready');
   saveNotification = signal<string>('');
   storageProvider = signal<'aiven' | 'gdrive' | 'local'>('aiven');
-  gdriveConnected = signal<boolean>(true);
-  gdriveQuotaUsed = signal<string>('1.2 MB');
-  gdriveQuotaTotal = signal<string>('15 GB');
 
   constructor(
     private themeService: ThemeService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    public gdrive: GDriveService
   ) {}
 
   ngOnInit() {
@@ -76,6 +75,10 @@ export class SettingsComponent implements OnInit {
     this.sidebarPosition.set((localStorage.getItem('studyflow-sidebar-pos') as 'left' | 'right') || 'left');
     this.compactDensity.set(localStorage.getItem('studyflow-compact-density') === 'true');
     this.customPfp.set(localStorage.getItem('studyflow-custom-pfp'));
+    const savedProvider = localStorage.getItem('studyflow-storage-provider') as 'aiven' | 'gdrive' | 'local' | null;
+    if (savedProvider) {
+      this.storageProvider.set(savedProvider);
+    }
     
     const user = this.apiService.getCurrentUser();
     this.displayName.set(user?.name || localStorage.getItem('studyflow-display-name') || '');
@@ -229,49 +232,75 @@ export class SettingsComponent implements OnInit {
     this.flashNotification(`Storage provider set to ${provider.toUpperCase()}`);
   }
 
-  toggleGoogleDriveAuth() {
-    const next = !this.gdriveConnected();
-    this.gdriveConnected.set(next);
-    this.flashNotification(next ? 'Connected to Google Drive OAuth2 AppFolder' : 'Disconnected Google Drive');
+  connectGoogleDrive() {
+    this.gdrive.startOAuthLogin();
+  }
+
+  disconnectGoogleDrive() {
+    this.gdrive.disconnect();
+    this.flashNotification('Disconnected Google Drive');
+  }
+
+  private async buildCompleteArchive() {
+    const [tasks, subjects, exams, grades, journal, focusReport] = await firstValueFrom(
+      forkJoin([
+        this.apiService.getTasks().pipe(catchError(() => of([]))),
+        this.apiService.getSubjects().pipe(catchError(() => of([]))),
+        this.apiService.getExams().pipe(catchError(() => of([]))),
+        this.apiService.getGrades().pipe(catchError(() => of([]))),
+        this.apiService.getJournal().pipe(catchError(() => of([]))),
+        this.apiService.getFocusReport().pipe(catchError(() => of(null)))
+      ])
+    );
+
+    return {
+      studyflowArchiveVersion: '2.0',
+      exportedAt: new Date().toISOString(),
+      profile: {
+        user: this.apiService.getCurrentUser(),
+        displayName: this.displayName(),
+        appMode: this.appMode(),
+        theme: this.currentTheme(),
+        storageProvider: this.storageProvider(),
+        customTheme: this.customColors
+      },
+      studyTimeline: {
+        totalFocusSeconds: focusReport?.totalFocusSeconds || 0,
+        totalFocusHours: focusReport ? +(focusReport.totalFocusSeconds / 3600).toFixed(2) : 0,
+        sessionCount: focusReport?.sessionCount || 0,
+        studyDates: focusReport?.byDay || []
+      },
+      tasks,
+      subjects,
+      exams,
+      grades,
+      journalNotes: journal
+    };
+  }
+
+  async syncToGoogleDrive() {
+    if (!this.gdrive.isConnected()) {
+      this.connectGoogleDrive();
+      return;
+    }
+    this.flashNotification('Uploading StudyFlow vault backup to Google Drive AppFolder...');
+    try {
+      const archive = await this.buildCompleteArchive();
+      const success = await this.gdrive.uploadBackupToDrive(archive);
+      if (success) {
+        this.flashNotification('Google Drive AppFolder backup complete! ✓');
+      } else {
+        this.flashNotification('Drive backup upload failed. Check credentials/quota.');
+      }
+    } catch (e) {
+      this.flashNotification('Sync to Google Drive failed.');
+    }
   }
 
   async exportDataJson() {
     this.flashNotification('Packaging complete StudyFlow archive...');
     try {
-      const [tasks, subjects, exams, grades, journal, focusReport] = await firstValueFrom(
-        forkJoin([
-          this.apiService.getTasks().pipe(catchError(() => of([]))),
-          this.apiService.getSubjects().pipe(catchError(() => of([]))),
-          this.apiService.getExams().pipe(catchError(() => of([]))),
-          this.apiService.getGrades().pipe(catchError(() => of([]))),
-          this.apiService.getJournal().pipe(catchError(() => of([]))),
-          this.apiService.getFocusReport().pipe(catchError(() => of(null)))
-        ])
-      );
-
-      const archive = {
-        studyflowArchiveVersion: '2.0',
-        exportedAt: new Date().toISOString(),
-        profile: {
-          user: this.apiService.getCurrentUser(),
-          displayName: this.displayName(),
-          appMode: this.appMode(),
-          theme: this.currentTheme(),
-          storageProvider: this.storageProvider(),
-          customTheme: this.customColors
-        },
-        studyTimeline: {
-          totalFocusSeconds: focusReport?.totalFocusSeconds || 0,
-          totalFocusHours: focusReport ? +(focusReport.totalFocusSeconds / 3600).toFixed(2) : 0,
-          sessionCount: focusReport?.sessionCount || 0,
-          studyDates: focusReport?.byDay || []
-        },
-        tasks,
-        subjects,
-        exams,
-        grades,
-        journalNotes: journal
-      };
+      const archive = await this.buildCompleteArchive();
 
       const blob = new Blob([JSON.stringify(archive, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');

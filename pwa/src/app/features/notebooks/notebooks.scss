@@ -430,11 +430,57 @@
       }
     }
 
+    .ai-provider-switcher {
+      display: flex;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+
+      .provider-pill {
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: var(--text-main);
+        }
+
+        &.active {
+          background: var(--accent-primary);
+          color: #ffffff;
+        }
+      }
+    }
+
     .api-key-input {
       padding: 3px 8px;
       font-size: 0.7rem;
-      width: 110px;
+      width: 120px;
       border-radius: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+
+      &:focus {
+        border-color: var(--accent-primary);
+      }
+    }
+
+    .ollama-tag {
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      color: var(--accent-primary);
+      background: rgba(122, 162, 247, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
     }
   }
 
