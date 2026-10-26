@@ -1,0 +1,208 @@
+<div class="notebooks-container">
+
+  <!-- Header Section -->
+  <div class="notebooks-topbar">
+    <div>
+      <h2>Notebooks & AI Document Hub</h2>
+      <p class="subtitle">Markdown study notes, attached PDF materials, and context-aware Nyra AI copilot</p>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- AI Provider Switcher -->
+      <div class="ai-provider-toggle">
+        <label>AI Brain:</label>
+        <button 
+          class="provider-pill" 
+          [class.active]="aiProvider() === 'gemini'" 
+          (click)="aiProvider.set('gemini')"
+          title="Google Gemini Cloud (Multimodal document reasoning)"
+        >
+          ✨ Gemini Cloud
+        </button>
+        <button 
+          class="provider-pill" 
+          [class.active]="aiProvider() === 'local'" 
+          (click)="aiProvider.set('local')"
+          title="Local Ollama (100% Offline privacy on localhost:11434)"
+        >
+          🔒 Local Ollama
+        </button>
+      </div>
+
+      <button class="btn-primary" (click)="createNewNote()">
+        <span>+</span> New Note
+      </button>
+    </div>
+  </div>
+
+  <!-- 3-Pane Modern Layout -->
+  <div class="notebooks-workspace">
+
+    <!-- Pane 1: Notes Sidebar -->
+    <div class="notes-sidebar-pane">
+      <div class="pane-header">
+        <h3>My Notes</h3>
+        <span class="count-badge">{{ notes().length }}</span>
+      </div>
+
+      <div class="notes-list">
+        @for (note of notes(); track note.id) {
+          <div 
+            class="note-list-item" 
+            [class.active]="activeNote()?.id === note.id"
+            (click)="selectNote(note)"
+          >
+            <div class="item-top">
+              <span class="note-title">{{ note.title || 'Untitled Note' }}</span>
+              <button class="btn-del-note" (click)="$event.stopPropagation(); deleteNote(note.id)">🗑️</button>
+            </div>
+            <p class="item-snippet">{{ note.content.substring(0, 75) || 'Empty note...' }}</p>
+            <span class="item-date">{{ note.updatedAt }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Pane 2: Markdown Note Editor -->
+    <div class="note-editor-pane">
+      @if (activeNote(); as note) {
+        <div class="editor-header">
+          <input 
+            type="text" 
+            [(ngModel)]="note.title" 
+            (ngModelChange)="saveActiveNote()"
+            placeholder="Note Title..."
+            class="note-title-input"
+          >
+          <span class="auto-save-pill">Auto-saved</span>
+        </div>
+
+        <div class="editor-body">
+          <textarea 
+            [(ngModel)]="note.content" 
+            (ngModelChange)="saveActiveNote()"
+            placeholder="Type notes in Markdown... (# Heading, - Bullet point, [ ] Checklist)"
+            class="markdown-textarea"
+          ></textarea>
+        </div>
+      } @else {
+        <div class="empty-editor">
+          <span class="icon">📝</span>
+          <h3>No Note Selected</h3>
+          <p>Select a note from the left or create a new one to begin writing.</p>
+          <button class="btn-primary" (click)="createNewNote()">+ Create Note</button>
+        </div>
+      }
+    </div>
+
+    <!-- Pane 3: Attached Documents Shelf + Nyra Document Chat -->
+    <div class="ai-docs-pane">
+      
+      <!-- Section A: Document Shelf (PDFs & Slides) -->
+      <div class="docs-shelf-section">
+        <div class="shelf-header">
+          <div class="title-with-badge">
+            <span class="icon">📚</span>
+            <h4>Study Materials & PDFs</h4>
+            <span class="shelf-count">{{ documents().length }}</span>
+          </div>
+          
+          <label class="btn-upload-doc" title="Upload PDF, Slides or Markdown notes">
+            <span>+ Attach File</span>
+            <input type="file" (change)="handleFileUpload($event)" multiple accept=".pdf,.md,.txt" style="display: none;">
+          </label>
+        </div>
+
+        <div class="docs-list">
+          @for (doc of documents(); track doc.id) {
+            <div class="doc-card" [class.selected]="doc.isSelectedForAI">
+              <input 
+                type="checkbox" 
+                [checked]="doc.isSelectedForAI" 
+                (change)="toggleDocSelection(doc)"
+                title="Include in Nyra AI Context"
+              >
+              <div class="doc-info" (click)="toggleDocSelection(doc)">
+                <span class="doc-name">{{ doc.name }}</span>
+                <span class="doc-meta">{{ doc.type.toUpperCase() }} • {{ doc.sizeFormatted }}</span>
+              </div>
+              <button class="btn-del-doc" (click)="deleteDocument(doc.id)" title="Remove document">✕</button>
+            </div>
+          }
+          @if (documents().length === 0) {
+            <div class="empty-docs-hint">
+              <span>Drop or attach PDFs here to chat with them</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Section B: Nyra Document Copilot Chat -->
+      <div class="nyra-chat-section">
+        <div class="chat-header">
+          <div class="copilot-title">
+            <span class="sparkle">✨</span>
+            <h4>Ask Nyra About Documents</h4>
+          </div>
+          
+          @if (aiProvider() === 'gemini') {
+            <input 
+              type="password" 
+              [ngModel]="geminiApiKey()" 
+              (ngModelChange)="saveGeminiKey($event)"
+              placeholder="Gemini API Key..." 
+              class="api-key-input"
+              title="Enter your Google AI Studio Gemini API Key"
+            >
+          }
+        </div>
+
+        <!-- Chat Conversation Messages -->
+        <div class="chat-messages-box">
+          @for (msg of chatMessages(); track msg.timestamp + msg.text) {
+            <div class="chat-bubble-wrap" [class.user]="msg.sender === 'user'" [class.nyra]="msg.sender === 'nyra'">
+              <div class="sender-label">
+                {{ msg.sender === 'user' ? 'You' : 'Nyra Copilot' }}
+              </div>
+              <div class="chat-bubble">
+                <p>{{ msg.text }}</p>
+                @if (msg.sources && msg.sources.length > 0) {
+                  <div class="sources-list">
+                    <span>Sources:</span>
+                    @for (s of msg.sources; track s) {
+                      <span class="source-tag">📄 {{ s }}</span>
+                    }
+                  </div>
+                }
+              </div>
+              <span class="bubble-time">{{ msg.timestamp }}</span>
+            </div>
+          }
+          @if (isThinking()) {
+            <div class="thinking-indicator">
+              <span class="sparkle">✨</span> Nyra is reading attached documents...
+            </div>
+          }
+        </div>
+
+        <!-- Chat Prompt Input -->
+        <div class="chat-input-row">
+          <input 
+            type="text" 
+            [(ngModel)]="aiPrompt" 
+            (keydown.enter)="sendAiMessage()"
+            placeholder="Ask anything about your notes or PDFs..."
+            [disabled]="isThinking()"
+          >
+          <button class="btn-send-chat" (click)="sendAiMessage()" [disabled]="isThinking() || !aiPrompt.trim()">
+            ↑
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

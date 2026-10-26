@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,6 +17,8 @@ export interface CalendarItem {
 export interface GroupedItems {
   [date: string]: CalendarItem[];
 }
+
+export type HeroMetricType = 'focus' | 'momentum' | 'radar' | 'gpa';
 
 @Component({
   selector: 'app-overview',
@@ -42,6 +44,26 @@ export class OverviewComponent implements OnInit, OnDestroy {
   completedTasksCount: number = 0;
   activeTasksCount: number = 0;
 
+  // Option 4: Modular Hero Widget State
+  heroMetric = signal<HeroMetricType>('focus');
+  isPrivacyMasked = signal<boolean>(false);
+
+  // Focus Activity Metrics (Option 1 - Default)
+  todayFocusMinutes: number = 0;
+  dailyGoalMinutes: number = 120; // 2 hours target
+  todayFocusPercent: number = 0;
+  todayFocusFormatted: string = '0m';
+  studyStreakDays: number = 0;
+
+  // Task Momentum Metrics (Option 2)
+  todayTasksCompletedCount: number = 0;
+  todayTasksTotalCount: number = 0;
+  todayMomentumPercent: number = 0;
+  highPriorityPendingCount: number = 0;
+
+  // Next Milestone Radar Metrics (Option 3)
+  nextMilestone: { title: string; daysLeft: number; date: string; subjectName: string; color: string; type: string } | null = null;
+
   // Mini Heatmap cells (last 84 days = 12 weeks)
   heatmapCells: { date: string; seconds: number; level: number }[] = [];
   totalFocusHours: string = '0';
@@ -55,6 +77,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    const savedHero = localStorage.getItem('studyflow-hero-metric') as HeroMetricType;
+    if (savedHero && ['focus', 'momentum', 'radar', 'gpa'].includes(savedHero)) {
+      this.heroMetric.set(savedHero);
+    } else {
+      this.heroMetric.set('focus'); // Focus Activity is the primary default
+    }
+
+    this.isPrivacyMasked.set(localStorage.getItem('studyflow-hero-privacy') === 'true');
+
     this.loadAll();
 
     const onEntity = () => this.loadAll();
@@ -70,11 +101,23 @@ export class OverviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  setHeroMetric(type: HeroMetricType) {
+    this.heroMetric.set(type);
+    localStorage.setItem('studyflow-hero-metric', type);
+  }
+
+  togglePrivacyMask() {
+    const next = !this.isPrivacyMasked();
+    this.isPrivacyMasked.set(next);
+    localStorage.setItem('studyflow-hero-privacy', String(next));
+  }
+
   loadAll() {
     this.loading = true;
     this.api.getSubjects().subscribe(data => {
       this.subjects = data;
       this.updateCalendar();
+      this.updateMilestoneRadar();
       this.cdr.detectChanges();
     });
 
@@ -84,6 +127,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
       this.completedTasksCount = data.filter(t => t.isCompleted).length;
       const total = this.activeTasksCount + this.completedTasksCount;
       this.velocityPercent = total > 0 ? Math.round((this.completedTasksCount / total) * 100) : 0;
+      
+      this.calculateMomentumMetrics();
       this.updateCalendar();
       this.cdr.detectChanges();
     });
@@ -91,6 +136,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.api.getExams().subscribe(data => {
       this.exams = data;
       this.updateCalendar();
+      this.updateMilestoneRadar();
       this.cdr.detectChanges();
     });
 
@@ -104,11 +150,82 @@ export class OverviewComponent implements OnInit, OnDestroy {
       next: (report) => {
         this.focusReport = report;
         this.totalFocusHours = (report.totalFocusSeconds / 3600).toFixed(1);
+        this.calculateFocusMetrics(report);
         this.buildMiniHeatmap(report.byDay || []);
         this.cdr.detectChanges();
       },
       error: () => {}
     });
+  }
+
+  calculateFocusMetrics(report: FocusReport) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayItem = report.byDay?.find(d => d.date === todayStr);
+    const todaySecs = todayItem ? todayItem.seconds : 0;
+    this.todayFocusMinutes = Math.round(todaySecs / 60);
+
+    const hrs = Math.floor(this.todayFocusMinutes / 60);
+    const mins = this.todayFocusMinutes % 60;
+    this.todayFocusFormatted = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+    this.todayFocusPercent = Math.min(100, Math.round((this.todayFocusMinutes / this.dailyGoalMinutes) * 100));
+
+    // Calculate Streak
+    const dayMap = new Map<string, number>();
+    (report.byDay || []).forEach(d => dayMap.set(d.date, d.seconds));
+
+    let streak = 0;
+    const checkDate = new Date();
+    // Check from today or yesterday backwards
+    const todayHasStudy = (dayMap.get(todayStr) || 0) > 0;
+    if (todayHasStudy) streak = 1;
+
+    for (let i = 1; i <= 60; i++) {
+      const d = new Date();
+      d.setDate(checkDate.getDate() - i);
+      const ds = d.toISOString().split('T')[0];
+      if ((dayMap.get(ds) || 0) > 0) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    this.studyStreakDays = streak;
+  }
+
+  calculateMomentumMetrics() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayTasks = this.tasks.filter(t => t.due_date === todayStr);
+    this.todayTasksTotalCount = todayTasks.length;
+    this.todayTasksCompletedCount = todayTasks.filter(t => t.isCompleted).length;
+    this.todayMomentumPercent = this.todayTasksTotalCount > 0 
+      ? Math.round((this.todayTasksCompletedCount / this.todayTasksTotalCount) * 100)
+      : (this.completedTasksCount > 0 ? 100 : 0);
+    this.highPriorityPendingCount = this.tasks.filter(t => !t.isCompleted && t.priority === 'HIGH').length;
+  }
+
+  updateMilestoneRadar() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const upcoming = this.exams
+      .map(e => {
+        const ed = new Date(e.examDate);
+        ed.setHours(0, 0, 0, 0);
+        const diffDays = Math.ceil((ed.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const sub = this.subjects.find(s => s.lifeAreaId === e.lifeAreaId);
+        return {
+          title: e.nameExam,
+          daysLeft: diffDays,
+          date: e.examDate,
+          subjectName: sub?.name || 'General',
+          color: sub?.color || 'var(--accent-primary)',
+          type: e.examType
+        };
+      })
+      .filter(item => item.daysLeft >= 0)
+      .sort((a, b) => a.daysLeft - b.daysLeft);
+
+    this.nextMilestone = upcoming.length > 0 ? upcoming[0] : null;
   }
 
   calculateGPA() {

@@ -14,5 +14,6 @@ export const routes: Routes = [
   { path: 'settings', canActivate: [authGuard], loadComponent: () => import('./features/settings/settings').then(m => m.SettingsComponent) },
   { path: 'timer', canActivate: [authGuard], loadComponent: () => import('./features/timer/timer').then(m => m.TimerComponent) },
   { path: 'focus-report', canActivate: [authGuard], loadComponent: () => import('./features/focus-report/focus-report').then(m => m.FocusReportComponent) },
-  { path: 'journal', canActivate: [authGuard], loadComponent: () => import('./features/journal/journal').then(m => m.JournalComponent) }
+  { path: 'journal', canActivate: [authGuard], loadComponent: () => import('./features/journal/journal').then(m => m.JournalComponent) },
+  { path: 'notebooks', canActivate: [authGuard], loadComponent: () => import('./features/notebooks/notebooks').then(m => m.NotebooksComponent) }
 ];

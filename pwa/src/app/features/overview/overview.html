@@ -5,7 +5,7 @@
     <div>
       <h2>{{ modeService.isWorkMode() ? 'Workspace Intelligence' : 'Academic Dashboard' }}</h2>
       <p class="subtitle">
-        {{ modeService.isWorkMode() ? 'Real-time sprint velocity, upcoming client milestones, and focus tracking' : 'Coursework momentum, upcoming examinations, and cumulative standing' }}
+        {{ modeService.isWorkMode() ? 'Sprint momentum, focus tracking, and active milestone deliverables' : 'Daily focus rhythm, task momentum, and academic roadmap' }}
       </p>
     </div>
     <div class="bento-actions">
@@ -18,41 +18,172 @@
   <!-- 4-Card Bento Grid -->
   <div class="bento-grid">
 
-    <!-- Card 1 (Top-Left): Primary Standing Metric Gauge -->
+    <!-- Card 1 (Top-Left): Modular Hero Metric Card (Default: Focus Activity) -->
     <div class="bento-card hero-metric-card">
       <div class="card-head">
-        <span class="kicker">{{ modeService.terms().gpaOrVelocity }}</span>
-        <span class="status-pill" [ngClass]="getStandingBadge().class">
-          {{ modeService.isWorkMode() ? (velocityPercent + '% On-Track') : getStandingBadge().label }}
-        </span>
+        <div class="hero-selector-pills">
+          <button 
+            class="pill-btn" 
+            [class.active]="heroMetric() === 'focus'" 
+            (click)="setHeroMetric('focus')"
+            title="Focus Activity & Rhythm"
+          >⏱️ Focus</button>
+          
+          <button 
+            class="pill-btn" 
+            [class.active]="heroMetric() === 'momentum'" 
+            (click)="setHeroMetric('momentum')"
+            title="Task Momentum"
+          >⚡ Momentum</button>
+          
+          <button 
+            class="pill-btn" 
+            [class.active]="heroMetric() === 'radar'" 
+            (click)="setHeroMetric('radar')"
+            title="Milestone Radar"
+          >🎯 Deadline</button>
+
+          <button 
+            class="pill-btn" 
+            [class.active]="heroMetric() === 'gpa'" 
+            (click)="setHeroMetric('gpa')"
+            [title]="modeService.terms().gpaOrVelocity"
+          >{{ modeService.isWorkMode() ? '📊 Sprint' : '🎓 GPA' }}</button>
+        </div>
+
+        <button 
+          class="privacy-eye-btn" 
+          [class.masked]="isPrivacyMasked()" 
+          (click)="togglePrivacyMask()" 
+          title="Toggle Privacy Mask (Hide sensitive numbers in public)"
+        >
+          {{ isPrivacyMasked() ? '🙈' : '👁️' }}
+        </button>
       </div>
 
-      <div class="metric-body">
-        @if (!modeService.isWorkMode()) {
+      <!-- VIEW 1: Focus Activity & Daily Rhythm (Option 1 - Default) -->
+      @if (heroMetric() === 'focus') {
+        <div class="metric-body" [class.privacy-blur]="isPrivacyMasked()">
           <div class="score-row">
-            <span class="primary-score">{{ gpa }}</span>
-            <span class="max-score">/ 10.00</span>
+            <span class="primary-score">{{ todayFocusFormatted }}</span>
+            <span class="max-score">/ 2h goal</span>
           </div>
-          <span class="scale-label">Weighted academic syllabi</span>
-        } @else {
-          <div class="score-row">
-            <span class="primary-score">{{ velocityPercent }}%</span>
-            <span class="max-score">Velocity</span>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" [style.width.%]="todayFocusPercent"></div>
           </div>
-          <span class="scale-label">{{ completedTasksCount }} completed of {{ completedTasksCount + activeTasksCount }} sprint items</span>
-        }
-      </div>
+          <div class="sub-label-row">
+            <span class="scale-label">{{ todayFocusPercent }}% of daily target reached</span>
+            @if (studyStreakDays > 0) {
+              <span class="streak-pill">🔥 {{ studyStreakDays }}-Day Streak</span>
+            }
+          </div>
+        </div>
 
-      <div class="metric-footer">
-        <div class="stat-pill">
-          <span class="num">{{ activeTasksCount }}</span>
-          <span class="lbl">Pending {{ modeService.isWorkMode() ? 'Issues' : 'Tasks' }}</span>
+        <div class="metric-footer">
+          <div class="stat-pill">
+            <span class="num">{{ totalFocusHours }}h</span>
+            <span class="lbl">Total Hours</span>
+          </div>
+          <div class="stat-pill">
+            <span class="num">{{ activeTasksCount }}</span>
+            <span class="lbl">Open Tasks</span>
+          </div>
         </div>
-        <div class="stat-pill">
-          <span class="num">{{ subjects.length }}</span>
-          <span class="lbl">Active {{ modeService.terms().subjects }}</span>
+      }
+
+      <!-- VIEW 2: Task Momentum & Throughput -->
+      @if (heroMetric() === 'momentum') {
+        <div class="metric-body" [class.privacy-blur]="isPrivacyMasked()">
+          <div class="score-row">
+            <span class="primary-score">{{ completedTasksCount }}</span>
+            <span class="max-score">/ {{ completedTasksCount + activeTasksCount }} Completed</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill fill-accent" [style.width.%]="velocityPercent"></div>
+          </div>
+          <div class="sub-label-row">
+            <span class="scale-label">{{ velocityPercent }}% overall task completion</span>
+            @if (highPriorityPendingCount > 0) {
+              <span class="urgent-pill">🔴 {{ highPriorityPendingCount }} High Priority</span>
+            }
+          </div>
         </div>
-      </div>
+
+        <div class="metric-footer">
+          <div class="stat-pill">
+            <span class="num">{{ activeTasksCount }}</span>
+            <span class="lbl">Pending</span>
+          </div>
+          <div class="stat-pill">
+            <span class="num">{{ completedTasksCount }}</span>
+            <span class="lbl">Shipped</span>
+          </div>
+        </div>
+      }
+
+      <!-- VIEW 3: Next Major Milestone Radar -->
+      @if (heroMetric() === 'radar') {
+        <div class="metric-body" [class.privacy-blur]="isPrivacyMasked()">
+          @if (nextMilestone) {
+            <div class="radar-content">
+              <span class="radar-badge" [style.background-color]="nextMilestone.color">{{ nextMilestone.subjectName }}</span>
+              <div class="score-row">
+                <span class="primary-score countdown">{{ nextMilestone.daysLeft }}</span>
+                <span class="max-score">{{ nextMilestone.daysLeft === 1 ? 'Day Left' : 'Days Left' }}</span>
+              </div>
+              <div class="milestone-title-text">{{ nextMilestone.title }}</div>
+              <span class="scale-label">Scheduled on {{ nextMilestone.date | date:'mediumDate' }}</span>
+            </div>
+          } @else {
+            <div class="empty-radar">
+              <span class="empty-icon">🏖️</span>
+              <p>No upcoming exams or deadlines within horizon.</p>
+            </div>
+          }
+        </div>
+
+        <div class="metric-footer">
+          <div class="stat-pill">
+            <span class="num">{{ exams.length }}</span>
+            <span class="lbl">Total {{ modeService.terms().exams }}</span>
+          </div>
+          <div class="stat-pill">
+            <span class="num">{{ subjects.length }}</span>
+            <span class="lbl">Active {{ modeService.terms().subjects }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- VIEW 4: GPA / Sprint Velocity -->
+      @if (heroMetric() === 'gpa') {
+        <div class="metric-body" [class.privacy-blur]="isPrivacyMasked()">
+          @if (!modeService.isWorkMode()) {
+            <div class="score-row">
+              <span class="primary-score">{{ gpa }}</span>
+              <span class="max-score">/ 10.00</span>
+            </div>
+            <span class="scale-label">Weighted academic standing</span>
+          } @else {
+            <div class="score-row">
+              <span class="primary-score">{{ velocityPercent }}%</span>
+              <span class="max-score">Velocity</span>
+            </div>
+            <span class="scale-label">Sprint SLA delivery rate</span>
+          }
+        </div>
+
+        <div class="metric-footer">
+          <div class="stat-pill">
+            <span class="num">{{ grades.length }}</span>
+            <span class="lbl">Recorded</span>
+          </div>
+          <div class="stat-pill">
+            <span class="num">{{ getStandingBadge().label }}</span>
+            <span class="lbl">Standing</span>
+          </div>
+        </div>
+      }
+
     </div>
 
     <!-- Card 2 (Top-Right): Agenda Timeline ("Up Next") -->

@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, firstValueFrom, of, catchError } from 'rxjs';
 import { ThemeService, CustomThemeColors, DEFAULT_CUSTOM_THEME } from '../../core/services/theme.service';
 import { ApiService } from '../../core/services/api';
 
@@ -234,19 +235,53 @@ export class SettingsComponent implements OnInit {
     this.flashNotification(next ? 'Connected to Google Drive OAuth2 AppFolder' : 'Disconnected Google Drive');
   }
 
-  exportDataJson() {
-    const data = {
-      user: this.apiService.getCurrentUser(),
-      appMode: this.appMode(),
-      theme: this.currentTheme(),
-      customTheme: this.customColors,
-      exportedAt: new Date().toISOString()
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `studyflow_backup_${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
+  async exportDataJson() {
+    this.flashNotification('Packaging complete StudyFlow archive...');
+    try {
+      const [tasks, subjects, exams, grades, journal, focusReport] = await firstValueFrom(
+        forkJoin([
+          this.apiService.getTasks().pipe(catchError(() => of([]))),
+          this.apiService.getSubjects().pipe(catchError(() => of([]))),
+          this.apiService.getExams().pipe(catchError(() => of([]))),
+          this.apiService.getGrades().pipe(catchError(() => of([]))),
+          this.apiService.getJournal().pipe(catchError(() => of([]))),
+          this.apiService.getFocusReport().pipe(catchError(() => of(null)))
+        ])
+      );
+
+      const archive = {
+        studyflowArchiveVersion: '2.0',
+        exportedAt: new Date().toISOString(),
+        profile: {
+          user: this.apiService.getCurrentUser(),
+          displayName: this.displayName(),
+          appMode: this.appMode(),
+          theme: this.currentTheme(),
+          storageProvider: this.storageProvider(),
+          customTheme: this.customColors
+        },
+        studyTimeline: {
+          totalFocusSeconds: focusReport?.totalFocusSeconds || 0,
+          totalFocusHours: focusReport ? +(focusReport.totalFocusSeconds / 3600).toFixed(2) : 0,
+          sessionCount: focusReport?.sessionCount || 0,
+          studyDates: focusReport?.byDay || []
+        },
+        tasks,
+        subjects,
+        exams,
+        grades,
+        journalNotes: journal
+      };
+
+      const blob = new Blob([JSON.stringify(archive, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `studyflow_full_archive_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      this.flashNotification('Full archive downloaded successfully!');
+    } catch (e) {
+      this.flashNotification('Export failed');
+    }
   }
 
   private flashNotification(msg: string) {
