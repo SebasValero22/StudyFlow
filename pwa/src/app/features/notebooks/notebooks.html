@@ -1,52 +1,69 @@
 <div class="notebooks-container">
 
   <!-- Header Section -->
-  <div class="notebooks-topbar">
-    <div>
-      <h2>Notebooks & AI Document Hub</h2>
-      <p class="subtitle">Markdown study notes, attached PDF materials, and context-aware Nyra AI copilot</p>
+  <header class="notebooks-topbar">
+    <div class="title-meta">
+      <h2>Notebooks & AI Hub</h2>
+      <p class="subtitle">Focus notes, study materials, and conversational Nyra Copilot</p>
     </div>
 
     <div class="topbar-actions">
-      <!-- AI Provider Switcher -->
-      <div class="ai-provider-toggle">
-        <label>AI Brain:</label>
-        <button 
-          class="provider-pill" 
-          [class.active]="aiProvider() === 'gemini'" 
-          (click)="aiProvider.set('gemini')"
-          title="Google Gemini Cloud (Multimodal document reasoning)"
-        >
-          ✨ Gemini Cloud
-        </button>
-        <button 
-          class="provider-pill" 
-          [class.active]="aiProvider() === 'local'" 
-          (click)="aiProvider.set('local')"
-          title="Local Ollama (100% Offline privacy on localhost:11434)"
-        >
-          🔒 Local Ollama
-        </button>
-      </div>
+      <!-- Materials Shelf Toggle -->
+      <button 
+        class="btn-topbar-action" 
+        [class.active]="showMaterialsDrawer()" 
+        (click)="toggleMaterialsDrawer()"
+        title="Toggle study materials and PDFs"
+      >
+        <span class="btn-icon">📚</span>
+        <span>Materials ({{ documents().length }})</span>
+        @if (selectedDocCount() > 0) {
+          <span class="pill-badge">{{ selectedDocCount() }} selected</span>
+        }
+      </button>
 
+      <!-- Ask Nyra AI Toggle -->
+      <button 
+        class="btn-topbar-action btn-ask-nyra" 
+        [class.active]="showAiPanel()" 
+        (click)="toggleAiPanel()"
+        title="Toggle Nyra Copilot Assistant"
+      >
+        <span class="sparkle">✨</span>
+        <span>Ask Nyra</span>
+      </button>
+
+      <!-- Create Note Button -->
       <button class="btn-primary" (click)="createNewNote()">
-        <span>+</span> New Note
+        <span class="plus">+</span> New Note
       </button>
     </div>
-  </div>
+  </header>
 
-  <!-- 3-Pane Modern Layout -->
-  <div class="notebooks-workspace">
+  <!-- Notification Toast -->
+  @if (notification()) {
+    <div class="notebook-toast">
+      <span>{{ notification() }}</span>
+    </div>
+  }
+
+  <!-- Main Workspace -->
+  <div class="notebooks-workspace" [class.ai-open]="showAiPanel()" [class.materials-open]="showMaterialsDrawer()">
 
     <!-- Pane 1: Notes Sidebar -->
-    <div class="notes-sidebar-pane">
-      <div class="pane-header">
-        <h3>My Notes</h3>
-        <span class="count-badge">{{ notes().length }}</span>
+    <aside class="notes-sidebar-pane">
+      <div class="sidebar-search-box">
+        <input 
+          type="text" 
+          [ngModel]="searchQuery()" 
+          (ngModelChange)="searchQuery.set($event)"
+          placeholder="Search notes..." 
+          class="notes-search-input"
+        >
       </div>
 
       <div class="notes-list">
-        @for (note of notes(); track note.id) {
+        @for (note of filteredNotes(); track note.id) {
           <div 
             class="note-list-item" 
             [class.active]="activeNote()?.id === note.id"
@@ -54,187 +71,352 @@
           >
             <div class="item-top">
               <span class="note-title">{{ note.title || 'Untitled Note' }}</span>
-              <button class="btn-del-note" (click)="$event.stopPropagation(); deleteNote(note.id)">🗑️</button>
+              <button 
+                class="btn-del-note" 
+                (click)="$event.stopPropagation(); deleteNote(note.id)" 
+                title="Delete note"
+              >
+                ✕
+              </button>
             </div>
-            <p class="item-snippet">{{ note.content.substring(0, 75) || 'Empty note...' }}</p>
-            <span class="item-date">{{ note.updatedAt }}</span>
+            <p class="item-snippet">{{ cleanSnippet(note.content) }}</p>
+            <div class="item-footer">
+              <span class="item-date">{{ note.updatedAt }}</span>
+            </div>
+          </div>
+        }
+        @if (filteredNotes().length === 0) {
+          <div class="empty-notes-hint">
+            <p>No notes found</p>
+            <button class="btn-secondary-sm" (click)="createNewNote()">Create one now</button>
           </div>
         }
       </div>
-    </div>
+    </aside>
 
-    <!-- Pane 2: Markdown Note Editor -->
-    <div class="note-editor-pane">
+    <!-- Pane 2: Note Editor -->
+    <main class="note-editor-pane">
       @if (activeNote(); as note) {
         <div class="editor-header">
-          <input 
-            type="text" 
-            [(ngModel)]="note.title" 
-            (ngModelChange)="saveActiveNote()"
-            placeholder="Note Title..."
-            class="note-title-input"
-          >
-          <span class="auto-save-pill">Auto-saved</span>
+          <div class="title-and-save">
+            <input 
+              type="text" 
+              [(ngModel)]="note.title" 
+              (ngModelChange)="onNoteContentChange()"
+              placeholder="Note Title..."
+              class="note-title-input"
+            >
+            <span class="save-status-pill" [class.saving]="saveState() === 'saving'">
+              {{ saveState() === 'saving' ? '◐ Saving...' : '● Saved' }}
+            </span>
+          </div>
+
+          <div class="editor-toolbar">
+            <!-- Write / Preview Mode Switcher -->
+            <div class="mode-switch-group">
+              <button 
+                class="switch-btn" 
+                [class.active]="editorMode() === 'write'" 
+                (click)="editorMode.set('write')"
+              >
+                Write
+              </button>
+              <button 
+                class="switch-btn" 
+                [class.active]="editorMode() === 'preview'" 
+                (click)="editorMode.set('preview')"
+              >
+                Preview
+              </button>
+            </div>
+
+            <span class="word-counter">{{ activeNoteWordCount() }} words</span>
+          </div>
         </div>
 
-        <div class="editor-body">
-          <textarea 
-            [(ngModel)]="note.content" 
-            (ngModelChange)="saveActiveNote()"
-            placeholder="Type notes in Markdown... (# Heading, - Bullet point, [ ] Checklist)"
-            class="markdown-textarea"
-          ></textarea>
+        <div class="editor-content-area">
+          @if (editorMode() === 'write') {
+            <textarea 
+              [(ngModel)]="note.content" 
+              (ngModelChange)="onNoteContentChange()"
+              placeholder="Start writing notes in comfortable Markdown... (# Heading, - Bullet point, **bold**, `code`)"
+              class="note-textarea"
+            ></textarea>
+          } @else {
+            <div class="note-preview-surface" [innerHTML]="renderMarkdown(note.content)"></div>
+          }
         </div>
       } @else {
         <div class="empty-editor">
           <span class="icon">📝</span>
           <h3>No Note Selected</h3>
-          <p>Select a note from the left or create a new one to begin writing.</p>
+          <p>Select a note from the left list or create a new one to begin studying.</p>
           <button class="btn-primary" (click)="createNewNote()">+ Create Note</button>
         </div>
       }
-    </div>
+    </main>
 
-    <!-- Pane 3: Attached Documents Shelf + Nyra Document Chat -->
-    <div class="ai-docs-pane">
-      
-      <!-- Section A: Document Shelf (PDFs & Slides) -->
-      <div class="docs-shelf-section">
-        <div class="shelf-header">
-          <div class="title-with-badge">
+    <!-- Pane 3: Materials Shelf Drawer (Collapsible) -->
+    @if (showMaterialsDrawer()) {
+      <aside class="materials-drawer-pane">
+        <div class="drawer-header">
+          <div class="header-title">
             <span class="icon">📚</span>
-            <h4>Study Materials & PDFs</h4>
-            <span class="shelf-count">{{ documents().length }}</span>
+            <h4>Study Materials</h4>
+            <span class="count-tag">{{ documents().length }}</span>
           </div>
-          
-          <label class="btn-upload-doc" title="Upload PDF, Slides or Markdown notes">
-            <span>+ Attach File</span>
+          <button class="btn-close-drawer" (click)="toggleMaterialsDrawer()" title="Close materials">✕</button>
+        </div>
+
+        <div class="drawer-actions">
+          <label class="btn-upload-file">
+            <span>+ Attach PDF / Notes</span>
             <input type="file" (change)="handleFileUpload($event)" multiple accept=".pdf,.md,.txt" style="display: none;">
           </label>
         </div>
 
-        <div class="docs-list">
+        <div class="materials-list">
           @for (doc of documents(); track doc.id) {
-            <div class="doc-card" [class.selected]="doc.isSelectedForAI">
-              <input 
-                type="checkbox" 
-                [checked]="doc.isSelectedForAI" 
-                (change)="toggleDocSelection(doc)"
-                title="Include in Nyra AI Context"
-              >
-              <div class="doc-info" (click)="toggleDocSelection(doc)">
-                <span class="doc-name">{{ doc.name }}</span>
-                <span class="doc-meta">{{ doc.type.toUpperCase() }} • {{ doc.sizeFormatted }}</span>
+            <div class="material-card" [class.selected]="doc.isSelectedForAI">
+              <label class="checkbox-wrap" title="Include in Nyra AI Context">
+                <input 
+                  type="checkbox" 
+                  [checked]="doc.isSelectedForAI" 
+                  (change)="toggleDocSelection(doc)"
+                >
+              </label>
+              <div class="material-info" (click)="toggleDocSelection(doc)">
+                <span class="material-name">{{ doc.name }}</span>
+                <span class="material-meta">{{ doc.type.toUpperCase() }} • {{ doc.sizeFormatted }}</span>
               </div>
-              <button class="btn-del-doc" (click)="deleteDocument(doc.id)" title="Remove document">✕</button>
+              <button class="btn-del-file" (click)="deleteDocument(doc.id)" title="Remove file">✕</button>
             </div>
           }
           @if (documents().length === 0) {
-            <div class="empty-docs-hint">
-              <span>Drop or attach PDFs here to chat with them</span>
+            <div class="empty-materials-hint">
+              <span class="hint-icon">📄</span>
+              <p>No attached materials yet.</p>
+              <span>Attach your lecture PDFs, syllabi, or slides to chat with them in Nyra.</span>
             </div>
           }
         </div>
-      </div>
+      </aside>
+    }
 
-      <!-- Section B: Nyra Document Copilot Chat -->
-      <div class="nyra-chat-section">
-        <div class="chat-header">
-          <div class="copilot-title">
+    <!-- Pane 4: Dedicated Nyra Assistant Right-Side Panel (Collapsible) -->
+    @if (showAiPanel()) {
+      <aside class="nyra-assistant-pane">
+        <!-- Assistant Header -->
+        <div class="assistant-header">
+          <div class="copilot-brand">
             <span class="sparkle">✨</span>
-            <h4>Nyra AI Copilot</h4>
+            <h4>Nyra Copilot</h4>
           </div>
 
-          <div class="ai-provider-switcher">
+          <div class="assistant-header-right">
+            <button class="btn-setup-gear" (click)="toggleKeySetup()" title="Configure AI API Keys">
+              ⚙️ Setup
+            </button>
+            <button class="btn-close-assistant" (click)="toggleAiPanel()" title="Close assistant">✕</button>
+          </div>
+        </div>
+
+        <!-- Provider Switcher & Live Status -->
+        <div class="provider-control-bar">
+          <div class="provider-selector-tabs">
             <button 
-              class="provider-pill" 
+              class="provider-tab" 
               [class.active]="aiProvider() === 'groq'" 
               (click)="setAiProvider('groq')"
-              title="Groq Llama 3.3 70B (Nyra Bot Engine)"
+              title="Groq Llama 3.3 70B (Ultra-fast)"
             >⚡ Groq</button>
             <button 
-              class="provider-pill" 
+              class="provider-tab" 
               [class.active]="aiProvider() === 'gemini'" 
               (click)="setAiProvider('gemini')"
               title="Google Gemini 1.5/2.0 Flash"
             >✨ Gemini</button>
             <button 
-              class="provider-pill" 
+              class="provider-tab" 
               [class.active]="aiProvider() === 'local'" 
               (click)="setAiProvider('local')"
               title="Local Ollama (:11434)"
             >💻 Local</button>
           </div>
-          
-          @if (aiProvider() === 'groq') {
-            <input 
-              type="password" 
-              [ngModel]="groqApiKey()" 
-              (ngModelChange)="saveGroqKey($event)"
-              placeholder="Groq key (gsk_...)" 
-              class="api-key-input"
-              title="Enter your Groq API key"
-            >
-          } @else if (aiProvider() === 'gemini') {
-            <input 
-              type="password" 
-              [ngModel]="geminiApiKey()" 
-              (ngModelChange)="saveGeminiKey($event)"
-              placeholder="Gemini API Key..." 
-              class="api-key-input"
-              title="Enter your Google AI Studio Gemini API Key"
-            >
+
+          <div class="provider-status-badge">
+            @if (aiProvider() === 'groq') {
+              @if (groqApiKey()) {
+                <span class="status-ready">● Ready (llama-3.3-70b)</span>
+              } @else {
+                <span class="status-need-key" (click)="toggleKeySetup()">○ Key Required</span>
+              }
+            } @else if (aiProvider() === 'gemini') {
+              @if (geminiApiKey()) {
+                <span class="status-ready">● Ready (1.5 Flash)</span>
+              } @else {
+                <span class="status-need-key" (click)="toggleKeySetup()">○ Key Required</span>
+              }
+            } @else {
+              <span class="status-ready">● Localhost:11434</span>
+            }
+          </div>
+        </div>
+
+        <!-- Source Context Row -->
+        <div class="source-context-strip">
+          @if (selectedDocCount() > 0) {
+            <span class="context-desc">
+              📄 Using: Active Note · <strong>{{ selectedDocCount() }} file(s)</strong>
+            </span>
+            <button class="link-manage-sources" (click)="toggleMaterialsDrawer()">Review</button>
           } @else {
-            <span class="ollama-tag" title="Ollama running locally on port 11434">localhost:11434</span>
+            <span class="context-desc">
+              🌐 Using: Active Note only (No materials selected)
+            </span>
+            <button class="link-manage-sources" (click)="toggleMaterialsDrawer()">+ Materials</button>
           }
         </div>
 
-        <!-- Chat Conversation Messages -->
-        <div class="chat-messages-box">
-          @for (msg of chatMessages(); track msg.timestamp + msg.text) {
-            <div class="chat-bubble-wrap" [class.user]="msg.sender === 'user'" [class.nyra]="msg.sender === 'nyra'">
-              <div class="sender-label">
-                {{ msg.sender === 'user' ? 'You' : 'Nyra Copilot' }}
+        <!-- Conversation Scrollable Box -->
+        <div class="assistant-conversation">
+          @for (msg of chatMessages(); track msg.id) {
+            <div class="message-bubble-wrap" [class.user]="msg.sender === 'user'" [class.nyra]="msg.sender === 'nyra'">
+              <div class="message-meta-line">
+                <span class="message-sender">{{ msg.sender === 'user' ? 'You' : 'Nyra Copilot' }}</span>
+                <span class="message-time">{{ msg.timestamp }}</span>
               </div>
-              <div class="chat-bubble">
-                <p>{{ msg.text }}</p>
+
+              <div class="message-content">
+                @if (msg.sender === 'nyra') {
+                  <div class="markdown-body" [innerHTML]="renderMarkdown(msg.text)"></div>
+
+                  <!-- Action Bar: Copy & Insert into Note -->
+                  <div class="message-actions-bar">
+                    <button class="btn-msg-action" (click)="copyMessage(msg.text)" title="Copy text">
+                      📋 Copy
+                    </button>
+                    <button class="btn-msg-action btn-insert-note" (click)="insertIntoNote(msg.text)" title="Insert into active note">
+                      📥 Insert into Note
+                    </button>
+                  </div>
+                } @else {
+                  <p class="user-text">{{ msg.text }}</p>
+                }
+
                 @if (msg.sources && msg.sources.length > 0) {
-                  <div class="sources-list">
-                    <span>Sources:</span>
+                  <div class="sources-strip">
+                    <span class="sources-label">Sources:</span>
                     @for (s of msg.sources; track s) {
-                      <span class="source-tag">📄 {{ s }}</span>
+                      <span class="source-pill">📄 {{ s }}</span>
                     }
                   </div>
                 }
               </div>
-              <span class="bubble-time">{{ msg.timestamp }}</span>
             </div>
           }
+
           @if (isThinking()) {
-            <div class="thinking-indicator">
-              <span class="sparkle">✨</span> Nyra is reading attached documents...
+            <div class="assistant-thinking-indicator">
+              <span class="spinner-sparkle">✨</span>
+              <span>Nyra is thinking...</span>
+            </div>
+          }
+
+          <!-- Starter Prompts (Shown when conversation is fresh) -->
+          @if (chatMessages().length <= 1 && !isThinking()) {
+            <div class="starter-prompts-container">
+              <span class="prompts-heading">Quick Actions</span>
+              <button class="starter-chip" (click)="applyStarterPrompt('Summarize the key concepts from the selected study materials and note.')">
+                ✨ Summarize materials
+              </button>
+              <button class="starter-chip" (click)="applyStarterPrompt('Generate 3 practice quiz questions with answer explanations based on my notes.')">
+                📝 Quiz me on this
+              </button>
+              <button class="starter-chip" (click)="applyStarterPrompt('Extract all key definitions, formulas, and theorems into a concise revision list.')">
+                💡 Key formulas & definitions
+              </button>
             </div>
           }
         </div>
 
-        <!-- Chat Prompt Input -->
-        <div class="chat-input-row">
-          <input 
-            type="text" 
-            [(ngModel)]="aiPrompt" 
-            (keydown.enter)="sendAiMessage()"
-            placeholder="Ask anything about your notes or PDFs..."
-            [disabled]="isThinking()"
-          >
-          <button class="btn-send-chat" (click)="sendAiMessage()" [disabled]="isThinking() || !aiPrompt.trim()">
-            ↑
-          </button>
+        <!-- Pinned Bottom Composer -->
+        <div class="assistant-composer">
+          <div class="composer-inner">
+            <textarea 
+              [(ngModel)]="aiPrompt" 
+              (keydown.enter)="$event.preventDefault(); sendAiMessage()"
+              placeholder="Ask anything about your notes or PDFs..."
+              rows="1"
+              [disabled]="isThinking()"
+              class="composer-textarea"
+            ></textarea>
+            <button 
+              class="btn-send-message" 
+              (click)="sendAiMessage()" 
+              [disabled]="isThinking() || !aiPrompt.trim()"
+              title="Send question (Enter)"
+            >
+              ↑
+            </button>
+          </div>
         </div>
-
-      </div>
-
-    </div>
+      </aside>
+    }
 
   </div>
+
+  <!-- Key Setup Dialog Popover -->
+  @if (showKeySetupModal()) {
+    <div class="setup-modal-backdrop" (click)="toggleKeySetup()">
+      <div class="setup-modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>AI Brain API Configuration</h3>
+          <button class="btn-close-modal" (click)="toggleKeySetup()">✕</button>
+        </div>
+
+        <p class="modal-desc">
+          Enter your API keys for direct high-speed reasoning. Keys are securely stored only inside your local browser storage.
+        </p>
+
+        <div class="key-field-group">
+          <label>⚡ Groq API Key (Fast Llama 3.3 70B — Nyra Default)</label>
+          <input 
+            type="password" 
+            [ngModel]="groqApiKey()" 
+            (ngModelChange)="saveGroqKey($event)"
+            placeholder="gsk_..."
+            class="key-text-input"
+          >
+          <span class="field-hint">Used for ultra-low latency response times.</span>
+        </div>
+
+        <div class="key-field-group">
+          <label>✨ Google Gemini API Key (Multimodal Reasoning)</label>
+          <input 
+            type="password" 
+            [ngModel]="geminiApiKey()" 
+            (ngModelChange)="saveGeminiKey($event)"
+            placeholder="AIzaSy..."
+            class="key-text-input"
+          >
+          <span class="field-hint">Google AI Studio API key.</span>
+        </div>
+
+        <div class="key-field-group">
+          <label>💻 Local Ollama</label>
+          <div class="ollama-info-row">
+            <span class="status-dot-active"></span>
+            <span>Target: <code>http://localhost:11434</code> (model: <code>llama3.2</code>)</span>
+          </div>
+          <span class="field-hint">Requires Ollama running locally. Completely private and offline.</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="saveKeysAndClose()">Save Configuration</button>
+        </div>
+      </div>
+    </div>
+  }
 
 </div>

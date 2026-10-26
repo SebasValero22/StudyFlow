@@ -58,6 +58,7 @@ api/data/
 # === Session / Transcript dumps ===
 studyflow-project-analysis-version-review.json
 .FullName
+studyflow-screen.png
 
 # === Linux (separate repo) ===
 linux/

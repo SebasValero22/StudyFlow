@@ -23,8 +23,12 @@ export class NyraVoiceButton {
 
   constructor(
     private apiService: ApiService,
-    private router: Router
+    public router: Router
   ) {}
+
+  get isHidden(): boolean {
+    return this.router.url.includes('/notebooks');
+  }
 
   @HostListener('window:keydown', ['$event'])
   handleShortcut(event: KeyboardEvent) {
