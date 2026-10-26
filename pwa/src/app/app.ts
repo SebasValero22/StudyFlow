@@ -33,6 +33,7 @@ export class App implements OnInit, OnDestroy {
 
   sidebarPosition = signal<'left' | 'right'>('left');
   isSidebarCollapsed = signal<boolean>(false);
+  showAudioDock = signal<boolean>(true);
   customPfp = signal<string | null>(null);
 
   private eventListeners: (() => void)[] = [];
@@ -48,18 +49,22 @@ export class App implements OnInit, OnDestroy {
   ngOnInit() {
     this.sidebarPosition.set((localStorage.getItem('studyflow-sidebar-pos') as 'left' | 'right') || 'left');
     this.isSidebarCollapsed.set(localStorage.getItem('studyflow-sidebar-collapsed') === 'true');
+    this.showAudioDock.set(localStorage.getItem('studyflow-show-audio-dock') !== 'false');
     this.customPfp.set(localStorage.getItem('studyflow-custom-pfp'));
 
     // Event listeners for real-time reactivity from Settings
     const onPos = (e: any) => this.sidebarPosition.set(e.detail);
     const onPfp = (e: any) => this.customPfp.set(e.detail);
+    const onAudio = (e: any) => this.showAudioDock.set(e.detail);
 
     window.addEventListener('studyflow-sidebar-pos-changed', onPos);
     window.addEventListener('studyflow-pfp-changed', onPfp);
+    window.addEventListener('studyflow-audio-dock-toggle', onAudio);
 
     this.eventListeners.push(
       () => window.removeEventListener('studyflow-sidebar-pos-changed', onPos),
-      () => window.removeEventListener('studyflow-pfp-changed', onPfp)
+      () => window.removeEventListener('studyflow-pfp-changed', onPfp),
+      () => window.removeEventListener('studyflow-audio-dock-toggle', onAudio)
     );
   }
 

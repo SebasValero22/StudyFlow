@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ApiService, LifeArea } from '../../core/services/api';
 import { ModeService } from '../../core/services/mode.service';
 
@@ -98,8 +99,13 @@ export class NotebooksComponent implements OnInit {
   constructor(
     private api: ApiService,
     public modeService: ModeService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
+
+  goToAiSettings() {
+    this.router.navigate(['/settings']);
+  }
 
   ngOnInit() {
     this.groqApiKey.set(localStorage.getItem('studyflow-groq-key') || '');

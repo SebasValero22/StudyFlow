@@ -19,12 +19,42 @@
   &.sidebar-collapsed {
     .sidebar {
       width: 72px;
-      padding: 1.25rem 0.5rem;
+      padding: 1rem 0.5rem;
 
-      .brand {
+      .sidebar-top {
+        flex-direction: column;
+        gap: 10px;
         padding: 0;
+        align-items: center;
         justify-content: center;
+        margin-bottom: 1.25rem;
+
+        .brand-link {
+          flex: 0;
+          display: flex;
+          justify-content: center;
+        }
+
+        .brand {
+          padding: 0;
+          justify-content: center;
+        }
+
+        .collapse-toggle-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: var(--sidebar-hover);
+          color: var(--sidebar-text-muted);
+          margin: 0 auto;
+
+          &:hover {
+            background: var(--accent-primary);
+            color: #ffffff;
+          }
+        }
       }
+
       .brand-info {
         display: none;
       }

@@ -15,6 +15,10 @@
             {{ stream.icon }} {{ stream.name }}
           </option>
         </select>
+        <label class="btn-byom-upload" title="Bring Your Own Music (Load local audio file)">
+          <span>📁</span>
+          <input type="file" accept="audio/*" (change)="onLocalFileSelected($event)" style="display: none;">
+        </label>
       </div>
       
       <div class="dock-volume-row">

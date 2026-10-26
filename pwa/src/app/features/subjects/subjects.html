@@ -12,6 +12,14 @@
       </p>
     </div>
     <div class="topbar-actions">
+      <button 
+        class="btn-secondary" 
+        (click)="toggleFilterMode()" 
+        title="Toggle between Mode-filtered and All Life Areas"
+        style="font-size: 0.8rem; padding: 6px 12px; margin-right: 8px;"
+      >
+        {{ filterMode === 'mode' ? (modeService.isWorkMode() ? '💼 Projects Only (' + displayedSubjects.length + ')' : '🎓 Subjects Only (' + displayedSubjects.length + ')') : '🌐 All Areas (' + subjects.length + ')' }}
+      </button>
       <button class="btn-primary" (click)="openCreateModal()">
         <span>+</span> New {{ modeService.terms().subject }}
       </button>
@@ -62,7 +70,7 @@
 
   <!-- 3-Column Modern Card Grid -->
   <div class="subjects-cards-grid">
-    @for (subject of subjects; track subject.lifeAreaId) {
+    @for (subject of displayedSubjects; track subject.lifeAreaId) {
       <div class="subject-card" [style.border-top-color]="subject.color">
         <div class="card-header">
           <div class="title-wrap">
@@ -97,7 +105,7 @@
       </div>
     }
 
-    @if (subjects.length === 0) {
+    @if (displayedSubjects.length === 0) {
       <div class="empty-deck">
         <span class="empty-icon">📁</span>
         <h3>No {{ modeService.terms().subjects }} Yet</h3>

@@ -166,9 +166,13 @@ export class CommandModalComponent implements OnInit {
       });
     } else if (tab === 'subject') {
       if (!this.subjectName.trim()) return;
+      const isWork = this.modeService.isWorkMode();
+      const code = this.subjectCode.trim();
       const payload: Partial<LifeArea> = {
         name: this.subjectName.trim(),
-        academicYear: this.subjectCode.trim() || (this.modeService.isWorkMode() ? 'PRJ-2026' : '2025/2026'),
+        academicYear: isWork 
+          ? (code ? (code.startsWith('PRJ') ? code : 'PRJ: ' + code) : 'PRJ: Client Alpha')
+          : (code || '2025/2026'),
         color: this.subjectColor,
         active: true
       };

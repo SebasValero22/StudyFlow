@@ -19,6 +19,9 @@
     <button class="nav-tab" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
       <span class="tab-icon">👤</span> Profile & Mode
     </button>
+    <button class="nav-tab" [class.active]="activeTab() === 'ai'" (click)="setTab('ai')">
+      <span class="tab-icon">✨</span> AI & Copilot
+    </button>
     <button class="nav-tab" [class.active]="activeTab() === 'voice'" (click)="setTab('voice')">
       <span class="tab-icon">🎙️</span> Voice Journal
     </button>
@@ -172,6 +175,16 @@
             {{ compactDensity() ? 'Enabled ✓' : 'Disabled' }}
           </button>
         </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-title">Focus Radio & Ambient Audio Dock</span>
+            <span class="setting-subtitle">Display persistent ambient streams, web radios, and custom music in the sidebar</span>
+          </div>
+          <button class="btn btn-secondary" (click)="toggleAudioDock()">
+            {{ showAudioDock() ? 'Dock Enabled 📻' : 'Dock Hidden ✕' }}
+          </button>
+        </div>
       </div>
     </div>
   }
@@ -229,6 +242,115 @@
         <div class="input-inline">
           <input type="text" [(ngModel)]="displayName" placeholder="Enter your name" class="text-input">
           <button class="btn btn-primary" (click)="saveDisplayName()">Save Name</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Tab: AI & Copilot Engine -->
+  @if (activeTab() === 'ai') {
+    <div class="tab-content">
+      <div class="settings-card">
+        <h3>Primary AI Brain Engine</h3>
+        <p class="card-desc">Select the default model that powers Nyra Copilot, document synthesis, and conversational study quizzes.</p>
+
+        <div class="mode-selector-grid">
+          <div class="mode-card" [class.active]="aiProvider() === 'groq'" (click)="setAiProvider('groq')">
+            <span class="mode-icon">⚡</span>
+            <h4>Groq Cloud (Llama 3.3 70B)</h4>
+            <p>Recommended. Ultra-low latency inference matching your Nyra Telegram bot.</p>
+          </div>
+
+          <div class="mode-card" [class.active]="aiProvider() === 'gemini'" (click)="setAiProvider('gemini')">
+            <span class="mode-icon">✨</span>
+            <h4>Google Gemini (1.5 / 2.0 Flash)</h4>
+            <p>Multimodal document understanding, PDF comprehension, and Google AI Studio power.</p>
+          </div>
+
+          <div class="mode-card" [class.active]="aiProvider() === 'local'" (click)="setAiProvider('local')">
+            <span class="mode-icon">💻</span>
+            <h4>Local Ollama (100% Offline)</h4>
+            <p>Complete data privacy. Runs locally on your machine on port 11434 with zero cloud reliance.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Groq Key Card -->
+      <div class="settings-card">
+        <h3>⚡ Groq API Configuration</h3>
+        <p class="card-desc">Your personal Groq API key (starts with <code>gsk_...</code>). Stored strictly in local browser storage.</p>
+
+        <div class="input-inline">
+          <input 
+            [type]="showGroqKey() ? 'text' : 'password'" 
+            [(ngModel)]="groqApiKey" 
+            placeholder="gsk_..." 
+            class="text-input"
+          >
+          <button class="btn btn-secondary" (click)="showGroqKey.set(!showGroqKey())">
+            {{ showGroqKey() ? 'Hide' : 'Show' }}
+          </button>
+          <button class="btn btn-primary" (click)="saveGroqKey()">Save Groq Key</button>
+        </div>
+      </div>
+
+      <!-- Gemini Key Card -->
+      <div class="settings-card">
+        <h3>✨ Google Gemini API Configuration</h3>
+        <p class="card-desc">Google AI Studio API key (starts with <code>AIzaSy...</code>).</p>
+
+        <div class="input-inline">
+          <input 
+            [type]="showGeminiKey() ? 'text' : 'password'" 
+            [(ngModel)]="geminiApiKey" 
+            placeholder="AIzaSy..." 
+            class="text-input"
+          >
+          <button class="btn btn-secondary" (click)="showGeminiKey.set(!showGeminiKey())">
+            {{ showGeminiKey() ? 'Hide' : 'Show' }}
+          </button>
+          <button class="btn btn-primary" (click)="saveGeminiKey()">Save Gemini Key</button>
+        </div>
+      </div>
+
+      <!-- Local Ollama Config Card -->
+      <div class="settings-card">
+        <h3>💻 Local Ollama Endpoint</h3>
+        <p class="card-desc">Configure your local Ollama server address and model tag.</p>
+
+        <div class="custom-timer-inputs">
+          <div class="input-col">
+            <label>Server Base URL</label>
+            <input type="text" [(ngModel)]="ollamaUrl" placeholder="http://localhost:11434" class="text-input">
+          </div>
+          <div class="input-col">
+            <label>Model Name</label>
+            <input type="text" [(ngModel)]="ollamaModel" placeholder="llama3.2" class="text-input">
+          </div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button class="btn btn-primary" (click)="saveOllamaConfig()">Save Ollama Config</button>
+        </div>
+      </div>
+
+      <!-- Test Connection Card -->
+      <div class="settings-card">
+        <h3>AI Health Check</h3>
+        <p class="card-desc">Ping your configured active AI model to verify connectivity and latency.</p>
+
+        <div class="sync-action-box">
+          <div>
+            @if (aiPingStatus()) {
+              <div class="sync-indicator">
+                <strong>{{ aiPingStatus() }}</strong>
+              </div>
+            } @else {
+              <p class="hint-text">Click to verify connectivity to {{ aiProvider().toUpperCase() }}.</p>
+            }
+          </div>
+          <button class="btn btn-primary" (click)="testAiConnection()" [disabled]="isPingingAi()">
+            {{ isPingingAi() ? 'Testing Connection...' : 'Test AI Connection' }}
+          </button>
         </div>
       </div>
     </div>

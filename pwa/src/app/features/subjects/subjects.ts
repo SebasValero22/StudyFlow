@@ -74,6 +74,21 @@ export class SubjectsComponent implements OnInit, OnDestroy {
     });
   }
 
+  filterMode: 'mode' | 'all' = 'mode';
+
+  get displayedSubjects(): LifeArea[] {
+    if (this.filterMode === 'all') return this.subjects;
+    const isWork = this.modeService.isWorkMode();
+    return this.subjects.filter(s => {
+      const isProject = this.modeService.isWorkProject(s);
+      return isWork ? isProject : !isProject;
+    });
+  }
+
+  toggleFilterMode() {
+    this.filterMode = this.filterMode === 'mode' ? 'all' : 'mode';
+  }
+
   getTaskCount(lifeAreaId?: number): number {
     if (!lifeAreaId) return 0;
     return this.tasks.filter(t => t.lifeAreaId === lifeAreaId && !t.isCompleted).length;

@@ -6,7 +6,7 @@ import { ThemeService, CustomThemeColors, DEFAULT_CUSTOM_THEME } from '../../cor
 import { ApiService } from '../../core/services/api';
 import { GDriveService } from '../../core/services/gdrive.service';
 
-export type SettingsTab = 'appearance' | 'profile' | 'voice' | 'timer' | 'sync';
+export type SettingsTab = 'appearance' | 'profile' | 'ai' | 'voice' | 'timer' | 'sync';
 
 @Component({
   selector: 'app-settings',
@@ -36,6 +36,18 @@ export class SettingsComponent implements OnInit {
   // Layout
   sidebarPosition = signal<'left' | 'right'>('left');
   compactDensity = signal<boolean>(false);
+  showAudioDock = signal<boolean>(true);
+
+  // AI Brain & Copilot
+  aiProvider = signal<'groq' | 'gemini' | 'local'>('groq');
+  groqApiKey = signal<string>('');
+  geminiApiKey = signal<string>('');
+  ollamaUrl = signal<string>('http://localhost:11434');
+  ollamaModel = signal<string>('llama3.2');
+  showGroqKey = signal<boolean>(false);
+  showGeminiKey = signal<boolean>(false);
+  aiPingStatus = signal<string>('');
+  isPingingAi = signal<boolean>(false);
 
   // Profile & Mode
   customPfp = signal<string | null>(null);
@@ -74,11 +86,18 @@ export class SettingsComponent implements OnInit {
     // Load saved settings
     this.sidebarPosition.set((localStorage.getItem('studyflow-sidebar-pos') as 'left' | 'right') || 'left');
     this.compactDensity.set(localStorage.getItem('studyflow-compact-density') === 'true');
+    this.showAudioDock.set(localStorage.getItem('studyflow-show-audio-dock') !== 'false');
     this.customPfp.set(localStorage.getItem('studyflow-custom-pfp'));
     const savedProvider = localStorage.getItem('studyflow-storage-provider') as 'aiven' | 'gdrive' | 'local' | null;
     if (savedProvider) {
       this.storageProvider.set(savedProvider);
     }
+
+    this.aiProvider.set((localStorage.getItem('studyflow-ai-provider') as 'groq' | 'gemini' | 'local') || 'groq');
+    this.groqApiKey.set(localStorage.getItem('studyflow-groq-key') || '');
+    this.geminiApiKey.set(localStorage.getItem('studyflow-gemini-key') || '');
+    this.ollamaUrl.set(localStorage.getItem('studyflow-ollama-url') || 'http://localhost:11434');
+    this.ollamaModel.set(localStorage.getItem('studyflow-ollama-model') || 'llama3.2');
     
     const user = this.apiService.getCurrentUser();
     this.displayName.set(user?.name || localStorage.getItem('studyflow-display-name') || '');
@@ -214,6 +233,87 @@ export class SettingsComponent implements OnInit {
   saveDisplayName() {
     localStorage.setItem('studyflow-display-name', this.displayName());
     this.flashNotification('Display name saved');
+  }
+
+  toggleAudioDock() {
+    const next = !this.showAudioDock();
+    this.showAudioDock.set(next);
+    localStorage.setItem('studyflow-show-audio-dock', String(next));
+    window.dispatchEvent(new CustomEvent('studyflow-audio-dock-toggle', { detail: next }));
+    this.flashNotification(`Ambient audio dock ${next ? 'enabled' : 'hidden'}`);
+  }
+
+  setAiProvider(provider: 'groq' | 'gemini' | 'local') {
+    this.aiProvider.set(provider);
+    localStorage.setItem('studyflow-ai-provider', provider);
+    this.flashNotification(`Active AI Engine set to ${provider.toUpperCase()}`);
+  }
+
+  saveGroqKey() {
+    localStorage.setItem('studyflow-groq-key', this.groqApiKey());
+    this.flashNotification('Groq API Key saved successfully! ✓');
+  }
+
+  saveGeminiKey() {
+    localStorage.setItem('studyflow-gemini-key', this.geminiApiKey());
+    this.flashNotification('Gemini API Key saved successfully! ✓');
+  }
+
+  saveOllamaConfig() {
+    localStorage.setItem('studyflow-ollama-url', this.ollamaUrl());
+    localStorage.setItem('studyflow-ollama-model', this.ollamaModel());
+    this.flashNotification('Local Ollama endpoint saved');
+  }
+
+  async testAiConnection() {
+    this.isPingingAi.set(true);
+    this.aiPingStatus.set('Testing connection...');
+    const start = Date.now();
+    try {
+      if (this.aiProvider() === 'groq') {
+        const key = this.groqApiKey().trim();
+        if (!key) throw new Error('Groq API Key is empty. Paste your key above.');
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [{ role: 'user', content: 'Say "Nyra Ready" in 2 words.' }],
+            max_tokens: 10
+          })
+        });
+        if (!res.ok) throw new Error(`Groq returned status ${res.status}`);
+        const data = await res.json();
+        const latency = Date.now() - start;
+        this.aiPingStatus.set(`● Groq Connected (${latency}ms): "${data.choices[0].message.content.trim()}"`);
+      } else if (this.aiProvider() === 'gemini') {
+        const key = this.geminiApiKey().trim();
+        if (!key) throw new Error('Gemini API Key is empty. Paste your key above.');
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: 'Say "Nyra Ready" in 2 words.' }] }]
+          })
+        });
+        if (!res.ok) throw new Error(`Gemini returned status ${res.status}`);
+        const data = await res.json();
+        const latency = Date.now() - start;
+        this.aiPingStatus.set(`● Gemini Connected (${latency}ms): "${data.candidates[0].content.parts[0].text.trim()}"`);
+      } else {
+        const res = await fetch(`${this.ollamaUrl()}/api/tags`);
+        if (!res.ok) throw new Error(`Ollama returned status ${res.status}`);
+        const latency = Date.now() - start;
+        this.aiPingStatus.set(`● Ollama reachable (${latency}ms) at ${this.ollamaUrl()}`);
+      }
+    } catch (e: any) {
+      this.aiPingStatus.set(`❌ Connection Error: ${e.message || 'Failed'}`);
+    } finally {
+      this.isPingingAi.set(false);
+    }
   }
 
   triggerSyncNow() {

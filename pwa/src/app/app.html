@@ -102,9 +102,11 @@
       </ul>
 
       <!-- Integrated Audio Dock in Sidebar Footer -->
-      <div class="sidebar-audio-dock">
-        <app-audio-player [isCompact]="isSidebarCollapsed()"></app-audio-player>
-      </div>
+      @if (showAudioDock()) {
+        <div class="sidebar-audio-dock">
+          <app-audio-player [isCompact]="isSidebarCollapsed()"></app-audio-player>
+        </div>
+      }
     </nav>
   }
 

@@ -42,6 +42,12 @@ export class ModeService {
     }
   }
 
+  isWorkProject(item: { academicYear?: string | null }): boolean {
+    if (!item || !item.academicYear) return false;
+    const y = item.academicYear.trim().toUpperCase();
+    return y.startsWith('WORK') || y.startsWith('PRJ') || y === 'PROJECT' || y.startsWith('CLIENT');
+  }
+
   toggleMode(): AppMode {
     const next: AppMode = this.modeSignal() === 'study' ? 'work' : 'study';
     this.setMode(next);

@@ -48,4 +48,11 @@ export class AudioPlayerComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     this.audioService.setVolume(parseFloat(input.value));
   }
+
+  onLocalFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.audioService.setCustomAudioFile(input.files[0]);
+    }
+  }
 }

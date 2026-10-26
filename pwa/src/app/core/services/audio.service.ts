@@ -21,9 +21,13 @@ export class AudioService {
   
   public streams: AudioStream[] = [
     { id: 'rain', name: 'Rain Ambience', type: 'procedural', icon: '🌧️' },
-    { id: 'brown', name: 'Deep Focus Noise', type: 'procedural', icon: '🌊' },
-    { id: 'cafe', name: 'Cafe Murmur', type: 'procedural', icon: '☕' },
-    { id: 'lofi', name: 'Lofi Chill Radio', type: 'stream', url: 'https://streams.ilovemusic.de/iloveradio17.mp3', icon: '📻' }
+    { id: 'brown', name: 'Deep Brown Noise', type: 'procedural', icon: '🌊' },
+    { id: 'cafe', name: 'Cozy Cafe Murmur', type: 'procedural', icon: '☕' },
+    { id: 'lofi', name: 'Lofi Chill Radio', type: 'stream', url: 'https://streams.ilovemusic.de/iloveradio17.mp3', icon: '📻' },
+    { id: 'synthwave', name: 'Synthwave Radio', type: 'stream', url: 'https://stream.nightride.fm/nightride.mp3', icon: '🌌' },
+    { id: 'classical', name: 'Classical Focus', type: 'stream', url: 'https://live.musopen.org:8085/streamvbr0', icon: '🎹' },
+    { id: 'forest', name: 'Forest & Birds', type: 'stream', url: 'https://actions.google.com/sounds/v1/environments/forest_birds.ogg', icon: '🍃' },
+    { id: 'custom', name: 'Bring Your Own Music', type: 'stream', url: '', icon: '🎵' }
   ];
 
   private currentStreamSubject = new BehaviorSubject<AudioStream>(this.streams[0]);
@@ -95,6 +99,38 @@ export class AudioService {
   pause() {
     this.stopAll();
     this.isPlayingSubject.next(false);
+  }
+
+  setCustomAudioFile(file: File) {
+    const objectUrl = URL.createObjectURL(file);
+    const customStream: AudioStream = {
+      id: 'custom',
+      name: file.name.length > 16 ? file.name.substring(0, 14) + '...' : file.name,
+      type: 'stream',
+      url: objectUrl,
+      icon: '🎵'
+    };
+    const idx = this.streams.findIndex(s => s.id === 'custom');
+    if (idx !== -1) {
+      this.streams[idx] = customStream;
+    }
+    this.playStream('custom');
+  }
+
+  setCustomStreamUrl(url: string, name = 'Custom Radio') {
+    const customStream: AudioStream = {
+      id: 'custom',
+      name,
+      type: 'stream',
+      url,
+      icon: '📻'
+    };
+    const idx = this.streams.findIndex(s => s.id === 'custom');
+    if (idx !== -1) {
+      this.streams[idx] = customStream;
+    }
+    localStorage.setItem('studyflow-custom-stream-url', url);
+    this.playStream('custom');
   }
 
   togglePlay() {
