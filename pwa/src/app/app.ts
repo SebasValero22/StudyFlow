@@ -52,6 +52,22 @@ export class App implements OnInit, OnDestroy {
     this.showAudioDock.set(localStorage.getItem('studyflow-show-audio-dock') !== 'false');
     this.customPfp.set(localStorage.getItem('studyflow-custom-pfp'));
 
+    // Purge stale service workers in native desktop/Tauri shells
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && (window.location.hostname === 'tauri.localhost' || !!(window as any).__TAURI_INTERNALS__ || !!(window as any).__TAURI__)) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        for (const reg of regs) {
+          reg.unregister();
+        }
+      });
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          for (const key of keys) {
+            caches.delete(key);
+          }
+        });
+      }
+    }
+
     // Event listeners for real-time reactivity from Settings
     const onPos = (e: any) => this.sidebarPosition.set(e.detail);
     const onPfp = (e: any) => this.customPfp.set(e.detail);
